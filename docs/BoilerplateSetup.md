@@ -35,6 +35,7 @@ This guide will walk you through the steps to create the Go boilerplate using th
 
      ```bash
      go install github.com/evilmartians/lefthook@latest
+     export PATH=$PATH:$HOME/go/bin
      ```
 
    - **Viper (Configuration Management)**: Viper is a complete configuration solution for Go applications, useful for handling configuration files and environment variables.

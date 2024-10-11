@@ -1,0 +1,28 @@
+# Config file for Air
+
+[build]
+  # This is the command that Air runs to build your application
+  cmd = "go build -o ./tmp/main ./cmd/main.go"
+
+  # Binary location after building
+  bin = "./tmp/main"
+
+  # Watching these extensions
+  include_ext = ["go", "tpl", "tmpl", "html"]
+
+  # Ignore these folders or files
+  exclude_dir = ["vendor", "tmp"]
+
+  # This pattern can ignore specific files
+  exclude_file = []
+
+  # The command to start the application
+  full_bin = "./tmp/main"
+
+[log]
+  # The color of log information (0 is off)
+  color = 1
+
+[hot]
+  # Disable live reload on runtime error
+  live_reload_on_error = false

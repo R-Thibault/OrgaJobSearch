@@ -5,6 +5,7 @@ import (
 
 	"github.com/R-Thibault/Go----Boilerplate-.git/config"
 	"github.com/R-Thibault/Go----Boilerplate-.git/routes"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +17,9 @@ func main() {
 
 	// Create a new Gin engine instance
 	r := gin.Default()
+
+	// Enable CORS
+	r.Use(cors.Default())
 
 	// Set up application routes
 	routes.SetupRoutes(r)

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/R-Thibault/Go----Boilerplate-.git/models"
+	"github.com/R-Thibault/OrgaJobSearch/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

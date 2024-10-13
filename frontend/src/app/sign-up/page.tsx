@@ -1,15 +1,35 @@
 "use client";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your form submission logic here
-    console.log({ email, password, confirmPassword });
+    try {
+      if (password === confirmPassword) {
+        const response = await axios.post("http://localhost:8080/sign-up", {
+          email: email,
+          password: password,
+        });
+        router.push("/sign-in");
+        if (response.data) {
+          setErrorMessage("");
+        }
+      } else {
+        setErrorMessage(
+          "Le mot de passe et la confirmation ne correspondent pas."
+        );
+      }
+    } catch (error) {
+      console.error("Error during sign in:", error);
+      setErrorMessage("Email ou mot de passe incorrecte.");
+    }
   };
 
   return (
@@ -65,6 +85,9 @@ export default function SignUpPage() {
               required
             />
           </div>
+          {errorMessage && (
+            <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
+          )}
           <button
             type="submit"
             className="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

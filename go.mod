@@ -1,4 +1,4 @@
-module github.com/R-Thibault/Go----Boilerplate-.git
+module github.com/R-Thibault/OrgaJobSearch
 
 go 1.23.2
 

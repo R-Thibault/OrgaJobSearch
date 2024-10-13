@@ -1,3 +1,7 @@
+"use client";
+
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export default function SignIn() {
@@ -5,18 +9,22 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  const router = useRouter();
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:8080/api/sign-in", {
-        email: email,
-        password: password,
-      });
-
-      console.log("Sign In successful:", response.data);
+      await axios.post(
+        "http://localhost:8080/sign-in",
+        {
+          email: email,
+          password: password,
+        },
+        { withCredentials: true }
+      );
+      router.push("/success");
     } catch (error) {
       console.error("Error during sign in:", error);
-      setErrorMessage("Invalid credentials or server error. Please try again.");
+      setErrorMessage("Email ou mot de passe incorrecte.");
     }
   };
   return (
@@ -63,7 +71,7 @@ export default function SignIn() {
           <div className="flex items-center justify-between">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              type="button"
+              type="submit"
             >
               Sign In
             </button>

@@ -38,6 +38,12 @@ func (a *AuthController) SignIn(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request"})
 		return
 	}
+	// check password requirement
+	isMatch := utils.RegexPassword(creds.Password)
+	if !isMatch {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
+		return
+	}
 
 	// User fetching logic
 	existingUser, err := a.service.GetUserByEmail(creds.Email)

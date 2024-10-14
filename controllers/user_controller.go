@@ -5,6 +5,7 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/models"
 	"github.com/R-Thibault/OrgaJobSearch/services"
+	"github.com/R-Thibault/OrgaJobSearch/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,6 +23,12 @@ func (u *UserController) SignUp(c *gin.Context) {
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		// If the input is invalid, respond with an error
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		return
+	}
+	// check password requirement
+	isMatch := utils.RegexPassword(creds.Password)
+	if !isMatch {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		return
 	}
 

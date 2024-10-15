@@ -1,67 +1,67 @@
-# OrgaJobSearch
+# OrgaJobSearch Documentation
 
-OrgaJobSearch WIP
+Welcome to **OrgaJobSearch**! This project aims to provide a streamlined job search and management platform, integrating both a Go backend and a modern JavaScript frontend. Below you'll find an overview of how to set up the project, understand the code structure, and follow best practices.
 
-## Prerequisites
+## Table of Contents
 
-Before running the project, make sure the following are installed on your machine:
+- [Introduction](#introduction)
+- [Installation Guide](#installation-guide)
+- [Project Structure](#project-structure)
+- [HTTP Request Flow](#http-request-flow)
+- [Code Conventions](#code-conventions)
+- [Getting Started](#getting-started)
+- [License](#license)
 
-- [Golang](https://golang.org/dl/) version 1.22 or higher
-- A PostgreSQL database
-- A Go dependency manager (Go Modules is recommended)
+## Introduction
 
-## Installation
+**OrgaJobSearch** is a Work In Progress (WIP) aimed at simplifying job searching processes with enhanced backend and frontend capabilities.
 
-1. Clone this repository to your local machine:
+The project uses:
 
-   ```bash
+- **Golang** for backend development
+- **React** (or another modern JavaScript framework) for the frontend
+- **PostgreSQL** for data persistence
+- Additional tools such as **Air**, **Viper**, **Lefthook**, and **Gorm** to aid development and maintainability
+
+## Installation Guide
+
+For a detailed guide on how to get started with the installation of this project, including prerequisites and steps to set up the development environment, please refer to [starter.md](./docs/starter.md).
+
+## Project Structure
+
+The project follows a layered structure, designed to promote separation of concerns and maintainability. Each component, from controllers to models, serves a distinct purpose. To understand the directory structure in detail, visit [project_structure_overview.md](./docs/project_structure_overview.md).
+
+## HTTP Request Flow
+
+This document outlines how HTTP requests, such as creating a user, flow through different parts of the application—starting from routing, reaching the service layer, interacting with the repository, and ending in the database. This is crucial for understanding how different parts of the application interact. For more information, refer to [http_request_flow.md](./docs/http_request_flow.md).
+
+## Code Conventions
+
+To maintain consistency in the codebase, follow the provided code conventions. This is especially useful when new developers join the project. Conventions include rules for naming, formatting, and structuring code. For full details, see [project_code_convention.md](./docs/project_code_conventions.md).
+
+## Getting Started
+
+1. **Clone the Repository**
+   ```sh
    git clone https://github.com/R-Thibault/OrgaJobSearch
-   ```
-
-2. Navigate to the project directory:
-
-   ```bash
    cd OrgaJobSearch
    ```
+2. **Set Up Dependencies**
+   Make sure you have [Golang 1.22 or higher](https://golang.org/dl/) installed, and set up a PostgreSQL database.
 
-3. Install the project dependencies using Go Modules (or another dependency manager):
+3. **Environment Variables**
+   Copy `.env.sample` to `.env` and fill in the appropriate environment variables.
 
-   ```bash
-   go mod tidy
-   ```
+4. **Run the Application**
+   - To run in development mode with live reloading:
+     ```sh
+     air
+     ```
+   - For a regular run:
+     ```sh
+     go run cmd/main.go
+     ```
 
-4. Set up the environment variables as needed (e.g., for database connection). You can copy the `.env.sample` file, rename it to `.env`, and add your environment variables, or you can set the environment variables directly:
+## License
 
-   ```bash
-   export DB_USER=your_database_user
-   export DB_PASSWORD=your_database_password
-   export DB_NAME=your_database_name
-   export DB_HOST=your_database_host
-   export DB_PORT=your_db_port
-   ```
-
-## Usage
-
-### Starting the Application
-
-To start the application:
-
-```bash
-go run *.go
-```
-
-### Starting the Application with Air (for Development)
-
-Air is a Go utility that monitors code changes and automatically restarts the server, making it ideal for development.
-
-To add the `air` command to your PATH:
-
-```bash
-export PATH=$PATH:$(go env GOPATH)/bin
-```
-
-Then, run Air to start the application in development mode:
-
-```bash
-air
-```
+This project is licensed under the MIT License.

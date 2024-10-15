@@ -2,6 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
+// User table for Database
 type User struct {
 	gorm.Model
 	Name           string `gorm:"size:255"`

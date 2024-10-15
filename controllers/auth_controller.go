@@ -1,13 +1,16 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/R-Thibault/Go----Boilerplate-.git/config"
+	"github.com/R-Thibault/Go----Boilerplate-.git/services"
+	"github.com/R-Thibault/Go----Boilerplate-.git/utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 var jwtKey = []byte(config.GetConfig("JWT_KEY"))
@@ -22,7 +25,19 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-type AuthController struct{}
+// AuthController handles authentication-related requests
+type AuthController struct {
+	service      services.UserServiceInterface
+	hashingUtils utils.HashingServiceInterface
+}
+
+// NewAuthController creates a new instance of AuthController
+func NewAuthController(service services.UserServiceInterface, hashingUtils utils.HashingServiceInterface) *AuthController {
+	return &AuthController{
+		service:      service,
+		hashingUtils: hashingUtils,
+	}
+}
 
 // SignIn handles the sign-in process
 func (a *AuthController) SignIn(c *gin.Context) {
@@ -32,11 +47,21 @@ func (a *AuthController) SignIn(c *gin.Context) {
 		return
 	}
 
-	// User fetching logic here
-	expectedPasswordHash := "$2a$12$ExampleHashFromBCryptForDemoPurposesOnly"
+	// User fetching logic
+	existingUser, err := a.service.GetUserByEmail(creds.Email)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
 
 	// Verify the password
-	if err := bcrypt.CompareHashAndPassword([]byte(expectedPasswordHash), []byte(creds.Password)); err != nil {
+	isMatch, err := a.hashingUtils.CompareHashPassword(creds.Password, existingUser.HashedPassword)
+	if err != nil {
+		fmt.Print(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}

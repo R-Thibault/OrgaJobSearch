@@ -23,12 +23,16 @@ type Claims struct {
 
 // AuthController handles authentication-related requests
 type AuthController struct {
-	service *services.UserService
+	service      services.UserServiceInterface
+	hashingUtils utils.HashingServiceInterface
 }
 
 // NewAuthController creates a new instance of AuthController
-func NewAuthController(service *services.UserService) *AuthController {
-	return &AuthController{service: service}
+func NewAuthController(service services.UserServiceInterface, hashingUtils utils.HashingServiceInterface) *AuthController {
+	return &AuthController{
+		service:      service,
+		hashingUtils: hashingUtils,
+	}
 }
 
 // SignIn handles the sign-in process
@@ -36,12 +40,6 @@ func (a *AuthController) SignIn(c *gin.Context) {
 	var creds models.Credentials
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request"})
-		return
-	}
-	// check password requirement
-	isMatch := utils.RegexPassword(creds.Password)
-	if !isMatch {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		return
 	}
 
@@ -57,7 +55,7 @@ func (a *AuthController) SignIn(c *gin.Context) {
 	}
 
 	// Verify the password
-	isMatch, err := utils.CompareHashPassword(creds.Password, existingUser.HashedPassword)
+	isMatch, err := a.hashingUtils.CompareHashPassword(creds.Password, existingUser.HashedPassword)
 	if err != nil {
 		fmt.Print(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})

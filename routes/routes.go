@@ -5,6 +5,7 @@ import (
 	"github.com/R-Thibault/OrgaJobSearch/controllers"
 	"github.com/R-Thibault/OrgaJobSearch/repository"
 	"github.com/R-Thibault/OrgaJobSearch/services"
+	"github.com/R-Thibault/OrgaJobSearch/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,11 +19,18 @@ func SetupRoutes(router *gin.Engine) {
 		})
 	})
 
+	// Initialize the repository and the hashing service
+	userRepository := repository.NewUserRepository(config.DB)
+	hashingService := utils.NewHashingService()
+
+	// Initialize the user service with the repository and hashing service
+	userService := services.NewUserService(userRepository, hashingService)
+
 	// Public route for signing in
-	authController := controllers.NewAuthController(services.NewUserService(repository.NewUserRepository(config.DB)))
+	authController := controllers.NewAuthController(userService, hashingService)
 	router.POST("/sign-in", authController.SignIn)
 
 	// Public route for signing up
-	userController := controllers.NewUserController(services.NewUserService(repository.NewUserRepository(config.DB)))
+	userController := controllers.NewUserController(userService)
 	router.POST("/sign-up", userController.SignUp)
 }

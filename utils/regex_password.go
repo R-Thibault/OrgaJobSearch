@@ -1,15 +1,26 @@
 package utils
 
 import (
-	"log"
 	"regexp"
 )
 
 func RegexPassword(password string) bool {
-	isMatch, err := regexp.Match("^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", []byte(password))
-	if err != nil {
-		log.Printf("NOK : %v\n", err)
+	if len(password) < 8 {
 		return false
 	}
-	return true
+
+	// Regex to check at least one uppercase letter
+	upperRegex := regexp.MustCompile(`[A-Z]`)
+	// Regex to check at least one lowercase letter
+	lowerRegex := regexp.MustCompile(`[a-z]`)
+	// Regex to check at least one digit
+	digitRegex := regexp.MustCompile(`[0-9]`)
+	// Regex to check at least one special character
+	specialCharRegex := regexp.MustCompile(`[@$!%*?&]`)
+
+	// Return true only if all regexes match
+	return upperRegex.MatchString(password) &&
+		lowerRegex.MatchString(password) &&
+		digitRegex.MatchString(password) &&
+		specialCharRegex.MatchString(password)
 }

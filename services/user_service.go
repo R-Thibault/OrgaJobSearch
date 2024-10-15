@@ -9,12 +9,15 @@ import (
 )
 
 type UserService struct {
-	repo *repository.UserRepository
+	repo         repository.UserRepositoryInterface
+	hashingUtils utils.HashingServiceInterface
 }
 
-func NewUserService(repo *repository.UserRepository) *UserService {
-	return &UserService{repo: repo}
+func NewUserService(repo repository.UserRepositoryInterface, hashingUtils utils.HashingServiceInterface) *UserService {
+	return &UserService{repo: repo, hashingUtils: hashingUtils}
 }
+
+var _ UserServiceInterface = &UserService{}
 
 func (s *UserService) RegisterUser(creds models.Credentials) error {
 	//Check if a user with same email exists
@@ -22,9 +25,14 @@ func (s *UserService) RegisterUser(creds models.Credentials) error {
 	if existingUser != nil {
 		return errors.New("user already exists")
 	}
+	// check password requirement
+	isMatch := utils.RegexPassword(creds.Password)
+	if !isMatch {
+		return errors.New("Password doesn't match requirement")
+	}
 
 	//Hash user's password
-	hashedPassword, err := utils.HashPassword(creds.Password)
+	hashedPassword, err := s.hashingUtils.HashPassword(creds.Password)
 	if err != nil {
 		return err
 	}

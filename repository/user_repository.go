@@ -15,6 +15,8 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
+var _ UserRepositoryInterface = &UserRepository{}
+
 func (r *UserRepository) SaveUser(user models.User) error {
 	//Save user in DB
 	return r.db.Create(&user).Error

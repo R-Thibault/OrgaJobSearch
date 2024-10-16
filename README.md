@@ -9,6 +9,7 @@ Welcome to **OrgaJobSearch**! This project aims to provide a streamlined job sea
 - [Project Structure](#project-structure)
 - [HTTP Request Flow](#http-request-flow)
 - [Code Conventions](#code-conventions)
+- [Testing Guide](#testing-guide)
 - [Getting Started](#getting-started)
 - [License](#license)
 
@@ -38,6 +39,10 @@ This document outlines how HTTP requests, such as creating a user, flow through 
 ## Code Conventions
 
 To maintain consistency in the codebase, follow the provided code conventions. This is especially useful when new developers join the project. Conventions include rules for naming, formatting, and structuring code. For full details, see [project_code_convention.md](./docs/project_code_conventions.md).
+
+## Testing Guide
+
+For guidance on how to create, run, and manage tests for this project, including the use of Mockery and Testify, please refer to [project_testing_backend.md](./docs/project_testing_backend.md).
 
 ## Getting Started
 

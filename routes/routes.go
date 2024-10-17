@@ -27,6 +27,7 @@ func SetupRoutes(router *gin.Engine) {
 	// Initialize the user service with the repository and hashing service
 	userService := services.NewUserService(userRepository, hashingService)
 	OTPService := services.NewOTPService(userRepository, OTPRepository, OTPGeneratorService)
+	MailerService := services.NewMailerService()
 
 	// Public route for signing in
 	authController := controllers.NewAuthController(userService, hashingService)
@@ -35,4 +36,11 @@ func SetupRoutes(router *gin.Engine) {
 	// Public route for signing up
 	userController := controllers.NewUserController(userService, OTPService)
 	router.POST("/sign-up", userController.SignUp)
+
+	// Public route to generate OTP
+	OTPcontroller := controllers.NewOTPController(OTPService, MailerService)
+	router.POST("/generate-otp", OTPcontroller.GenerateOTP)
+
+	//Public route for sending OTP
+	router.POST("/send-otp", OTPcontroller.SendOTP)
 }

@@ -57,11 +57,15 @@ func (a *AuthController) SignIn(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
 	}
-
+	// check if user validate is email
+	if existingUser.EmailIsValide == false {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
 	// Verify the password
 	isMatch, err := a.hashingUtils.CompareHashPassword(creds.Password, existingUser.HashedPassword)
 	if err != nil {
-		fmt.Print(err)
+
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}

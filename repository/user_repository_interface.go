@@ -6,4 +6,5 @@ import "github.com/R-Thibault/OrgaJobSearch/models"
 type UserRepositoryInterface interface {
 	SaveUser(user models.User) error
 	GetUserByEmail(email string) (*models.User, error)
+	ValidateEmail(email string) error
 }

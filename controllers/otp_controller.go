@@ -14,12 +14,13 @@ import (
 
 type OTPController struct {
 	OTPService    *services.OTPService
+	UserService   services.UserServiceInterface
 	MailerService *services.MailerService
 }
 
-func NewOTPController(OTPService *services.OTPService, MailerService *services.MailerService) *OTPController {
+func NewOTPController(OTPService *services.OTPService, MailerService *services.MailerService, UserService services.UserServiceInterface) *OTPController {
 
-	return &OTPController{OTPService: OTPService, MailerService: MailerService}
+	return &OTPController{OTPService: OTPService, MailerService: MailerService, UserService: UserService}
 }
 
 func (u *OTPController) GenerateOTP(c *gin.Context) {
@@ -91,16 +92,22 @@ func (u *OTPController) SendOTP(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "OTP Successfully send"})
 }
 
-func (ctrl *OTPController) ValidateOTP(c *gin.Context) {
-	var request struct {
-		OTP int `json:"otp"`
-	}
+func (u *OTPController) ValidateOTP(c *gin.Context) {
+	var request models.SendOTPRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
+		log.Printf("Error OTP : %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-
-	// Here you would typically check the OTP against a stored value
-	// For simplicity, we'll assume any OTP is valid
+	err := u.OTPService.VerifyOTP(request.Email, request.OtpCode)
+	if err != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		return
+	}
+	errValidate := u.UserService.EmailValidation(request.Email)
+	if errValidate != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": errValidate.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "OTP is valid"})
 }

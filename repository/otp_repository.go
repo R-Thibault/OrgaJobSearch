@@ -35,7 +35,7 @@ func (r *OTPRepository) GetOTPCodeByUserID(userID uint) (*models.OTP, error) {
 	}
 
 	var otp models.OTP
-	result := r.db.Debug().Where("userID = ? AND otpType = ?", userID, "emailValidation").First(&otp)
+	result := r.db.Where("user_id = ? AND otp_type = ?", userID, "emailValidation").First(&otp)
 	if result.Error != nil {
 		if result.Error != nil {
 			if errors.Is(result.Error, gorm.ErrRecordNotFound) {

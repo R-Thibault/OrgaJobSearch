@@ -51,3 +51,11 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 
 	return &user, nil
 }
+
+func (r *UserRepository) ValidateEmail(email string) error {
+	if email == "" {
+		return errors.New("email cannot be empty")
+	}
+	return r.db.Model(&models.User{}).Where("email = ?", email).Update("email_is_valide", true).Error
+
+}

@@ -30,7 +30,7 @@ export default function SignUpPage() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       if (password === confirmPassword) {
@@ -70,22 +70,24 @@ export default function SignUpPage() {
     }
   };
 
-  const handleOtpSubmit = async (e) => {
+  const handleOtpSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const otpResponse = await axios.post("http://localhost:8080/verify-otp", {
         email: email,
-        otp: otp,
+        otpCode: otp,
       });
-      if (otpResponse.data.success) {
+      if (otpResponse.data) {
+        setErrorOTPMessage("");
         // OTP is correct, proceed to sign-in page
         router.push("/sign-in");
       } else {
-        setErrorMessage("OTP incorrect. Veuillez réessayer.");
+        console.log(otpResponse);
+        setErrorOTPMessage("OTP incorrect. Veuillez réessayer.");
       }
     } catch (error) {
       console.error("Error during OTP verification:", error);
-      setErrorMessage("Erreur lors de la vérification de l'OTP.");
+      setErrorOTPMessage("Erreur lors de la vérification de l'OTP.");
     }
   };
 

@@ -49,3 +49,7 @@ func (s *UserService) RegisterUser(creds models.Credentials) error {
 func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
 	return s.UserRrepo.GetUserByEmail(email)
 }
+
+func (s *UserService) EmailValidation(email string) error {
+	return s.UserRrepo.ValidateEmail(email)
+}

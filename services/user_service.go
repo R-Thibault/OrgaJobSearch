@@ -9,19 +9,19 @@ import (
 )
 
 type UserService struct {
-	repo         repository.UserRepositoryInterface
+	UserRrepo    repository.UserRepositoryInterface
 	hashingUtils utils.HashingServiceInterface
 }
 
-func NewUserService(repo repository.UserRepositoryInterface, hashingUtils utils.HashingServiceInterface) *UserService {
-	return &UserService{repo: repo, hashingUtils: hashingUtils}
+func NewUserService(UserRrepo repository.UserRepositoryInterface, hashingUtils utils.HashingServiceInterface) *UserService {
+	return &UserService{UserRrepo: UserRrepo, hashingUtils: hashingUtils}
 }
 
 var _ UserServiceInterface = &UserService{}
 
 func (s *UserService) RegisterUser(creds models.Credentials) error {
 	//Check if a user with same email exists
-	existingUser, _ := s.repo.GetUserByEmail(creds.Email)
+	existingUser, _ := s.UserRrepo.GetUserByEmail(creds.Email)
 	if existingUser != nil {
 		return errors.New("user already exists")
 	}
@@ -43,9 +43,9 @@ func (s *UserService) RegisterUser(creds models.Credentials) error {
 		HashedPassword: string(hashedPassword),
 	}
 	// Save the user
-	return s.repo.SaveUser(user)
+	return s.UserRrepo.SaveUser(user)
 }
 
 func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
-	return s.repo.GetUserByEmail(email)
+	return s.UserRrepo.GetUserByEmail(email)
 }

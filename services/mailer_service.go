@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"os"
 
+	"github.com/R-Thibault/OrgaJobSearch/config"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
@@ -23,8 +23,9 @@ func (s *MailerService) SendEmail(toEmail string, subject string, plainTextConte
 	to := mail.NewEmail("Recipient", toEmail)
 	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
 
-	apiKey := os.Getenv("SENDGRID_API_KEY")
+	apiKey := config.GetConfig("SENDGRID_API_KEY")
 	if apiKey == "" {
+		log.Println("SENDGRID_API_KEY is not set")
 		return fmt.Errorf("SENDGRID_API_KEY not set")
 	}
 	client := sendgrid.NewSendClient(apiKey)
@@ -32,6 +33,8 @@ func (s *MailerService) SendEmail(toEmail string, subject string, plainTextConte
 	response, err := client.Send(message)
 
 	if err != nil {
+		log.Printf("Mail Response : %v\n", response)
+		log.Printf("Mail Error : %v\n", err)
 		return errors.New("failed to send email")
 	}
 	// Log the response for verification

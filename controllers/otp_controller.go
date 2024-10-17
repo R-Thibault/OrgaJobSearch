@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 
@@ -33,8 +34,6 @@ func (u *OTPController) GenerateOTP(c *gin.Context) {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
-	log.Printf("%v\n", Otp)
-	// Logique envoie mail ici
 
 	c.JSON(http.StatusOK, gin.H{"otp": "OTP generated successfully"})
 
@@ -58,11 +57,19 @@ func (u *OTPController) GenerateOTP(c *gin.Context) {
 			return
 		}
 		req.Header.Set("Content-type", "application/json")
+		req.Header.Set("Content-type", "application/json")
 		resp, err := client.Do(req)
-		if err != nil || resp.StatusCode != http.StatusOK {
-			log.Printf("Error sending OTP: %v", err)
+		if err != nil {
+			log.Printf("Error sending OTP: %v\n", err)
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			bodyBytes, _ := io.ReadAll(resp.Body)
+			log.Printf("Error sending OTP: Received status code %d, response: %s", resp.StatusCode, string(bodyBytes))
 		} else {
-			log.Printf("OTP send successfully")
+			log.Printf("OTP sent successfully")
 		}
 	}()
 }
@@ -96,10 +103,4 @@ func (ctrl *OTPController) ValidateOTP(c *gin.Context) {
 	// Here you would typically check the OTP against a stored value
 	// For simplicity, we'll assume any OTP is valid
 	c.JSON(http.StatusOK, gin.H{"message": "OTP is valid"})
-}
-
-func RegisterRoutes(router *gin.Engine) {
-	otpController := NewOTPController()
-	router.POST("/generate-otp", otpController.GenerateOTP)
-	router.POST("/validate-otp", otpController.ValidateOTP)
 }

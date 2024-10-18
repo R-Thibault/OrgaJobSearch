@@ -6,7 +6,7 @@ import (
 	"github.com/R-Thibault/OrgaJobSearch/models"
 	"github.com/R-Thibault/OrgaJobSearch/repository/mocks"
 	mockRepo "github.com/R-Thibault/OrgaJobSearch/repository/mocks"
-	"github.com/R-Thibault/OrgaJobSearch/services"
+	userServices "github.com/R-Thibault/OrgaJobSearch/services/user_services"
 	mockUtil "github.com/R-Thibault/OrgaJobSearch/utils/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -15,7 +15,7 @@ import (
 func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 	mockRepo := new(mockRepo.UserRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	userService := services.NewUserService(mockRepo, mockHashingService)
+	userService := userServices.NewUserService(mockRepo, mockHashingService)
 
 	creds := models.Credentials{
 		Email:    "existing@example.com",
@@ -37,7 +37,7 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 func TestRegisterUser_PasswordRegexCheckFail(t *testing.T) {
 	mockRepo := new(mockRepo.UserRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	UserService := services.NewUserService(mockRepo, mockHashingService)
+	UserService := userServices.NewUserService(mockRepo, mockHashingService)
 
 	creds := models.Credentials{
 		Email:    "test@example.com",
@@ -57,7 +57,7 @@ func TestRegisterUser_PasswordRegexCheckPass(t *testing.T) {
 	//Setup the mock repository
 	mockRepo := new(mocks.UserRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	userService := services.NewUserService(mockRepo, mockHashingService)
+	userService := userServices.NewUserService(mockRepo, mockHashingService)
 
 	// Define credentials
 	creds := models.Credentials{

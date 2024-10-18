@@ -7,7 +7,7 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/models"
 	mockRepo "github.com/R-Thibault/OrgaJobSearch/repository/mocks"
-	"github.com/R-Thibault/OrgaJobSearch/services"
+	otpServices "github.com/R-Thibault/OrgaJobSearch/services/otp_services"
 	mockUtil "github.com/R-Thibault/OrgaJobSearch/utils/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -18,7 +18,7 @@ func TestGenerateOTP_UserNotFound(t *testing.T) {
 	mockRepoUser := new(mockRepo.UserRepositoryInterface)
 	mockRepoOTP := new(mockRepo.OTPRepositoryInterface)
 	mockUtilOTP := new(mockUtil.OtpGeneratorServiceInterface)
-	otpService := services.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
+	otpService := otpServices.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
 
 	email := "nonexistinguser@example.com"
 
@@ -38,7 +38,7 @@ func TestGenerateOTP_Success(t *testing.T) {
 	mockRepoUser := new(mockRepo.UserRepositoryInterface)
 	mockRepoOTP := new(mockRepo.OTPRepositoryInterface)
 	mockUtilOTP := new(mockUtil.OtpGeneratorServiceInterface)
-	otpService := services.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
+	otpService := otpServices.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
 
 	email := "existinguser@example.com"
 	otp := "123456"
@@ -69,7 +69,7 @@ func TestVerifyOTP_Sucess(t *testing.T) {
 	mockRepoUser := new(mockRepo.UserRepositoryInterface)
 	mockRepoOTP := new(mockRepo.OTPRepositoryInterface)
 	mockUtilOTP := new(mockUtil.OtpGeneratorServiceInterface)
-	otpService := services.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
+	otpService := otpServices.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
 
 	otp := "123456"
 	email := "existinguser@example.com"
@@ -96,7 +96,7 @@ func TestVerifyOTP_Fail_IncorrectOTP(t *testing.T) {
 	mockRepoUser := new(mockRepo.UserRepositoryInterface)
 	mockRepoOTP := new(mockRepo.OTPRepositoryInterface)
 	mockUtilOTP := new(mockUtil.OtpGeneratorServiceInterface)
-	otpService := services.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
+	otpService := otpServices.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
 
 	email := "existinguser@example.com"
 	user := &models.User{
@@ -129,7 +129,7 @@ func TestVerifyOTP_Fail_ExpiredOTP(t *testing.T) {
 	mockRepoUser := new(mockRepo.UserRepositoryInterface)
 	mockRepoOTP := new(mockRepo.OTPRepositoryInterface)
 	mockUtilOTP := new(mockUtil.OtpGeneratorServiceInterface)
-	otpService := services.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
+	otpService := otpServices.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
 
 	email := "existinguser@example.com"
 	user := &models.User{

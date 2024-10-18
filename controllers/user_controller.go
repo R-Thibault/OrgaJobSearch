@@ -4,16 +4,18 @@ import (
 	"net/http"
 
 	"github.com/R-Thibault/OrgaJobSearch/models"
-	"github.com/R-Thibault/OrgaJobSearch/services"
+	otpServices "github.com/R-Thibault/OrgaJobSearch/services/otp_services"
+	userServices "github.com/R-Thibault/OrgaJobSearch/services/user_services"
+
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	UserService *services.UserService
-	OTPService  *services.OTPService
+	UserService *userServices.UserService
+	OTPService  *otpServices.OTPService
 }
 
-func NewUserController(UserService *services.UserService, OTPService *services.OTPService) *UserController {
+func NewUserController(UserService *userServices.UserService, OTPService *otpServices.OTPService) *UserController {
 	return &UserController{UserService: UserService, OTPService: OTPService}
 }
 

@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	models "github.com/R-Thibault/OrgaJobSearch/models"
+	models "github.com/R-Thibault/OrgaJobSearch/backend/models"
 	mock "github.com/stretchr/testify/mock"
 )
 

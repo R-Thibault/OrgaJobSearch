@@ -3,10 +3,10 @@ package services
 import (
 	"errors"
 
-	"github.com/R-Thibault/OrgaJobSearch/models"
-	userRepository "github.com/R-Thibault/OrgaJobSearch/repository/user_repository"
-	"github.com/R-Thibault/OrgaJobSearch/utils"
-	hashingUtils "github.com/R-Thibault/OrgaJobSearch/utils/hash_util"
+	"github.com/R-Thibault/OrgaJobSearch/backend/models"
+	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
+	"github.com/R-Thibault/OrgaJobSearch/backend/utils"
+	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
 )
 
 type UserService struct {

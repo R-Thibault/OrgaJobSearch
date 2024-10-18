@@ -7,10 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/R-Thibault/OrgaJobSearch/controllers"
-	"github.com/R-Thibault/OrgaJobSearch/models"
-	userMocks "github.com/R-Thibault/OrgaJobSearch/services/mocks"
-	hashMocks "github.com/R-Thibault/OrgaJobSearch/utils/mocks"
+	"github.com/R-Thibault/OrgaJobSearch/backend/controllers"
+	"github.com/R-Thibault/OrgaJobSearch/backend/models"
+	userMocks "github.com/R-Thibault/OrgaJobSearch/backend/services/mocks"
+	hashMocks "github.com/R-Thibault/OrgaJobSearch/backend/utils/mocks"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

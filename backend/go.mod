@@ -1,4 +1,4 @@
-module github.com/R-Thibault/OrgaJobSearch
+module github.com/R-Thibault/OrgaJobSearch/backend
 
 go 1.23.2
 

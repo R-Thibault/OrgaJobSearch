@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/R-Thibault/OrgaJobSearch/config"
-	"github.com/R-Thibault/OrgaJobSearch/routes"
+	"github.com/R-Thibault/OrgaJobSearch/backend/config"
+	"github.com/R-Thibault/OrgaJobSearch/backend/routes"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )

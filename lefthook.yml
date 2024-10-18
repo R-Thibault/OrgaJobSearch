@@ -38,3 +38,8 @@ commit-msg:
   scripts:
     "add_branch_name":
       runner: bash
+
+pre-push:
+  scripts:
+    "test_pre_push":
+      runner: bash

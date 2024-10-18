@@ -1,4 +1,4 @@
-import Navbar from "./components/organisms/navbar";
+import Navbar from "../components/organisms/navbar";
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-between">

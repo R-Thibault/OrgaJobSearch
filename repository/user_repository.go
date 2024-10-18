@@ -2,6 +2,8 @@ package repository
 
 import (
 	"errors"
+	"log"
+	"strings"
 
 	"github.com/R-Thibault/OrgaJobSearch/models"
 	"gorm.io/gorm"
@@ -32,7 +34,13 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	}
 
 	var user models.User
-	result := r.db.Debug().Where("email = ?", email).First(&user)
+	email = strings.TrimSpace(email)
+	result := r.db.Unscoped().Where("email = ?", email).First(&user)
+	if result.Error == nil {
+		log.Printf("User found: %+v\n", user)
+	} else {
+		log.Printf("User not found or other error: %v\n", result.Error)
+	}
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -42,4 +50,12 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	}
 
 	return &user, nil
+}
+
+func (r *UserRepository) ValidateEmail(email string) error {
+	if email == "" {
+		return errors.New("email cannot be empty")
+	}
+	return r.db.Model(&models.User{}).Where("email = ?", email).Update("email_is_valide", true).Error
+
 }

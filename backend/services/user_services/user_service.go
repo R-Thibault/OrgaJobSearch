@@ -4,16 +4,17 @@ import (
 	"errors"
 
 	"github.com/R-Thibault/OrgaJobSearch/models"
-	"github.com/R-Thibault/OrgaJobSearch/repository"
+	userRepository "github.com/R-Thibault/OrgaJobSearch/repository/user_repository"
 	"github.com/R-Thibault/OrgaJobSearch/utils"
+	hashingUtils "github.com/R-Thibault/OrgaJobSearch/utils/hash_util"
 )
 
 type UserService struct {
-	UserRrepo    repository.UserRepositoryInterface
-	hashingUtils utils.HashingServiceInterface
+	UserRrepo    userRepository.UserRepositoryInterface
+	hashingUtils hashingUtils.HashingServiceInterface
 }
 
-func NewUserService(UserRrepo repository.UserRepositoryInterface, hashingUtils utils.HashingServiceInterface) *UserService {
+func NewUserService(UserRrepo userRepository.UserRepositoryInterface, hashingUtils hashingUtils.HashingServiceInterface) *UserService {
 	return &UserService{UserRrepo: UserRrepo, hashingUtils: hashingUtils}
 }
 

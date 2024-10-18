@@ -4,17 +4,18 @@ import (
 	"errors"
 	"time"
 
-	"github.com/R-Thibault/OrgaJobSearch/repository"
-	"github.com/R-Thibault/OrgaJobSearch/utils"
+	otpRepository "github.com/R-Thibault/OrgaJobSearch/repository/otp_repository"
+	userRepository "github.com/R-Thibault/OrgaJobSearch/repository/user_repository"
+	otpGeneratorUtils "github.com/R-Thibault/OrgaJobSearch/utils/otpGenerator_util"
 )
 
 type OTPService struct {
-	userRepo repository.UserRepositoryInterface
-	OTPRepo  repository.OTPRepositoryInterface
-	OTPUtil  utils.OtpGeneratorServiceInterface
+	userRepo userRepository.UserRepositoryInterface
+	OTPRepo  otpRepository.OTPRepositoryInterface
+	OTPUtil  otpGeneratorUtils.OtpGeneratorServiceInterface
 }
 
-func NewOTPService(userRepo repository.UserRepositoryInterface, OTPRepo repository.OTPRepositoryInterface, OTPUtil utils.OtpGeneratorServiceInterface) *OTPService {
+func NewOTPService(userRepo userRepository.UserRepositoryInterface, OTPRepo otpRepository.OTPRepositoryInterface, OTPUtil otpGeneratorUtils.OtpGeneratorServiceInterface) *OTPService {
 	return &OTPService{userRepo: userRepo, OTPRepo: OTPRepo, OTPUtil: OTPUtil}
 }
 

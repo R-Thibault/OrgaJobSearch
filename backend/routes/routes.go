@@ -3,9 +3,14 @@ package routes
 import (
 	"github.com/R-Thibault/OrgaJobSearch/config"
 	"github.com/R-Thibault/OrgaJobSearch/controllers"
-	"github.com/R-Thibault/OrgaJobSearch/repository"
+	otpRepository "github.com/R-Thibault/OrgaJobSearch/repository/otp_repository"
+	userRepository "github.com/R-Thibault/OrgaJobSearch/repository/user_repository"
 	"github.com/R-Thibault/OrgaJobSearch/services"
-	"github.com/R-Thibault/OrgaJobSearch/utils"
+	otpServices "github.com/R-Thibault/OrgaJobSearch/services/otp_services"
+	userServices "github.com/R-Thibault/OrgaJobSearch/services/user_services"
+	hashingUtils "github.com/R-Thibault/OrgaJobSearch/utils/hash_util"
+	otpGeneratorUtils "github.com/R-Thibault/OrgaJobSearch/utils/otpGenerator_util"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,14 +25,14 @@ func SetupRoutes(router *gin.Engine) {
 	})
 
 	// Initialize the repository and the hashing service
-	userRepository := repository.NewUserRepository(config.DB)
-	OTPRepository := repository.NewOTPRepository(config.DB)
-	hashingService := utils.NewHashingService()
-	OTPGeneratorService := utils.NewOtpGeneratorService()
+	userRepository := userRepository.NewUserRepository(config.DB)
+	OTPRepository := otpRepository.NewOTPRepository(config.DB)
+	hashingService := hashingUtils.NewHashingService()
+	OTPGeneratorService := otpGeneratorUtils.NewOtpGeneratorService()
 
 	// Initialize the user service with the repository and hashing service
-	UserService := services.NewUserService(userRepository, hashingService)
-	OTPService := services.NewOTPService(userRepository, OTPRepository, OTPGeneratorService)
+	UserService := userServices.NewUserService(userRepository, hashingService)
+	OTPService := otpServices.NewOTPService(userRepository, OTPRepository, OTPGeneratorService)
 	MailerService := services.NewMailerService()
 
 	// Public route for signing in

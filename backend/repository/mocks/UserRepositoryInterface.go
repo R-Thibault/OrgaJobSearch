@@ -60,6 +60,24 @@ func (_m *UserRepositoryInterface) SaveUser(user models.User) error {
 	return r0
 }
 
+// ValidateEmail provides a mock function with given fields: email
+func (_m *UserRepositoryInterface) ValidateEmail(email string) error {
+	ret := _m.Called(email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ValidateEmail")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(email)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewUserRepositoryInterface creates a new instance of UserRepositoryInterface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewUserRepositoryInterface(t interface {

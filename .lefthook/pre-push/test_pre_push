@@ -1,0 +1,3 @@
+echo "Running test_pre_push.sh script"
+
+cd backend && go test ./...

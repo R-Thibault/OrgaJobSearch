@@ -2,38 +2,7 @@
 
 This document outlines the coding conventions for the Go project. The goal is to ensure that the codebase remains consistent, readable, and maintainable, so that onboarding new developers is straightforward. This guide covers project structure, naming conventions, best practices, and more.
 
-## Project Structure
-
-The project is organized into several directories following a layered architecture. The structure helps to keep the code modular and encourages a separation of concerns.
-
-```
-project-root/
-    ├── cmd/                    # Entry point for the application
-    │   └── main.go
-    ├── config/                 # Configuration files and utilities
-    │   ├── db.go
-    │   └── config.go
-    ├── controllers/            # HTTP handlers
-    │   └── auth_controller.go
-    ├── services/               # Business logic
-    │   └── user_service.go
-    ├── repository/             # Database access
-    │   └── user_repository.go
-    ├── models/                 # Data structures (e.g., structs)
-    │   └── user.go
-    ├── routes/                 # API route definitions
-    │   └── routes.go
-    ├── middleware/             # Middleware definitions
-    │   └── auth_middleware.go
-    ├── frontend/               # Frontend project folder
-    ├── utils/                  # Utility functions (e.g., hashing)
-    │   ├── hash_util.go
-    ├── .air.toml               # Air configuration for live-reloading
-    ├── .env                    # Environment variables
-    ├── go.mod                  # Go module definition
-    ├── go.sum                  # Go dependencies
-    └── README.md
-```
+## For Backend
 
 ### Folder Purposes
 
@@ -48,7 +17,7 @@ project-root/
 - **utils/**: Houses helper functions (e.g., hashing passwords).
 - **frontend/**: Contains frontend code (e.g., React/Next.js).
 
-## Naming Conventions
+### Naming Conventions
 
 - **Packages**: Package names should be lowercase and singular (e.g., `repository`, `service`). Avoid underscores or camelCase.
 - **Files**: Use snake_case for file names (e.g., `user_repository.go`, `auth_middleware.go`).
@@ -58,7 +27,7 @@ project-root/
 - **Interfaces**: Should describe behavior and end in `-er` (e.g., `Hasher`, `UserRepositoryInterface`).
 - **Structs**: Struct names should be capitalized and descriptive (e.g., `User`, `Credentials`).
 
-## Code Formatting
+### Code Formatting
 
 - **Indentation**: Use tabs (Go default).
 - **Line Length**: Limit lines to 100 characters when possible.
@@ -77,7 +46,7 @@ project-root/
 
 - **Comments**: Use comments to explain why a particular decision was made, rather than what the code is doing. Public functions and structs should have doc comments (`// FunctionName does something...`).
 
-## Best Practices
+## Best Practices for backend
 
 ### Controllers
 

@@ -15,13 +15,13 @@ Before running the project, make sure the following are installed on your machin
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/R-Thibault/OrgaJobSearch
+   git clone https://github.com/R-Thibault/OrgaJobSearch OrgaJobSearch
    ```
 
-2. Navigate to the project directory:
+2. Navigate to the project directory backend:
 
    ```bash
-   cd OrgaJobSearch
+   cd OrgaJobSearch/backend
    ```
 
 3. Install the project dependencies using Go Modules (or another dependency manager):
@@ -38,6 +38,8 @@ Before running the project, make sure the following are installed on your machin
    export DB_NAME=your_database_name
    export DB_HOST=your_database_host
    export DB_PORT=your_db_port
+   export JWT_KEY=your_secret_key
+   export SENDGRID_API_KEY=your_sendgrid_api_key
    ```
 
 ## Usage
@@ -57,7 +59,7 @@ Air is a Go utility that monitors code changes and automatically restarts the se
 To add the `air` command to your PATH:
 
 ```bash
-export PATH=$PATH:$(go env GOPATH)/bin
+   export PATH=$PATH:$(go env GOPATH)/bin
 ```
 
 Then, run Air to start the application in development mode:

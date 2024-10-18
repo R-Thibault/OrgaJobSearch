@@ -28,7 +28,6 @@ This guide will walk you through the steps to create the Go boilerplate using th
 
      ```bash
      go install github.com/air-verse/air@latest
-     export PATH=$PATH:$(go env GOPATH)/bin
      ```
 
    - **Lefthook (Git Hooks Manager)**: Lefthook is used for managing Git hooks to ensure quality control.

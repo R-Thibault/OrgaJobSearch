@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/R-Thibault/Go----Boilerplate-.git/config"
-	"github.com/R-Thibault/Go----Boilerplate-.git/routes"
+	"github.com/R-Thibault/OrgaJobSearch/backend/config"
+	"github.com/R-Thibault/OrgaJobSearch/backend/routes"
 	"github.com/gin-gonic/gin"
 )
 

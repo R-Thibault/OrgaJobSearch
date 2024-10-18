@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	otpRepository "github.com/R-Thibault/OrgaJobSearch/repository/otp_repository"
-	userRepository "github.com/R-Thibault/OrgaJobSearch/repository/user_repository"
-	otpGeneratorUtils "github.com/R-Thibault/OrgaJobSearch/utils/otpGenerator_util"
+	otpRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/otp_repository"
+	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
+	otpGeneratorUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/otpGenerator_util"
 )
 
 type OTPService struct {

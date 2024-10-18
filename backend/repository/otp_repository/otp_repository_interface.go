@@ -1,6 +1,6 @@
 package repository
 
-import "github.com/R-Thibault/OrgaJobSearch/models"
+import "github.com/R-Thibault/OrgaJobSearch/backend/models"
 
 // UserRepositoryInterface defines the methods for interacting with users in the database.
 type OTPRepositoryInterface interface {

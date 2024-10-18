@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 
-	"github.com/R-Thibault/OrgaJobSearch/models"
+	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	"gorm.io/gorm"
 )
 

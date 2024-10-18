@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/R-Thibault/OrgaJobSearch/config"
+	"github.com/R-Thibault/OrgaJobSearch/backend/config"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )

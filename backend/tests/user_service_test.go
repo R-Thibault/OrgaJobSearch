@@ -3,11 +3,11 @@ package tests
 import (
 	"testing"
 
-	"github.com/R-Thibault/OrgaJobSearch/models"
-	"github.com/R-Thibault/OrgaJobSearch/repository/mocks"
-	mockRepo "github.com/R-Thibault/OrgaJobSearch/repository/mocks"
-	userServices "github.com/R-Thibault/OrgaJobSearch/services/user_services"
-	mockUtil "github.com/R-Thibault/OrgaJobSearch/utils/mocks"
+	"github.com/R-Thibault/OrgaJobSearch/backend/models"
+	"github.com/R-Thibault/OrgaJobSearch/backend/repository/mocks"
+	mockRepo "github.com/R-Thibault/OrgaJobSearch/backend/repository/mocks"
+	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
+	mockUtil "github.com/R-Thibault/OrgaJobSearch/backend/utils/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )

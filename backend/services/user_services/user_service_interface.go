@@ -1,6 +1,6 @@
 package services
 
-import "github.com/R-Thibault/OrgaJobSearch/models"
+import "github.com/R-Thibault/OrgaJobSearch/backend/models"
 
 type UserServiceInterface interface {
 	RegisterUser(creds models.Credentials) error

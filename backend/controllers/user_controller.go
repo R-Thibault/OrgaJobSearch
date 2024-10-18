@@ -3,9 +3,9 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/R-Thibault/OrgaJobSearch/models"
-	otpServices "github.com/R-Thibault/OrgaJobSearch/services/otp_services"
-	userServices "github.com/R-Thibault/OrgaJobSearch/services/user_services"
+	"github.com/R-Thibault/OrgaJobSearch/backend/models"
+	otpServices "github.com/R-Thibault/OrgaJobSearch/backend/services/otp_services"
+	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 
 	"github.com/gin-gonic/gin"
 )

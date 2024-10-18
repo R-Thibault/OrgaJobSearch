@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/R-Thibault/OrgaJobSearch/models"
+	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	"golang.org/x/exp/rand"
 )
 

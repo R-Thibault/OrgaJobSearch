@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/R-Thibault/OrgaJobSearch/config"
-	"github.com/R-Thibault/OrgaJobSearch/models"
-	userServices "github.com/R-Thibault/OrgaJobSearch/services/user_services"
-	hashingUtils "github.com/R-Thibault/OrgaJobSearch/utils/hash_util"
+	"github.com/R-Thibault/OrgaJobSearch/backend/config"
+	"github.com/R-Thibault/OrgaJobSearch/backend/models"
+	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
+	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"

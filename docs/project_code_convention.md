@@ -71,7 +71,7 @@ project-root/
 
       "github.com/gin-gonic/gin"
 
-      "github.com/R-Thibault/OrgaJobSearch/repository"
+      "github.com/R-Thibault/OrgaJobSearch/backend/repository"
   )
   ```
 

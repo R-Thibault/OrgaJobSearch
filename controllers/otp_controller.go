@@ -9,16 +9,18 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/models"
 	"github.com/R-Thibault/OrgaJobSearch/services"
+	otpServices "github.com/R-Thibault/OrgaJobSearch/services/otp_services"
+	userServices "github.com/R-Thibault/OrgaJobSearch/services/user_services"
 	"github.com/gin-gonic/gin"
 )
 
 type OTPController struct {
-	OTPService    *services.OTPService
-	UserService   services.UserServiceInterface
+	OTPService    *otpServices.OTPService
+	UserService   userServices.UserServiceInterface
 	MailerService *services.MailerService
 }
 
-func NewOTPController(OTPService *services.OTPService, MailerService *services.MailerService, UserService services.UserServiceInterface) *OTPController {
+func NewOTPController(OTPService *otpServices.OTPService, MailerService *services.MailerService, UserService userServices.UserServiceInterface) *OTPController {
 
 	return &OTPController{OTPService: OTPService, MailerService: MailerService, UserService: UserService}
 }

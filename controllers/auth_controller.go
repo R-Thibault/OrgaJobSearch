@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
-	"github.com/R-Thibault/Go----Boilerplate-.git/config"
-	"github.com/R-Thibault/Go----Boilerplate-.git/services"
-	"github.com/R-Thibault/Go----Boilerplate-.git/utils"
+	"github.com/R-Thibault/OrgaJobSearch/config"
+	userServices "github.com/R-Thibault/OrgaJobSearch/services/user_services"
+	hashingUtils "github.com/R-Thibault/OrgaJobSearch/utils/hash_util"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -27,12 +27,12 @@ type Claims struct {
 
 // AuthController handles authentication-related requests
 type AuthController struct {
-	service      services.UserServiceInterface
-	hashingUtils utils.HashingServiceInterface
+	service      userServices.UserServiceInterface
+	hashingUtils hashingUtils.HashingServiceInterface
 }
 
 // NewAuthController creates a new instance of AuthController
-func NewAuthController(service services.UserServiceInterface, hashingUtils utils.HashingServiceInterface) *AuthController {
+func NewAuthController(service userServices.UserServiceInterface, hashingUtils hashingUtils.HashingServiceInterface) *AuthController {
 	return &AuthController{
 		service:      service,
 		hashingUtils: hashingUtils,

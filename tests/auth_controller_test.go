@@ -65,14 +65,15 @@ func TestSignIn_Successful(t *testing.T) {
 	c.Request, _ = http.NewRequest(http.MethodPost, "/sign-in", bytes.NewBuffer(body))
 	c.Request.Header.Set("Content-type", "application/json")
 	hashedPassword := "encodedSalt:encodedHash"
-	mockUserService.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email, HashedPassword: hashedPassword}, nil)
+	mockUserService.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email, HashedPassword: hashedPassword, EmailIsValide: true}, nil)
 	mockHashingService.On("CompareHashPassword", creds.Password, hashedPassword).Return(true, nil)
 
 	authController.SignIn(c)
 
-	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, http.StatusOK, w.Code, "Expected status code 200, but got %v", w.Code)
 	assert.Contains(t, w.Body.String(), "Sign in successful")
 	mockUserService.AssertExpectations(t)
+	mockHashingService.AssertExpectations(t)
 }
 
 func TestSignIn_PasswordDoNotMatch(t *testing.T) {

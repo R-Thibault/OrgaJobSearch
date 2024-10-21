@@ -15,6 +15,10 @@ func main() {
 	config.InitDB()
 	defer config.CloseDB()
 
+	if err := config.LoadData(config.GetDB()); err != nil {
+		log.Fatalf("Error loading initial data: %v", err)
+	}
+
 	// Create a new Gin engine instance
 	r := gin.Default()
 	// Enable CORS

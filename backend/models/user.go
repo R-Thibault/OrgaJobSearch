@@ -10,4 +10,5 @@ type User struct {
 	HashedPassword string `gorm:"size:255; not null"`
 	EmailIsValide  bool   `gorm:"default:false"`
 	Otps           []OTP
+	Roles          []Role `gorm:"many2many:user_role;"`
 }

@@ -36,7 +36,7 @@ func NewAuthController(service userServices.UserServiceInterface, hashingUtils h
 	}
 }
 
-// SignIn handles the sign-in process
+// SignIn handles the login process
 func (a *AuthController) SignIn(c *gin.Context) {
 	var creds models.Credentials
 	if err := c.ShouldBindJSON(&creds); err != nil {

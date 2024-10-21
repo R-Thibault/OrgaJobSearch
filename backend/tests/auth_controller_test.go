@@ -33,7 +33,7 @@ func TestSignIn_SignIn_UserNotFound(t *testing.T) {
 
 	body, _ := json.Marshal(creds)
 
-	c.Request, _ = http.NewRequest(http.MethodPost, "/sign-in", bytes.NewBuffer(body))
+	c.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(body))
 	c.Request.Header.Set("Content-type", "application/json")
 
 	// Setup mock expectations to simulate an existing user
@@ -62,7 +62,7 @@ func TestSignIn_Successful(t *testing.T) {
 
 	body, _ := json.Marshal(creds)
 
-	c.Request, _ = http.NewRequest(http.MethodPost, "/sign-in", bytes.NewBuffer(body))
+	c.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(body))
 	c.Request.Header.Set("Content-type", "application/json")
 	hashedPassword := "encodedSalt:encodedHash"
 	mockUserService.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email, HashedPassword: hashedPassword, EmailIsValide: true}, nil)
@@ -92,7 +92,7 @@ func TestSignIn_PasswordDoNotMatch(t *testing.T) {
 
 	body, _ := json.Marshal(creds)
 
-	c.Request, _ = http.NewRequest(http.MethodPost, "/sign-in", bytes.NewBuffer(body))
+	c.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(body))
 	c.Request.Header.Set("Content-type", "application/json")
 	hashedPassword := "encodedSalt:encodedHash"
 	mockUserService.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email, HashedPassword: hashedPassword}, nil)

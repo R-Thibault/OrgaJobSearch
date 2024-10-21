@@ -79,8 +79,8 @@ export default function SignUpPage() {
       });
       if (otpResponse.data) {
         setErrorOTPMessage("");
-        // OTP is correct, proceed to sign-in page
-        router.push("/sign-in");
+        // OTP is correct, proceed to login page
+        router.push("/login");
       } else {
         console.log(otpResponse);
         setErrorOTPMessage("OTP incorrect. Veuillez réessayer.");

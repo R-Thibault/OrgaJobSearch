@@ -7,7 +7,7 @@ export default function Access() {
     <div className="flex space-x-4">
       {/* Use a link for Sign In navigation */}
       <Link
-        href="/sign-in"
+        href="/login"
         passHref
         className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-700"
       >

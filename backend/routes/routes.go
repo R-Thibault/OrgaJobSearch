@@ -37,7 +37,7 @@ func SetupRoutes(router *gin.Engine) {
 
 	// Public route for signing in
 	authController := controllers.NewAuthController(UserService, hashingService)
-	router.POST("/sign-in", authController.SignIn)
+	router.POST("/login", authController.SignIn)
 
 	// Public route for signing up
 	userController := controllers.NewUserController(UserService, OTPService)

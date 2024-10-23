@@ -171,7 +171,7 @@ func (s *MailerService) SendUserSignUpInvitation(toEmail string, tokenString str
 			<div class="message">
 				<p>Hello,</p>
 				<p>We're excited to invite you to join OrgaJobSearch. Click the link below to sign up and get started!</p>
-				<a href="https://localhost:3000/signup?token=%s" class="button">Accept Invitation</a>
+				<a href="http://localhost:3000/sign-up?token=%s" class="button">Accept Invitation</a>
 				<p>The invitation link will expire in 48 hours, so be sure to sign up soon.</p>
 			</div>
 			<div class="footer">

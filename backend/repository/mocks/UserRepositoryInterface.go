@@ -42,6 +42,24 @@ func (_m *UserRepositoryInterface) GetUserByEmail(email string) (*models.User, e
 	return r0, r1
 }
 
+// PreRegisterUser provides a mock function with given fields: user
+func (_m *UserRepositoryInterface) PreRegisterUser(user models.User) error {
+	ret := _m.Called(user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PreRegisterUser")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(models.User) error); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // SaveUser provides a mock function with given fields: user
 func (_m *UserRepositoryInterface) SaveUser(user models.User) error {
 	ret := _m.Called(user)

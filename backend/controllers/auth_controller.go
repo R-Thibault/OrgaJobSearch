@@ -9,6 +9,7 @@ import (
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
+	JWTTokenGenerator "github.com/R-Thibault/OrgaJobSearch/backend/utils/tokenGenerator_util"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -24,15 +25,17 @@ type Claims struct {
 
 // AuthController handles authentication-related requests
 type AuthController struct {
-	service      userServices.UserServiceInterface
-	hashingUtils hashingUtils.HashingServiceInterface
+	service           userServices.UserServiceInterface
+	hashingUtils      hashingUtils.HashingServiceInterface
+	JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorServiceInterface
 }
 
 // NewAuthController creates a new instance of AuthController
-func NewAuthController(service userServices.UserServiceInterface, hashingUtils hashingUtils.HashingServiceInterface) *AuthController {
+func NewAuthController(service userServices.UserServiceInterface, hashingUtils hashingUtils.HashingServiceInterface, JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorServiceInterface) *AuthController {
 	return &AuthController{
-		service:      service,
-		hashingUtils: hashingUtils,
+		service:           service,
+		hashingUtils:      hashingUtils,
+		JWTTokenGenerator: JWTTokenGenerator,
 	}
 }
 
@@ -70,17 +73,8 @@ func (a *AuthController) SignIn(c *gin.Context) {
 	if isMatch {
 		fmt.Println("Password matches!")
 		// Create JWT Token
-		expirationTime := time.Now().Add(35 * time.Minute) // Extend the expiration time to 15 minutes, For demos purpose
-		claims := &Claims{
-			Email: creds.Email,
-			StandardClaims: jwt.StandardClaims{
-				ExpiresAt: expirationTime.Unix(),
-			},
-		}
-
-		// Sign the token
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenString, err := token.SignedString(jwtKey)
+		expirationTime := time.Now().Add(24 * time.Hour)
+		tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(nil, creds.Email, expirationTime)
 		if err != nil {
 			fmt.Printf("Failed to sign the token: %v\n", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})

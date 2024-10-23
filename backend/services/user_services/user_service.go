@@ -10,19 +10,19 @@ import (
 )
 
 type UserService struct {
-	UserRrepo    userRepository.UserRepositoryInterface
+	UserRepo     userRepository.UserRepositoryInterface
 	hashingUtils hashingUtils.HashingServiceInterface
 }
 
-func NewUserService(UserRrepo userRepository.UserRepositoryInterface, hashingUtils hashingUtils.HashingServiceInterface) *UserService {
-	return &UserService{UserRrepo: UserRrepo, hashingUtils: hashingUtils}
+func NewUserService(UserRepo userRepository.UserRepositoryInterface, hashingUtils hashingUtils.HashingServiceInterface) *UserService {
+	return &UserService{UserRepo: UserRepo, hashingUtils: hashingUtils}
 }
 
 var _ UserServiceInterface = &UserService{}
 
 func (s *UserService) RegisterUser(creds models.Credentials) error {
 	//Check if a user with same email exists
-	existingUser, _ := s.UserRrepo.GetUserByEmail(creds.Email)
+	existingUser, _ := s.UserRepo.GetUserByEmail(creds.Email)
 	if existingUser != nil {
 		return errors.New("user already exists")
 	}
@@ -44,13 +44,25 @@ func (s *UserService) RegisterUser(creds models.Credentials) error {
 		HashedPassword: string(hashedPassword),
 	}
 	// Save the user
-	return s.UserRrepo.SaveUser(user)
+	return s.UserRepo.SaveUser(user)
 }
 
 func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
-	return s.UserRrepo.GetUserByEmail(email)
+	return s.UserRepo.GetUserByEmail(email)
 }
 
 func (s *UserService) EmailValidation(email string) error {
-	return s.UserRrepo.ValidateEmail(email)
+	return s.UserRepo.ValidateEmail(email)
+}
+
+func (s *UserService) PreRegisterUser(email string) error {
+	existingUser, _ := s.UserRepo.GetUserByEmail(email)
+	if existingUser != nil {
+		return errors.New("user already exists")
+	}
+	user := models.User{
+		Email: email,
+	}
+
+	return s.UserRepo.PreRegisterUser(user)
 }

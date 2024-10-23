@@ -59,3 +59,8 @@ func (r *UserRepository) ValidateEmail(email string) error {
 	return r.db.Model(&models.User{}).Where("email = ?", email).Update("email_is_valide", true).Error
 
 }
+
+func (r *UserRepository) PreRegisterUser(user models.User) error {
+	// Save user in DB
+	return r.db.Create(&user).Error
+}

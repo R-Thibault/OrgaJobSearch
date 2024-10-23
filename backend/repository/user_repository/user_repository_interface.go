@@ -7,4 +7,5 @@ type UserRepositoryInterface interface {
 	SaveUser(user models.User) error
 	GetUserByEmail(email string) (*models.User, error)
 	ValidateEmail(email string) error
+	PreRegisterUser(user models.User) error
 }

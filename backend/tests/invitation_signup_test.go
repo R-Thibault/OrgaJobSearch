@@ -11,6 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"gorm.io/gorm"
 )
 
 func TestInvitationSignup_EmailExist(t *testing.T) {
@@ -47,9 +48,17 @@ func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}
+	user := &models.User{
+		Model: gorm.Model{
+			ID: 1,
+		},
+		Email: invitationToken.Email,
+		// You can add more fields here if needed
+	}
 
 	mockRepo.On("GetUserByEmail", invitationToken.Email).Return(nil, nil)
 	mockRepo.On("PreRegisterUser", mock.AnythingOfType("models.User")).Return(nil)
+	mockRepo.On("GetUserByID", *invitationToken.UserID).Return(user, nil)
 
 	err := userService.PreRegisterUser(invitationToken.Email, invitationToken.UserID)
 	assert.NoError(t, err)

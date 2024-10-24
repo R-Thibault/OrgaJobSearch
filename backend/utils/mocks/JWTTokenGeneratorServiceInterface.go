@@ -13,9 +13,9 @@ type JWTTokenGeneratorServiceInterface struct {
 	mock.Mock
 }
 
-// GenerateJWTToken provides a mock function with given fields: userID, email, expirationTime
-func (_m *JWTTokenGeneratorServiceInterface) GenerateJWTToken(userID *uint, email string, expirationTime time.Time) (string, error) {
-	ret := _m.Called(userID, email, expirationTime)
+// GenerateJWTToken provides a mock function with given fields: tokenType, email, expirationTime
+func (_m *JWTTokenGeneratorServiceInterface) GenerateJWTToken(tokenType *string, email string, expirationTime time.Time) (string, error) {
+	ret := _m.Called(tokenType, email, expirationTime)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GenerateJWTToken")
@@ -23,17 +23,17 @@ func (_m *JWTTokenGeneratorServiceInterface) GenerateJWTToken(userID *uint, emai
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*uint, string, time.Time) (string, error)); ok {
-		return rf(userID, email, expirationTime)
+	if rf, ok := ret.Get(0).(func(*string, string, time.Time) (string, error)); ok {
+		return rf(tokenType, email, expirationTime)
 	}
-	if rf, ok := ret.Get(0).(func(*uint, string, time.Time) string); ok {
-		r0 = rf(userID, email, expirationTime)
+	if rf, ok := ret.Get(0).(func(*string, string, time.Time) string); ok {
+		r0 = rf(tokenType, email, expirationTime)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(*uint, string, time.Time) error); ok {
-		r1 = rf(userID, email, expirationTime)
+	if rf, ok := ret.Get(1).(func(*string, string, time.Time) error); ok {
+		r1 = rf(tokenType, email, expirationTime)
 	} else {
 		r1 = ret.Error(1)
 	}

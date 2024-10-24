@@ -17,15 +17,15 @@ func NewJWTTokenGeneratorService() *JWTTokenGeneratorService {
 	return &JWTTokenGeneratorService{}
 }
 
-func (u *JWTTokenGeneratorService) GenerateJWTToken(userID *uint, email string, expirationTime time.Time) (JWTToken string, err error) {
+func (u *JWTTokenGeneratorService) GenerateJWTToken(tokenType *string, email string, expirationTime time.Time) (JWTToken string, err error) {
 
 	var jwtKey = []byte(config.GetConfig("JWT_KEY"))
 	// Set expiration
 	// expirationTime := time.Now().Add(60 * time.Minute)
 
 	token := models.JWTToken{
-		UserID: userID,
-		Email:  email,
+		TokenType: tokenType,
+		Email:     email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

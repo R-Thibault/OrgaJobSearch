@@ -33,11 +33,11 @@ func (u *UserInvitationController) SendJobSeekerInvitation(c *gin.Context) {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
-
+	userInvitation.InvitationType = "PersonnalInvitation"
 	// Set expiration time for token
 	expirationTime := time.Now().Add(8 * time.Hour)
 	// Generate Token here
-	jwtTokenString, err := u.TokenGeneratorUtil.GenerateJWTToken(&userInvitation.UserID, userInvitation.Email, expirationTime)
+	jwtTokenString, err := u.TokenGeneratorUtil.GenerateJWTToken(&userInvitation.InvitationType, userInvitation.Email, expirationTime)
 
 	// Build email template with url + tokenstring and send it
 	mailerErr := u.MailerService.SendUserSignUpInvitation(userInvitation.Email, jwtTokenString)

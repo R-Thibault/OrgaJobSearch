@@ -71,7 +71,7 @@ func TestSignIn_Successful(t *testing.T) {
 	hashedPassword := "encodedSalt:encodedHash"
 	mockUserService.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email, HashedPassword: hashedPassword, EmailIsValide: true}, nil)
 	mockHashingService.On("CompareHashPassword", creds.Password, hashedPassword).Return(true, nil)
-	mockJWTTokenGenerator.On("GenerateJWTToken", (*uint)(nil), creds.Email, mock.Anything).Return("string", nil)
+	mockJWTTokenGenerator.On("GenerateJWTToken", (*string)(nil), creds.Email, mock.Anything).Return("string", nil)
 	authController.SignIn(c)
 
 	assert.Equal(t, http.StatusOK, w.Code, "Expected status code 200, but got %v", w.Code)

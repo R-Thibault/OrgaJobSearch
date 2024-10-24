@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
@@ -55,13 +56,29 @@ func (s *UserService) EmailValidation(email string) error {
 	return s.UserRepo.ValidateEmail(email)
 }
 
-func (s *UserService) PreRegisterUser(email string) error {
-	existingUser, _ := s.UserRepo.GetUserByEmail(email)
+func (s *UserService) PreRegisterUser(email string, careerSuportID *uint) error {
+	existingUser, err := s.UserRepo.GetUserByEmail(email)
+	if err != nil {
+		return fmt.Errorf("failed to check if user exists: %w", err)
+	}
 	if existingUser != nil {
 		return errors.New("user already exists")
 	}
+
+	// Optionally, verify if the career support user exists
+	if careerSuportID != nil {
+		careerSupport, err := s.UserRepo.GetUserByID(*careerSuportID)
+		if err != nil {
+			return fmt.Errorf("failed to find career support: %w", err)
+		}
+		if careerSupport == nil {
+			return errors.New("career support user does not exist")
+		}
+	}
+
 	user := models.User{
-		Email: email,
+		Email:           email,
+		CareerSupportID: careerSuportID,
 	}
 
 	return s.UserRepo.PreRegisterUser(user)

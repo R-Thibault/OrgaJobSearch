@@ -51,7 +51,7 @@ func SetupRoutes(router *gin.Engine) {
 
 	// Public ( will be protected) route for send User invitation
 	userInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService)
-	router.POST("/send-user-invitation", userInvitationController.SendUserInvitation)
+	router.POST("/send-user-invitation", userInvitationController.SendJobSeekerInvitation)
 
 	//Public route for sending OTP
 	router.POST("/send-otp", OTPcontroller.SendOTP)

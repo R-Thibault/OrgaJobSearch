@@ -21,14 +21,14 @@ func NewUserInvitationController(UserService *userServices.UserService, TokenGen
 	return &UserInvitationController{UserService: UserService, TokenGeneratorUtil: TokenGeneratorUtil, MailerService: MailerService}
 }
 
-func (u *UserInvitationController) SendUserInvitation(c *gin.Context) {
+func (u *UserInvitationController) SendJobSeekerInvitation(c *gin.Context) {
 	var userInvitation models.UserInvitation
 	if err := c.ShouldBindJSON(&userInvitation); err != nil {
 		// If the input is invalid, respond with an error
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	err := u.UserService.PreRegisterUser(userInvitation.Email)
+	err := u.UserService.PreRegisterUser(userInvitation.Email, &userInvitation.UserID)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return

@@ -42,6 +42,36 @@ func (_m *UserRepositoryInterface) GetUserByEmail(email string) (*models.User, e
 	return r0, r1
 }
 
+// GetUserByID provides a mock function with given fields: ID
+func (_m *UserRepositoryInterface) GetUserByID(ID uint) (*models.User, error) {
+	ret := _m.Called(ID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserByID")
+	}
+
+	var r0 *models.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uint) (*models.User, error)); ok {
+		return rf(ID)
+	}
+	if rf, ok := ret.Get(0).(func(uint) *models.User); ok {
+		r0 = rf(ID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(ID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // PreRegisterUser provides a mock function with given fields: user
 func (_m *UserRepositoryInterface) PreRegisterUser(user models.User) error {
 	ret := _m.Called(user)

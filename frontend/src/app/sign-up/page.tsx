@@ -41,7 +41,6 @@ export default function SignUpPage() {
       const response = await axios.post("http://localhost:8080/verify-token", {
         token,
       });
-
       if (response.data && response.data.valid) {
         console.log("Token is valid.");
         setIsTokenValid(true);
@@ -51,7 +50,7 @@ export default function SignUpPage() {
         setIsTokenValid(false);
       }
     } catch (error) {
-      console.error("Error verifying token:", error);
+      console.log("Error verifying token:", error);
       setErrorMessage("Erreur lors de la vérification du token.");
       setIsTokenValid(false);
     }

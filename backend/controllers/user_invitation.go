@@ -9,7 +9,6 @@ import (
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 	tokenUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/tokenGenerator_util"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type UserInvitationController struct {
@@ -29,17 +28,16 @@ func (u *UserInvitationController) SendJobSeekerInvitation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	err := u.UserService.PreRegisterUser(userInvitation.Email, &userInvitation.UserID)
+	savedUser, err := u.UserService.PreRegisterUser(userInvitation.Email, &userInvitation.UserID)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
 	userInvitation.InvitationType = "PersonalInvitation"
-	newUUID := uuid.New().String()
 	// Set expiration time for token
 	expirationTime := time.Now().Add(8 * time.Hour)
 	// Generate Token here
-	jwtTokenString, err := u.TokenGeneratorUtil.GenerateJWTToken(&userInvitation.InvitationType, &newUUID, expirationTime)
+	jwtTokenString, err := u.TokenGeneratorUtil.GenerateJWTToken(&userInvitation.InvitationType, &savedUser.UserUUID, expirationTime)
 
 	// Build email template with url + tokenstring and send it
 	mailerErr := u.MailerService.SendUserSignUpInvitation(userInvitation.Email, jwtTokenString)

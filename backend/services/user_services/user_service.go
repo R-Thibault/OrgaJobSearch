@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
@@ -57,23 +58,21 @@ func (s *UserService) EmailValidation(email string) error {
 	return s.UserRepo.ValidateEmail(email)
 }
 
-func (s *UserService) PreRegisterUser(email string, careerSuportID *uint) error {
-	existingUser, err := s.UserRepo.GetUserByEmail(email)
-	if err != nil {
-		return fmt.Errorf("failed to check if user exists: %w", err)
-	}
-	if existingUser != nil {
-		return errors.New("user already exists")
-	}
+func (s *UserService) PreRegisterUser(email string, careerSuportID *uint) (*models.User, error) {
+	existingUser, _ := s.UserRepo.GetUserByEmail(email)
 
+	if existingUser != nil {
+		return nil, errors.New("user already exists")
+	}
+	log.Printf("careerS ID: %v", careerSuportID)
 	// Optionally, verify if the career support user exists
 	if careerSuportID != nil {
 		careerSupport, err := s.UserRepo.GetUserByID(*careerSuportID)
 		if err != nil {
-			return fmt.Errorf("failed to find career support: %w", err)
+			return nil, fmt.Errorf("failed to find career support: %w", err)
 		}
 		if careerSupport == nil {
-			return errors.New("career support user does not exist")
+			return nil, errors.New("career support user does not exist")
 		}
 	}
 
@@ -82,6 +81,9 @@ func (s *UserService) PreRegisterUser(email string, careerSuportID *uint) error 
 		UserUUID:        uuid.New().String(),
 		CareerSupportID: careerSuportID,
 	}
-
-	return s.UserRepo.PreRegisterUser(user)
+	savedUser, err := s.UserRepo.PreRegisterUser(user)
+	if err != nil {
+		return nil, errors.New("Error during user pre-registration")
+	}
+	return savedUser, nil
 }

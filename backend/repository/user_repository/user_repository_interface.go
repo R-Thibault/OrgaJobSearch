@@ -8,6 +8,6 @@ type UserRepositoryInterface interface {
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByID(ID uint) (*models.User, error)
 	ValidateEmail(email string) error
-	PreRegisterUser(user models.User) error
+	PreRegisterUser(user models.User) (*models.User, error)
 	GetUserByUUID(uuid string) (*models.User, error)
 }

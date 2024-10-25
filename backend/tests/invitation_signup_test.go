@@ -27,7 +27,7 @@ func TestInvitationSignup_EmailExist(t *testing.T) {
 
 	mockRepo.On("GetUserByEmail", userInvitation.Email).Return(&models.User{Email: userInvitation.Email}, nil)
 
-	err := userService.PreRegisterUser(userInvitation.Email, nil)
+	_, err := userService.PreRegisterUser(userInvitation.Email, nil)
 	assert.Error(t, err)
 	assert.Equal(t, "user already exists", err.Error())
 	mockRepo.AssertExpectations(t)
@@ -46,15 +46,17 @@ func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
 		Model: gorm.Model{
 			ID: 1,
 		},
-		Email: userInvitation.Email,
+		UserUUID: uuid.New().String(),
+		Email:    userInvitation.Email,
 	}
 
 	mockRepo.On("GetUserByEmail", userInvitation.Email).Return(nil, nil)
-	mockRepo.On("PreRegisterUser", mock.AnythingOfType("models.User")).Return(nil)
+	mockRepo.On("PreRegisterUser", mock.AnythingOfType("models.User")).Return(user, nil)
 	mockRepo.On("GetUserByID", userInvitation.UserID).Return(user, nil)
 
-	err := userService.PreRegisterUser(userInvitation.Email, &userInvitation.UserID)
+	savedUser, err := userService.PreRegisterUser(userInvitation.Email, &userInvitation.UserID)
 	assert.NoError(t, err)
+	assert.Equal(t, user, savedUser)
 	mockRepo.AssertCalled(t, "GetUserByEmail", userInvitation.Email)
 	mockRepo.AssertExpectations(t)
 }

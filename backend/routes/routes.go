@@ -47,8 +47,11 @@ func SetupRoutes(router *gin.Engine) {
 	authController := controllers.NewAuthController(UserService, hashingService, TokenService, invitationService, GenerateTokenService)
 	router.POST("/login", authController.SignIn)
 
+	// Public route to check token from url invitation
+	router.POST("/verify-token", authController.VerifyToken)
+
 	// Public route for signing up
-	userController := controllers.NewUserController(UserService, OTPService)
+	userController := controllers.NewUserController(UserService, OTPService, TokenService)
 	router.POST("/sign-up", userController.SignUp)
 
 	// Public route to generate OTP
@@ -63,4 +66,5 @@ func SetupRoutes(router *gin.Engine) {
 	router.POST("/send-otp", OTPcontroller.SendOTP)
 
 	router.POST("/verify-otp", OTPcontroller.ValidateOTP)
+
 }

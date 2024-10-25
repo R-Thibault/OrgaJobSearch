@@ -7,3 +7,7 @@ type JWTToken struct {
 	Body      *string `json:"body"`
 	jwt.StandardClaims
 }
+
+type TokenRequest struct {
+	Token string `json:"token"`
+}

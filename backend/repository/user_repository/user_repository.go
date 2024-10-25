@@ -2,7 +2,6 @@ package repository
 
 import (
 	"errors"
-	"log"
 	"strings"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
@@ -36,11 +35,6 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	var user models.User
 	email = strings.TrimSpace(email)
 	result := r.db.Unscoped().Where("email = ?", email).First(&user)
-	if result.Error == nil {
-		log.Printf("User found: %+v\n", user)
-	} else {
-		log.Printf("User not found or other error: %v\n", result.Error)
-	}
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -82,12 +76,19 @@ func (r *UserRepository) ValidateEmail(email string) error {
 
 }
 
-func (r *UserRepository) PreRegisterUser(user models.User) error {
+func (r *UserRepository) PreRegisterUser(user models.User) (*models.User, error) {
 	if user.Email == "" {
-		return errors.New("email cannot be empty")
+		return nil, errors.New("email cannot be empty")
 	}
 	// Save user in DB
-	return r.db.Create(&user).Error
+	result := r.db.Create(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+		return nil, result.Error
+	}
+	return &user, nil
 }
 
 func (r *UserRepository) GetUserByUUID(uuid string) (*models.User, error) {

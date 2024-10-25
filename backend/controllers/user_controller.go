@@ -5,18 +5,20 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	otpServices "github.com/R-Thibault/OrgaJobSearch/backend/services/otp_services"
+	tokenService "github.com/R-Thibault/OrgaJobSearch/backend/services/token_services"
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	UserService *userServices.UserService
-	OTPService  *otpServices.OTPService
+	UserService  *userServices.UserService
+	OTPService   *otpServices.OTPService
+	tokenService tokenService.TokenServiceInterface
 }
 
-func NewUserController(UserService *userServices.UserService, OTPService *otpServices.OTPService) *UserController {
-	return &UserController{UserService: UserService, OTPService: OTPService}
+func NewUserController(UserService *userServices.UserService, OTPService *otpServices.OTPService, tokenService tokenService.TokenServiceInterface) *UserController {
+	return &UserController{UserService: UserService, OTPService: OTPService, tokenService: tokenService}
 }
 
 func (u *UserController) SignUp(c *gin.Context) {
@@ -37,4 +39,25 @@ func (u *UserController) SignUp(c *gin.Context) {
 
 	// Respond with succes if no errors
 	c.JSON(http.StatusOK, gin.H{"message": creds.Email})
+}
+
+func (u *UserController) MyProfil(c *gin.Context) {
+	//extract cookie
+	cookie, err := c.Cookie("token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentification required"})
+
+		return
+	}
+	tokenClaims, err := u.tokenService.VerifyToken(cookie)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
+		return
+	}
+	user, err := u.UserService.UserRepo.GetUserByUUID(*tokenClaims.Body)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"userName": user.Name, "email": user.Email, "role": user.Roles})
 }

@@ -108,12 +108,13 @@ func (a *AuthController) SignIn(c *gin.Context) {
 }
 
 func (a *AuthController) VerifyToken(c *gin.Context) {
-	var tokenString string
+	var tokenString models.TokenRequest
 	if err := c.ShouldBindJSON(&tokenString); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-	token, err := a.tokenService.VerifyToken(tokenString)
+	fmt.Print(tokenString)
+	token, err := a.tokenService.VerifyToken(tokenString.Token)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
 		return
@@ -125,7 +126,9 @@ func (a *AuthController) VerifyToken(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"message": email})
+		c.JSON(http.StatusOK, gin.H{
+			"email":     email,
+			"tokenType": *token.TokenType})
 	case "GlobalInvitation":
 		fmt.Println("Global Invitation")
 	default:

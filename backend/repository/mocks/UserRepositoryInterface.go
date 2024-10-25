@@ -103,21 +103,33 @@ func (_m *UserRepositoryInterface) GetUserByUUID(uuid string) (*models.User, err
 }
 
 // PreRegisterUser provides a mock function with given fields: user
-func (_m *UserRepositoryInterface) PreRegisterUser(user models.User) error {
+func (_m *UserRepositoryInterface) PreRegisterUser(user models.User) (*models.User, error) {
 	ret := _m.Called(user)
 
 	if len(ret) == 0 {
 		panic("no return value specified for PreRegisterUser")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(models.User) error); ok {
+	var r0 *models.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(models.User) (*models.User, error)); ok {
+		return rf(user)
+	}
+	if rf, ok := ret.Get(0).(func(models.User) *models.User); ok {
 		r0 = rf(user)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.User)
+		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(models.User) error); ok {
+		r1 = rf(user)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // SaveUser provides a mock function with given fields: user

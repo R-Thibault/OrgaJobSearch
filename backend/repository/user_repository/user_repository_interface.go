@@ -10,4 +10,5 @@ type UserRepositoryInterface interface {
 	ValidateEmail(email string) error
 	PreRegisterUser(user models.User) (*models.User, error)
 	GetUserByUUID(uuid string) (*models.User, error)
+	UpdateJobSeeker(savedUser models.User) error
 }

@@ -80,6 +80,7 @@ func (r *UserRepository) PreRegisterUser(user models.User) (*models.User, error)
 	if user.Email == "" {
 		return nil, errors.New("email cannot be empty")
 	}
+	user.UserStatus = "pre-registred"
 	// Save user in DB
 	result := r.db.Create(&user)
 	if result.Error != nil {
@@ -105,4 +106,23 @@ func (r *UserRepository) GetUserByUUID(uuid string) (*models.User, error) {
 	}
 
 	return &user, nil
+}
+
+func (r *UserRepository) UpdateJobSeeker(savedUser models.User) error {
+	result := r.db.Save(&models.User{
+		Model: gorm.Model{
+			ID: savedUser.ID,
+		},
+		Email:          savedUser.Email,
+		HashedPassword: savedUser.HashedPassword,
+		UserUUID:       savedUser.UserUUID,
+		UserStatus:     "registred",
+		EmailIsValide:  true})
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return gorm.ErrRecordNotFound
+		}
+		return result.Error
+	}
+	return nil
 }

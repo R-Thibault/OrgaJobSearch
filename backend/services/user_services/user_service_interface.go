@@ -6,4 +6,5 @@ type UserServiceInterface interface {
 	RegisterUser(creds models.Credentials) error
 	GetUserByEmail(email string) (*models.User, error)
 	EmailValidation(email string) error
+	JobSeekerRegistration(tokenBody string, creds models.Credentials) error
 }

@@ -41,11 +41,12 @@ export default function SignUpPage() {
       const response = await axios.post("http://localhost:8080/verify-token", {
         token,
       });
-      if (response.data && response.data.valid) {
+      if (response.data) {
         console.log("Token is valid.");
         setIsTokenValid(true);
         setEmail(response.data.email);
       } else {
+        console.log(response);
         setErrorMessage("Invalid or expired token. Please contact support.");
         setIsTokenValid(false);
       }
@@ -75,7 +76,7 @@ export default function SignUpPage() {
         const response = await axios.post("http://localhost:8080/sign-up", {
           email: email,
           password: password,
-          token: token,
+          tokenString: token,
         });
         if (response.data) {
           console.log(response.data);
@@ -144,6 +145,7 @@ export default function SignUpPage() {
             <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
           )}
           <form className="space-y-4" onSubmit={handleSubmit}>
+            <input type="hidden" name="token" value={token || ""} />
             <div>
               <label
                 htmlFor="email"
@@ -196,7 +198,7 @@ export default function SignUpPage() {
                 required
               />
             </div>
-            <input type="hidden" name="token" value={token || ""} />
+
             {errorMessage && (
               <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
             )}

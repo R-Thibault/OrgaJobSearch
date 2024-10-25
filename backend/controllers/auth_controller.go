@@ -113,7 +113,6 @@ func (a *AuthController) VerifyToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
 		return
 	}
-	fmt.Print(tokenString)
 	token, err := a.tokenService.VerifyToken(tokenString.Token)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})

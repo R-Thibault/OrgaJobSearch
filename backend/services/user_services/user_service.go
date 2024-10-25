@@ -87,3 +87,22 @@ func (s *UserService) PreRegisterUser(email string, careerSuportID *uint) (*mode
 	}
 	return savedUser, nil
 }
+
+func (s *UserService) JobSeekerRegistration(tokenBody string, creds models.Credentials) error {
+	savedUser, err := s.UserRepo.GetUserByUUID(tokenBody)
+	if err != nil {
+		return errors.New("UUID doesn't match a user")
+	}
+	hashedPassword, hashErr := s.hashingUtils.HashPassword(creds.Password)
+	if hashErr != nil {
+		return errors.New("Error during password hash")
+	}
+	savedUser.HashedPassword = hashedPassword
+	savedUser.Email = creds.Email
+	savedUser.UserUUID = tokenBody
+	updateErr := s.UserRepo.UpdateJobSeeker(*savedUser)
+	if updateErr != nil {
+		return errors.New("Error during user update")
+	}
+	return nil
+}

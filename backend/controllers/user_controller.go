@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
@@ -29,13 +30,32 @@ func (u *UserController) SignUp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-
-	// Call the service to register the user
-	err := u.UserService.RegisterUser(creds)
+	token, err := u.tokenService.VerifyToken(creds.TokenString)
 	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
 		return
 	}
+	switch *token.TokenType {
+	case "PersonalInvitation":
+		err := u.UserService.JobSeekerRegistration(*token.Body, creds)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"success": "User registration successful !"})
+	case "GlobalInvitation":
+		fmt.Println("Global Invitation")
+	default:
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	// Call the service to register the user
+	// err := u.UserService.RegisterUser(creds)
+	// if err != nil {
+	// 	c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
 	// Respond with succes if no errors
 	c.JSON(http.StatusOK, gin.H{"message": creds.Email})

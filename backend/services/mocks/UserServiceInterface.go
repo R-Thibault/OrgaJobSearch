@@ -60,6 +60,24 @@ func (_m *UserServiceInterface) GetUserByEmail(email string) (*models.User, erro
 	return r0, r1
 }
 
+// JobSeekerRegistration provides a mock function with given fields: tokenBody, creds
+func (_m *UserServiceInterface) JobSeekerRegistration(tokenBody string, creds models.Credentials) error {
+	ret := _m.Called(tokenBody, creds)
+
+	if len(ret) == 0 {
+		panic("no return value specified for JobSeekerRegistration")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, models.Credentials) error); ok {
+		r0 = rf(tokenBody, creds)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // RegisterUser provides a mock function with given fields: creds
 func (_m *UserServiceInterface) RegisterUser(creds models.Credentials) error {
 	ret := _m.Called(creds)

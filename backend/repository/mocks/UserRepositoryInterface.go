@@ -150,6 +150,24 @@ func (_m *UserRepositoryInterface) SaveUser(user models.User) error {
 	return r0
 }
 
+// UpdateJobSeeker provides a mock function with given fields: savedUser
+func (_m *UserRepositoryInterface) UpdateJobSeeker(savedUser models.User) error {
+	ret := _m.Called(savedUser)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateJobSeeker")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(models.User) error); ok {
+		r0 = rf(savedUser)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // ValidateEmail provides a mock function with given fields: email
 func (_m *UserRepositoryInterface) ValidateEmail(email string) error {
 	ret := _m.Called(email)

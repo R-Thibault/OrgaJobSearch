@@ -67,7 +67,8 @@ func TestSignIn_Successful(t *testing.T) {
 		Email:    "user@example.com",
 		Password: "superPassword1!",
 	}
-
+	// expirationTime := time.Now().Add(60 * time.Minute)
+	cookieName := "Cookie"
 	body, _ := json.Marshal(creds)
 
 	c.Request, _ = http.NewRequest(http.MethodPost, "/login", bytes.NewBuffer(body))
@@ -75,7 +76,8 @@ func TestSignIn_Successful(t *testing.T) {
 	hashedPassword := "encodedSalt:encodedHash"
 	mockUserService.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email, HashedPassword: hashedPassword, EmailIsValide: true}, nil)
 	mockHashingService.On("CompareHashPassword", creds.Password, hashedPassword).Return(true, nil)
-	mockJWTTokenGenerator.On("GenerateJWTToken", (*string)(nil), creds.Email, mock.Anything).Return("string", nil)
+
+	mockJWTTokenGenerator.On("GenerateJWTToken", &cookieName, mock.AnythingOfType("*string"), mock.Anything).Return("string", nil)
 	authController.SignIn(c)
 
 	assert.Equal(t, http.StatusOK, w.Code, "Expected status code 200, but got %v", w.Code)

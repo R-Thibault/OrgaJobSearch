@@ -94,6 +94,6 @@ func TestInvitationSignup_VerifyTokenPass(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, invitationType, *claims.TokenType)
-	assert.Equal(t, newUUID, claims.Body)
+	assert.Equal(t, &newUUID, claims.Body)
 	assert.Equal(t, expirationTime.Unix(), claims.ExpiresAt)
 }

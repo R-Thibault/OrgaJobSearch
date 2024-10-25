@@ -10,6 +10,7 @@ import (
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 	mockUtil "github.com/R-Thibault/OrgaJobSearch/backend/utils/mocks"
 	tokenGeneratorUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/tokenGenerator_util"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
@@ -38,9 +39,8 @@ func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
 	userService := userServices.NewUserService(mockRepo, mockHashingService)
 
 	userInvitation := models.UserInvitation{
-		UserID:         uint(10),
-		Email:          "existing@example.com",
-		InvitationType: "personnalInvitation",
+		UserID: uint(10),
+		Email:  "existing@example.com",
 	}
 	user := &models.User{
 		Model: gorm.Model{
@@ -64,9 +64,9 @@ func TestInvitationSignup_VerifyTokenFail(t *testing.T) {
 	tokenService := tokenServices.NewTokenService()
 	expirationTime := time.Now().Add(-1 * time.Hour)
 	tokenType := "personnalInvitation"
-	email := "nonexisting@example.com"
+	newUUID := uuid.New().String()
 
-	tokenString, err := tokenGenerator.GenerateJWTToken(&tokenType, email, expirationTime)
+	tokenString, err := tokenGenerator.GenerateJWTToken(&tokenType, &newUUID, expirationTime)
 	if err != nil {
 		t.Fatalf("Failed to generate token: %v", err)
 	}
@@ -83,9 +83,9 @@ func TestInvitationSignup_VerifyTokenPass(t *testing.T) {
 	tokenService := tokenServices.NewTokenService()
 	expirationTime := time.Now().Add(1 * time.Hour)
 	invitationType := "personnalInvitation"
-	email := "nonexisting@example.com"
+	newUUID := uuid.New().String()
 
-	tokenString, err := tokenGenerator.GenerateJWTToken(&invitationType, email, expirationTime)
+	tokenString, err := tokenGenerator.GenerateJWTToken(&invitationType, &newUUID, expirationTime)
 	if err != nil {
 		t.Fatalf("Failed to generate token: %v", err)
 	}
@@ -94,6 +94,6 @@ func TestInvitationSignup_VerifyTokenPass(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, invitationType, *claims.TokenType)
-	assert.Equal(t, email, claims.Email)
+	assert.Equal(t, newUUID, claims.Body)
 	assert.Equal(t, expirationTime.Unix(), claims.ExpiresAt)
 }

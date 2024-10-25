@@ -8,6 +8,8 @@ type User struct {
 	Name            string `gorm:"size:255"`
 	Email           string `gorm:"size:255;unique;index;not null"`
 	HashedPassword  string `gorm:"size:255;"`
+	UserStatus      string `gorm:"size:255"`
+	UserUUID        string `gorm:"size:36"`
 	EmailIsValide   bool   `gorm:"default:false"`
 	Otps            []OTP
 	Roles           []Role `gorm:"many2many:user_role;"`

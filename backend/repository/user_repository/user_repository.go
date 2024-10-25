@@ -63,11 +63,6 @@ func (r *UserRepository) GetUserByID(ID uint) (*models.User, error) {
 
 	var user models.User
 	result := r.db.Unscoped().Where("id = ?", ID).First(&user)
-	if result.Error == nil {
-		log.Printf("User found: %+v\n", user)
-	} else {
-		log.Printf("User not found or other error: %v\n", result.Error)
-	}
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -93,4 +88,20 @@ func (r *UserRepository) PreRegisterUser(user models.User) error {
 	}
 	// Save user in DB
 	return r.db.Create(&user).Error
+}
+
+func (r *UserRepository) GetUserByUUID(uuid string) (*models.User, error) {
+	if uuid == "" {
+		return nil, errors.New("uudi cannot be empty")
+	}
+	var user models.User
+	result := r.db.Unscoped().Where("user_uuid = ?", uuid).First(&user)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+		return nil, result.Error
+	}
+
+	return &user, nil
 }

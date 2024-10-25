@@ -6,7 +6,9 @@ import (
 	otpRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/otp_repository"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
 	"github.com/R-Thibault/OrgaJobSearch/backend/services"
+	invitationServices "github.com/R-Thibault/OrgaJobSearch/backend/services/invitation_services"
 	otpServices "github.com/R-Thibault/OrgaJobSearch/backend/services/otp_services"
+	tokenService "github.com/R-Thibault/OrgaJobSearch/backend/services/token_services"
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
 	otpGeneratorUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/otpGenerator_util"
@@ -25,20 +27,24 @@ func SetupRoutes(router *gin.Engine) {
 		})
 	})
 
-	// Initialize the repository and the hashing service
+	// Initialize repositories
 	userRepository := userRepository.NewUserRepository(config.DB)
 	OTPRepository := otpRepository.NewOTPRepository(config.DB)
+
+	// Initialize Utilities
 	hashingService := hashingUtils.NewHashingService()
 	GenerateTokenService := tokenUtils.NewJWTTokenGeneratorService()
 	OTPGeneratorService := otpGeneratorUtils.NewOtpGeneratorService()
 
-	// Initialize the user service with the repository and hashing service
+	// Initialize Serivces
 	UserService := userServices.NewUserService(userRepository, hashingService)
 	OTPService := otpServices.NewOTPService(userRepository, OTPRepository, OTPGeneratorService)
+	TokenService := tokenService.NewTokenService()
 	MailerService := services.NewMailerService()
+	invitationService := invitationServices.NewInvitationService(userRepository)
 
 	// Public route for signing in
-	authController := controllers.NewAuthController(UserService, hashingService, GenerateTokenService)
+	authController := controllers.NewAuthController(UserService, hashingService, TokenService, invitationService, GenerateTokenService)
 	router.POST("/login", authController.SignIn)
 
 	// Public route for signing up

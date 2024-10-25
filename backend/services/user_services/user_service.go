@@ -8,6 +8,7 @@ import (
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
 	"github.com/R-Thibault/OrgaJobSearch/backend/utils"
 	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
+	"github.com/google/uuid"
 )
 
 type UserService struct {
@@ -78,6 +79,7 @@ func (s *UserService) PreRegisterUser(email string, careerSuportID *uint) error 
 
 	user := models.User{
 		Email:           email,
+		UserUUID:        uuid.New().String(),
 		CareerSupportID: careerSuportID,
 	}
 

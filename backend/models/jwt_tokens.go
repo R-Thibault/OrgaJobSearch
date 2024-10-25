@@ -4,6 +4,6 @@ import "github.com/dgrijalva/jwt-go"
 
 type JWTToken struct {
 	TokenType *string `json:"tokenType"`
-	Email     string  `json:"email"`
+	Body      *string `json:"body"`
 	jwt.StandardClaims
 }

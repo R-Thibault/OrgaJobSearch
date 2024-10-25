@@ -7,6 +7,8 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/config"
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
+	invitationServices "github.com/R-Thibault/OrgaJobSearch/backend/services/invitation_services"
+	tokenService "github.com/R-Thibault/OrgaJobSearch/backend/services/token_services"
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
 	JWTTokenGenerator "github.com/R-Thibault/OrgaJobSearch/backend/utils/tokenGenerator_util"
@@ -26,15 +28,19 @@ type Claims struct {
 // AuthController handles authentication-related requests
 type AuthController struct {
 	service           userServices.UserServiceInterface
+	tokenService      tokenService.TokenServiceInterface
+	invitationService invitationServices.InvitationServiceInterface
 	hashingUtils      hashingUtils.HashingServiceInterface
 	JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorServiceInterface
 }
 
 // NewAuthController creates a new instance of AuthController
-func NewAuthController(service userServices.UserServiceInterface, hashingUtils hashingUtils.HashingServiceInterface, JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorServiceInterface) *AuthController {
+func NewAuthController(service userServices.UserServiceInterface, hashingUtils hashingUtils.HashingServiceInterface, tokenService tokenService.TokenServiceInterface, invitationService invitationServices.InvitationServiceInterface, JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorServiceInterface) *AuthController {
 	return &AuthController{
 		service:           service,
 		hashingUtils:      hashingUtils,
+		tokenService:      tokenService,
+		invitationService: invitationService,
 		JWTTokenGenerator: JWTTokenGenerator,
 	}
 }
@@ -74,7 +80,8 @@ func (a *AuthController) SignIn(c *gin.Context) {
 		fmt.Println("Password matches!")
 		// Create JWT Token
 		expirationTime := time.Now().Add(24 * time.Hour)
-		tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(nil, creds.Email, expirationTime)
+		tokenType := "Cookie"
+		tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(&tokenType, nil, expirationTime)
 		if err != nil {
 			fmt.Printf("Failed to sign the token: %v\n", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
@@ -96,6 +103,33 @@ func (a *AuthController) SignIn(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "Sign in successful"})
 	} else {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+}
+
+func (a *AuthController) VerifyToken(c *gin.Context) {
+	var tokenString string
+	if err := c.ShouldBindJSON(&tokenString); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request"})
+		return
+	}
+	token, err := a.tokenService.VerifyToken(tokenString)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
+		return
+	}
+	switch *token.TokenType {
+	case "PersonalInvitation":
+		email, err := a.invitationService.VerifyPersonnalInvitationTokenData(*token)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": email})
+	case "GlobalInvitation":
+		fmt.Println("Global Invitation")
+	default:
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return
 	}
 }

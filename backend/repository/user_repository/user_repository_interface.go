@@ -9,4 +9,5 @@ type UserRepositoryInterface interface {
 	GetUserByID(ID uint) (*models.User, error)
 	ValidateEmail(email string) error
 	PreRegisterUser(user models.User) error
+	GetUserByUUID(uuid string) (*models.User, error)
 }

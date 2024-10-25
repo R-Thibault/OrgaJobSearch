@@ -9,7 +9,7 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/controllers"
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
-	userMocks "github.com/R-Thibault/OrgaJobSearch/backend/services/mocks"
+	serviceMocks "github.com/R-Thibault/OrgaJobSearch/backend/services/mocks"
 	JWTMock "github.com/R-Thibault/OrgaJobSearch/backend/utils/mocks"
 	hashMocks "github.com/R-Thibault/OrgaJobSearch/backend/utils/mocks"
 
@@ -21,10 +21,12 @@ import (
 
 func TestSignIn_SignIn_UserNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	mockUserService := new(userMocks.UserServiceInterface)
+	mockUserService := new(serviceMocks.UserServiceInterface)
 	mockHashingService := new(hashMocks.HashingServiceInterface)
 	mockJWTTokenGenerator := new(JWTMock.JWTTokenGeneratorServiceInterface)
-	authController := controllers.NewAuthController(mockUserService, mockHashingService, mockJWTTokenGenerator)
+	mockInvitationService := new(serviceMocks.InvitationServiceInterface)
+	mockTokenService := new(serviceMocks.TokenServiceInterface)
+	authController := controllers.NewAuthController(mockUserService, mockHashingService, mockTokenService, mockInvitationService, mockJWTTokenGenerator)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -51,10 +53,12 @@ func TestSignIn_SignIn_UserNotFound(t *testing.T) {
 
 func TestSignIn_Successful(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	mockUserService := new(userMocks.UserServiceInterface)
+	mockUserService := new(serviceMocks.UserServiceInterface)
 	mockHashingService := new(hashMocks.HashingServiceInterface)
 	mockJWTTokenGenerator := new(JWTMock.JWTTokenGeneratorServiceInterface)
-	authController := controllers.NewAuthController(mockUserService, mockHashingService, mockJWTTokenGenerator)
+	mockInvitationService := new(serviceMocks.InvitationServiceInterface)
+	mockTokenService := new(serviceMocks.TokenServiceInterface)
+	authController := controllers.NewAuthController(mockUserService, mockHashingService, mockTokenService, mockInvitationService, mockJWTTokenGenerator)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -83,10 +87,12 @@ func TestSignIn_Successful(t *testing.T) {
 
 func TestSignIn_PasswordDoNotMatch(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	mockUserService := new(userMocks.UserServiceInterface)
+	mockUserService := new(serviceMocks.UserServiceInterface)
 	mockHashingService := new(hashMocks.HashingServiceInterface)
 	mockJWTTokenGenerator := new(JWTMock.JWTTokenGeneratorServiceInterface)
-	authController := controllers.NewAuthController(mockUserService, mockHashingService, mockJWTTokenGenerator)
+	mockInvitationService := new(serviceMocks.InvitationServiceInterface)
+	mockTokenService := new(serviceMocks.TokenServiceInterface)
+	authController := controllers.NewAuthController(mockUserService, mockHashingService, mockTokenService, mockInvitationService, mockJWTTokenGenerator)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)

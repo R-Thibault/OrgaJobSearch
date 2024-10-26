@@ -41,27 +41,30 @@ func SetupRoutes(router *gin.Engine) {
 	OTPService := otpServices.NewOTPService(userRepository, OTPRepository, OTPGeneratorService)
 	TokenService := tokenService.NewTokenService()
 	MailerService := services.NewMailerService()
-	invitationService := invitationServices.NewInvitationService(userRepository)
+	invitationService := invitationServices.NewInvitationService(userRepository, OTPService)
+
+	// Initialize Controllers
+	authController := controllers.NewAuthController(UserService, hashingService, TokenService, invitationService, GenerateTokenService)
+	userController := controllers.NewUserController(UserService, OTPService, TokenService)
+	OTPcontroller := controllers.NewOTPController(OTPService, MailerService, UserService)
+	userInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService, OTPService)
 
 	// Public route for signing in
-	authController := controllers.NewAuthController(UserService, hashingService, TokenService, invitationService, GenerateTokenService)
 	router.POST("/login", authController.SignIn)
 
 	// Public route to check token from url invitation
 	router.POST("/verify-token", authController.VerifyToken)
 
 	// Public route for signing up
-	userController := controllers.NewUserController(UserService, OTPService, TokenService)
 	router.POST("/sign-up", userController.SignUp)
 
 	// Public route to generate OTP
-	OTPcontroller := controllers.NewOTPController(OTPService, MailerService, UserService)
 	router.POST("/generate-otp", OTPcontroller.GenerateOTPForSignUp)
 
 	// Public ( will be protected) route for send User invitation
-	userInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService, OTPService)
 	router.POST("/send-user-invitation", userInvitationController.SendJobSeekerInvitation)
 
+	// Public ( will be protected) route for send Global invitation
 	router.POST("/generate-url", userInvitationController.GenerateGlobalURLInvitation)
 
 	//Public route for sending OTP

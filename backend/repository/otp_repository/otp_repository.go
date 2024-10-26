@@ -47,3 +47,24 @@ func (r *OTPRepository) GetOTPCodeByUserID(userID uint) (*models.OTP, error) {
 
 	return &otp, nil
 }
+
+func (r *OTPRepository) GetOTPByCode(otpCode string, otpType string) (*models.OTP, error) {
+	if r.db == nil {
+		return &models.OTP{}, errors.New("database connection is nil")
+	}
+	if otpCode == "0" {
+		return &models.OTP{}, errors.New("OtpCode is empty")
+	}
+	var otp models.OTP
+	result := r.db.Where("otp_code = ? AND otp_type = ?", otpCode, otpType).First(&otp)
+	if result.Error != nil {
+		if result.Error != nil {
+			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+				return nil, gorm.ErrRecordNotFound
+			}
+			return nil, result.Error
+		}
+	}
+
+	return &otp, nil
+}

@@ -12,6 +12,36 @@ type OTPRepositoryInterface struct {
 	mock.Mock
 }
 
+// GetOTPByCode provides a mock function with given fields: otpCode, otpType
+func (_m *OTPRepositoryInterface) GetOTPByCode(otpCode string, otpType string) (*models.OTP, error) {
+	ret := _m.Called(otpCode, otpType)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetOTPByCode")
+	}
+
+	var r0 *models.OTP
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string, string) (*models.OTP, error)); ok {
+		return rf(otpCode, otpType)
+	}
+	if rf, ok := ret.Get(0).(func(string, string) *models.OTP); ok {
+		r0 = rf(otpCode, otpType)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.OTP)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(otpCode, otpType)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetOTPCodeByUserID provides a mock function with given fields: userID
 func (_m *OTPRepositoryInterface) GetOTPCodeByUserID(userID uint) (*models.OTP, error) {
 	ret := _m.Called(userID)

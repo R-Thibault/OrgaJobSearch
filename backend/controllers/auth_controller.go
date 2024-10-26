@@ -129,7 +129,13 @@ func (a *AuthController) VerifyToken(c *gin.Context) {
 			"email":     email,
 			"tokenType": *token.TokenType})
 	case "GlobalInvitation":
-		fmt.Println("Global Invitation")
+		err := a.invitationService.VerifyGlobalInvitationTokenData(*token)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"tokenType": *token.TokenType})
 	default:
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return

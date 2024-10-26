@@ -12,6 +12,24 @@ type InvitationServiceInterface struct {
 	mock.Mock
 }
 
+// VerifyGlobalInvitationTokenData provides a mock function with given fields: token
+func (_m *InvitationServiceInterface) VerifyGlobalInvitationTokenData(token models.JWTToken) error {
+	ret := _m.Called(token)
+
+	if len(ret) == 0 {
+		panic("no return value specified for VerifyGlobalInvitationTokenData")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(models.JWTToken) error); ok {
+		r0 = rf(token)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // VerifyPersonnalInvitationTokenData provides a mock function with given fields: token
 func (_m *InvitationServiceInterface) VerifyPersonnalInvitationTokenData(token models.JWTToken) (string, error) {
 	ret := _m.Called(token)

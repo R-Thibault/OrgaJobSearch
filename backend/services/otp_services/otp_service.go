@@ -63,3 +63,14 @@ func (s *OTPService) VerifyOTP(email string, otpCode string) error {
 	}
 
 }
+
+func (s *OTPService) VerifyOTPForGlobalInvitation(otpCode string, otpType string) error {
+	if otpCode == "" {
+		return errors.New("Otp code can't be emtpy")
+	}
+	otpSaved, err := s.OTPRepo.GetOTPByCode(otpCode, otpType)
+	if err != nil || otpSaved == nil {
+		return errors.New("OTP not found")
+	}
+	return nil
+}

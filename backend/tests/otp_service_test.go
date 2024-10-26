@@ -21,12 +21,12 @@ func TestGenerateOTP_UserNotFound(t *testing.T) {
 	otpService := otpServices.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
 
 	email := "nonexistinguser@example.com"
-
+	otpType := "emailValidation"
 	// Setup mock expectation
 	mockRepoUser.On("GetUserByEmail", email).Return(nil, errors.New("user not found"))
 
 	// Execute function
-	_, err := otpService.GenerateOTP(email)
+	_, err := otpService.GenerateOTP(email, otpType)
 
 	//Assertions
 	assert.Error(t, err)
@@ -43,10 +43,10 @@ func TestGenerateOTP_Success(t *testing.T) {
 	email := "existinguser@example.com"
 	otp := "123456"
 	user := &models.User{Email: email}
-
+	otpType := "emailValidation"
 	// Setup mock expectation
 	mockRepoUser.On("GetUserByEmail", email).Return(user, nil)
-	mockUtilOTP.On("GenerateOTP", user).Return(models.OTP{
+	mockUtilOTP.On("GenerateOTP", user, otpType).Return(models.OTP{
 		UserID:        user.ID,
 		OtpCode:       otp,
 		OtpExpiration: time.Now().Add(60 * time.Minute),
@@ -57,7 +57,7 @@ func TestGenerateOTP_Success(t *testing.T) {
 	mockRepoOTP.On("SaveOTP", mock.AnythingOfType("models.OTP")).Return(otp, nil)
 
 	// Execute function
-	generatedOTP, err := otpService.GenerateOTP(email)
+	generatedOTP, err := otpService.GenerateOTP(email, otpType)
 
 	//Assertions
 	assert.NoError(t, err)

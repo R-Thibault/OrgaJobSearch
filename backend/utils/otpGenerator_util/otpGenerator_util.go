@@ -18,7 +18,7 @@ func NewOtpGeneratorService() *OtpGeneratorService {
 
 var _ OtpGeneratorServiceInterface = &OtpGeneratorService{}
 
-func (s *OtpGeneratorService) GenerateOTP(user *models.User) (otp models.OTP) {
+func (s *OtpGeneratorService) GenerateOTP(user *models.User, OtpType string) (otp models.OTP) {
 	// Set the seed for the random number generator
 	rand.Seed(uint64(time.Now().UnixNano()))
 	OtpRandCode := rand.Intn(900000) + 100000
@@ -27,7 +27,7 @@ func (s *OtpGeneratorService) GenerateOTP(user *models.User) (otp models.OTP) {
 		UserID:        user.ID,
 		OtpCode:       OtpRandCodeToString,
 		OtpExpiration: time.Now().Add(60 * time.Minute), // 1heure
-		OtpType:       "emailValidation",
+		OtpType:       OtpType,
 		OtpAttempts:   0,
 		IsValid:       true,
 	}

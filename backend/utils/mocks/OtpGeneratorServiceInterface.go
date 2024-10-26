@@ -12,17 +12,17 @@ type OtpGeneratorServiceInterface struct {
 	mock.Mock
 }
 
-// GenerateOTP provides a mock function with given fields: user
-func (_m *OtpGeneratorServiceInterface) GenerateOTP(user *models.User) models.OTP {
-	ret := _m.Called(user)
+// GenerateOTP provides a mock function with given fields: user, OtpType
+func (_m *OtpGeneratorServiceInterface) GenerateOTP(user *models.User, OtpType string) models.OTP {
+	ret := _m.Called(user, OtpType)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GenerateOTP")
 	}
 
 	var r0 models.OTP
-	if rf, ok := ret.Get(0).(func(*models.User) models.OTP); ok {
-		r0 = rf(user)
+	if rf, ok := ret.Get(0).(func(*models.User, string) models.OTP); ok {
+		r0 = rf(user, OtpType)
 	} else {
 		r0 = ret.Get(0).(models.OTP)
 	}

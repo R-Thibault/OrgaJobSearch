@@ -182,7 +182,7 @@ func (s *MailerService) SendUserSignUpInvitation(toEmail string, tokenString str
 	</html>
 	`, tokenString)
 
-	plainTextContent := fmt.Sprintf("You're invited to join OrgaJobSearch! Please use the following link to sign up: https://example.com/signup?token=%s. The link will expire in 48 hours.", tokenString)
+	plainTextContent := fmt.Sprintf("You're invited to join OrgaJobSearch! Please use the following link to sign up: http://localhost:3000/sign-up?token=%s. The link will expire in 48 hours.", tokenString)
 
 	err := s.SendEmail(toEmail, subject, plainTextContent, htmlContent)
 	if err != nil {

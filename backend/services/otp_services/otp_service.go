@@ -21,14 +21,14 @@ func NewOTPService(userRepo userRepository.UserRepositoryInterface, OTPRepo otpR
 
 var _ OTPServiceInterface = &OTPService{}
 
-func (s *OTPService) GenerateOTP(email string) (otpCode string, err error) {
+func (s *OTPService) GenerateOTP(email string, otpType string) (otpCode string, err error) {
 
 	user, err := s.userRepo.GetUserByEmail(email)
 	if err != nil || user == nil {
 		return "", errors.New("user not found")
 	}
 
-	otp := s.OTPUtil.GenerateOTP(user)
+	otp := s.OTPUtil.GenerateOTP(user, otpType)
 
 	otpCodeGenerated, err := s.OTPRepo.SaveOTP(otp)
 	if err != nil {

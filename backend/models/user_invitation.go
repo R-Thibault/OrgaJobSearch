@@ -5,3 +5,8 @@ type UserInvitation struct {
 	UserID         uint   `json:"userID"`
 	InvitationType string `json:"invitationType"`
 }
+
+type GlobalInvitation struct {
+	UserID         uint   `json:"userID"`
+	InvitationType string `json:"invitationType"`
+}

@@ -14,13 +14,13 @@ import (
 )
 
 type UserInvitationController struct {
-	UserService        *userServices.UserService
+	UserService        userServices.UserServiceInterface
 	TokenGeneratorUtil tokenUtils.JWTTokenGeneratorServiceInterface
 	MailerService      mailerService.MailerService
 	otpServices        otpServices.OTPServiceInterface
 }
 
-func NewUserInvitationController(UserService *userServices.UserService, TokenGeneratorUtil tokenUtils.JWTTokenGeneratorServiceInterface, MailerService mailerService.MailerService, otpServices otpServices.OTPServiceInterface) *UserInvitationController {
+func NewUserInvitationController(UserService userServices.UserServiceInterface, TokenGeneratorUtil tokenUtils.JWTTokenGeneratorServiceInterface, MailerService mailerService.MailerService, otpServices otpServices.OTPServiceInterface) *UserInvitationController {
 	return &UserInvitationController{UserService: UserService, TokenGeneratorUtil: TokenGeneratorUtil, MailerService: MailerService, otpServices: otpServices}
 }
 
@@ -59,7 +59,7 @@ func (u *UserInvitationController) GenerateGlobalURLInvitation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	user, err := u.UserService.UserRepo.GetUserByID(invitation.UserID)
+	user, err := u.UserService.GetUserByID(invitation.UserID)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return

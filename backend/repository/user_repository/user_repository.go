@@ -72,7 +72,12 @@ func (r *UserRepository) ValidateEmail(email string) error {
 	if email == "" {
 		return errors.New("email cannot be empty")
 	}
-	return r.db.Model(&models.User{}).Where("email = ?", email).Update("email_is_valide", true).Error
+	return r.db.Model(&models.User{}).
+		Where("email = ?", email).
+		Updates(map[string]interface{}{
+			"email_is_valide": true,
+			"user_status":     "registered",
+		}).Error
 
 }
 

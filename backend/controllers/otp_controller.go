@@ -15,12 +15,12 @@ import (
 )
 
 type OTPController struct {
-	OTPService    *otpServices.OTPService
+	OTPService    otpServices.OTPServiceInterface
 	UserService   userServices.UserServiceInterface
 	MailerService *services.MailerService
 }
 
-func NewOTPController(OTPService *otpServices.OTPService, MailerService *services.MailerService, UserService userServices.UserServiceInterface) *OTPController {
+func NewOTPController(OTPService otpServices.OTPServiceInterface, MailerService *services.MailerService, UserService userServices.UserServiceInterface) *OTPController {
 
 	return &OTPController{OTPService: OTPService, MailerService: MailerService, UserService: UserService}
 }

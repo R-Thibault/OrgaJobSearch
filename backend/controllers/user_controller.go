@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
@@ -13,12 +13,12 @@ import (
 )
 
 type UserController struct {
-	UserService  *userServices.UserService
-	OTPService   *otpServices.OTPService
+	UserService  userServices.UserServiceInterface
+	OTPService   otpServices.OTPServiceInterface
 	tokenService tokenService.TokenServiceInterface
 }
 
-func NewUserController(UserService *userServices.UserService, OTPService *otpServices.OTPService, tokenService tokenService.TokenServiceInterface) *UserController {
+func NewUserController(UserService userServices.UserServiceInterface, OTPService otpServices.OTPServiceInterface, tokenService tokenService.TokenServiceInterface) *UserController {
 	return &UserController{UserService: UserService, OTPService: OTPService, tokenService: tokenService}
 }
 
@@ -35,49 +35,25 @@ func (u *UserController) SignUp(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
 		return
 	}
+	log.Printf("token : %v", token.Body)
 	switch *token.TokenType {
 	case "PersonalInvitation":
 		err := u.UserService.JobSeekerRegistration(*token.Body, creds)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"success": "User registration successful !"})
 	case "GlobalInvitation":
-		fmt.Println("Global Invitation")
+		err := u.UserService.RegisterUser(creds)
+		if err != nil {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"tokenType": *token.TokenType})
 	default:
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return
 	}
 
-	// Call the service to register the user
-	// err := u.UserService.RegisterUser(creds)
-	// if err != nil {
-	// 	c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
-	// Respond with succes if no errors
-	c.JSON(http.StatusOK, gin.H{"message": creds.Email})
-}
-
-func (u *UserController) MyProfil(c *gin.Context) {
-	//extract cookie
-	cookie, err := c.Cookie("token")
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentification required"})
-
-		return
-	}
-	tokenClaims, err := u.tokenService.VerifyToken(cookie)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
-		return
-	}
-	user, err := u.UserService.UserRepo.GetUserByUUID(*tokenClaims.Body)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"userName": user.Name, "email": user.Email, "role": user.Roles})
 }

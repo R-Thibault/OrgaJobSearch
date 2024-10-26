@@ -45,6 +45,8 @@ func (s *UserService) RegisterUser(creds models.Credentials) error {
 	user := models.User{
 		Email:          creds.Email,
 		HashedPassword: string(hashedPassword),
+		UserUUID:       uuid.New().String(),
+		UserStatus:     "pending",
 	}
 	// Save the user
 	return s.UserRepo.SaveUser(user)
@@ -56,6 +58,10 @@ func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
 
 func (s *UserService) EmailValidation(email string) error {
 	return s.UserRepo.ValidateEmail(email)
+}
+
+func (s *UserService) GetUserByID(userID uint) (*models.User, error) {
+	return s.UserRepo.GetUserByID(userID)
 }
 
 func (s *UserService) PreRegisterUser(email string, careerSuportID *uint) (*models.User, error) {
@@ -92,6 +98,11 @@ func (s *UserService) JobSeekerRegistration(tokenBody string, creds models.Crede
 	savedUser, err := s.UserRepo.GetUserByUUID(tokenBody)
 	if err != nil {
 		return errors.New("UUID doesn't match a user")
+	}
+	// check password requirement
+	isMatch := utils.RegexPassword(creds.Password)
+	if !isMatch {
+		return errors.New("Password doesn't match requirement")
 	}
 	hashedPassword, hashErr := s.hashingUtils.HashPassword(creds.Password)
 	if hashErr != nil {

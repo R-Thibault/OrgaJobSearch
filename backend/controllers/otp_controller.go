@@ -32,7 +32,12 @@ func (u *OTPController) GenerateOTPForSignUp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	Otp, err := u.OTPService.GenerateOTP(creds.Email, "emailValidation")
+	user, err := u.UserService.GetUserByEmail(creds.Email)
+	if err != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		return
+	}
+	Otp, err := u.OTPService.GenerateOTP(user.ID, "emailValidation")
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return

@@ -81,7 +81,7 @@ func (r *UserRepository) ValidateEmail(email string) error {
 
 }
 
-func (r *UserRepository) PreRegisterUser(user models.User) (*models.User, error) {
+func (r *UserRepository) PreRegisterJobSeeker(user models.User) (*models.User, error) {
 	if user.Email == "" {
 		return nil, errors.New("email cannot be empty")
 	}

@@ -64,7 +64,7 @@ func (s *UserService) GetUserByID(userID uint) (*models.User, error) {
 	return s.UserRepo.GetUserByID(userID)
 }
 
-func (s *UserService) PreRegisterUser(email string, careerSuportID *uint) (*models.User, error) {
+func (s *UserService) PreRegisterJobSeeker(email string, careerSuportID *uint) (*models.User, error) {
 	existingUser, _ := s.UserRepo.GetUserByEmail(email)
 
 	if existingUser != nil {
@@ -87,7 +87,7 @@ func (s *UserService) PreRegisterUser(email string, careerSuportID *uint) (*mode
 		UserUUID:        uuid.New().String(),
 		CareerSupportID: careerSuportID,
 	}
-	savedUser, err := s.UserRepo.PreRegisterUser(user)
+	savedUser, err := s.UserRepo.PreRegisterJobSeeker(user)
 	if err != nil {
 		return nil, errors.New("Error during user pre-registration")
 	}

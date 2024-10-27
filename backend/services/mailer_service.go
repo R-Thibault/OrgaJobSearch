@@ -117,7 +117,7 @@ func (s *MailerService) SendOTPMail(toEmail string, otpCode string) error {
 	return nil
 }
 
-func (s *MailerService) SendUserSignUpInvitation(toEmail string, tokenString string) error {
+func (s *MailerService) SendJobSeekerSignUpInvitation(toEmail string, tokenString string) error {
 	subject := "You're Invited to Join OrgaJobSearch!"
 
 	htmlContent := fmt.Sprintf(`

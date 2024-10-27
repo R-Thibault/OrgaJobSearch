@@ -31,7 +31,7 @@ func (u *UserInvitationController) SendJobSeekerInvitation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	savedUser, err := u.UserService.PreRegisterUser(userInvitation.Email, &userInvitation.UserID)
+	savedUser, err := u.UserService.PreRegisterJobSeeker(userInvitation.Email, &userInvitation.UserID)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
@@ -43,7 +43,7 @@ func (u *UserInvitationController) SendJobSeekerInvitation(c *gin.Context) {
 	jwtTokenString, err := u.TokenGeneratorUtil.GenerateJWTToken(&userInvitation.InvitationType, &savedUser.UserUUID, expirationTime)
 
 	// Build email template with url + tokenstring and send it
-	mailerErr := u.MailerService.SendUserSignUpInvitation(userInvitation.Email, jwtTokenString)
+	mailerErr := u.MailerService.SendJobSeekerSignUpInvitation(userInvitation.Email, jwtTokenString)
 	if mailerErr != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
@@ -64,9 +64,9 @@ func (u *UserInvitationController) GenerateGlobalURLInvitation(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return
 	}
-	otpType := "GlobalInvitation"
 	//Generate the OTP with a type "GlobalInvitation"
-	otpGenerated, err := u.otpServices.GenerateOTP(user.Email, otpType)
+	otpType := "GlobalInvitation"
+	otpGenerated, err := u.otpServices.GenerateOTP(user.ID, otpType)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return

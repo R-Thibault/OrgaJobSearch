@@ -103,7 +103,7 @@ func (_m *UserRepositoryInterface) GetUserByUUID(uuid string) (*models.User, err
 }
 
 // PreRegisterUser provides a mock function with given fields: user
-func (_m *UserRepositoryInterface) PreRegisterUser(user models.User) (*models.User, error) {
+func (_m *UserRepositoryInterface) PreRegisterJobSeeker(user models.User) (*models.User, error) {
 	ret := _m.Called(user)
 
 	if len(ret) == 0 {

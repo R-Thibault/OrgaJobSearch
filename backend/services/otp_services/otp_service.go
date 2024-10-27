@@ -21,9 +21,9 @@ func NewOTPService(userRepo userRepository.UserRepositoryInterface, OTPRepo otpR
 
 var _ OTPServiceInterface = &OTPService{}
 
-func (s *OTPService) GenerateOTP(email string, otpType string) (otpCode string, err error) {
+func (s *OTPService) GenerateOTP(userID uint, otpType string) (otpCode string, err error) {
 
-	user, err := s.userRepo.GetUserByEmail(email)
+	user, err := s.userRepo.GetUserByID(userID)
 	if err != nil || user == nil {
 		return "", errors.New("user not found")
 	}

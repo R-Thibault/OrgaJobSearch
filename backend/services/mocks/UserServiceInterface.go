@@ -108,12 +108,12 @@ func (_m *UserServiceInterface) JobSeekerRegistration(tokenBody string, creds mo
 	return r0
 }
 
-// PreRegisterUser provides a mock function with given fields: email, careerSuportID
-func (_m *UserServiceInterface) PreRegisterUser(email string, careerSuportID *uint) (*models.User, error) {
+// PreRegisterJobSeeker provides a mock function with given fields: email, careerSuportID
+func (_m *UserServiceInterface) PreRegisterJobSeeker(email string, careerSuportID *uint) (*models.User, error) {
 	ret := _m.Called(email, careerSuportID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for PreRegisterUser")
+		panic("no return value specified for PreRegisterJobSeeker")
 	}
 
 	var r0 *models.User

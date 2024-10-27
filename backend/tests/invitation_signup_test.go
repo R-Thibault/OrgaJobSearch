@@ -27,7 +27,7 @@ func TestInvitationSignup_EmailExist(t *testing.T) {
 
 	mockRepo.On("GetUserByEmail", userInvitation.Email).Return(&models.User{Email: userInvitation.Email}, nil)
 
-	_, err := userService.PreRegisterUser(userInvitation.Email, nil)
+	_, err := userService.PreRegisterJobSeeker(userInvitation.Email, nil)
 	assert.Error(t, err)
 	assert.Equal(t, "user already exists", err.Error())
 	mockRepo.AssertExpectations(t)
@@ -51,10 +51,10 @@ func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
 	}
 
 	mockRepo.On("GetUserByEmail", userInvitation.Email).Return(nil, nil)
-	mockRepo.On("PreRegisterUser", mock.AnythingOfType("models.User")).Return(user, nil)
+	mockRepo.On("PreRegisterJobSeeker", mock.AnythingOfType("models.User")).Return(user, nil)
 	mockRepo.On("GetUserByID", userInvitation.UserID).Return(user, nil)
 
-	savedUser, err := userService.PreRegisterUser(userInvitation.Email, &userInvitation.UserID)
+	savedUser, err := userService.PreRegisterJobSeeker(userInvitation.Email, &userInvitation.UserID)
 	assert.NoError(t, err)
 	assert.Equal(t, user, savedUser)
 	mockRepo.AssertCalled(t, "GetUserByEmail", userInvitation.Email)

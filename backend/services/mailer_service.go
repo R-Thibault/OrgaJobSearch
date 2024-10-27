@@ -116,3 +116,78 @@ func (s *MailerService) SendOTPMail(toEmail string, otpCode string) error {
 	}
 	return nil
 }
+
+func (s *MailerService) SendJobSeekerSignUpInvitation(toEmail string, tokenString string) error {
+	subject := "You're Invited to Join OrgaJobSearch!"
+
+	htmlContent := fmt.Sprintf(`
+	<!DOCTYPE html>
+	<html>
+	<head>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+			}
+			.container {
+				max-width: 600px;
+				margin: 0 auto;
+				padding: 20px;
+				background-color: #f7f7f7;
+				border-radius: 10px;
+				box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+			}
+			.header {
+				text-align: center;
+				padding-bottom: 20px;
+			}
+			.message {
+				margin: 20px 0;
+				text-align: center;
+			}
+			.footer {
+				text-align: center;
+				color: #888888;
+				font-size: 12px;
+				padding-top: 20px;
+			}
+			.button {
+				display: inline-block;
+				padding: 10px 20px;
+				font-size: 16px;
+				font-weight: bold;
+				color: #ffffff;
+				background-color: #28a745;
+				text-decoration: none;
+				border-radius: 5px;
+				margin-top: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h2>You're Invited to Join OrgaJobSearch!</h2>
+			</div>
+			<div class="message">
+				<p>Hello,</p>
+				<p>We're excited to invite you to join OrgaJobSearch. Click the link below to sign up and get started!</p>
+				<a href="http://localhost:3000/sign-up?token=%s" class="button">Accept Invitation</a>
+				<p>The invitation link will expire in 48 hours, so be sure to sign up soon.</p>
+			</div>
+			<div class="footer">
+				<p>If you did not request this invitation, please ignore this email.</p>
+			</div>
+		</div>
+	</body>
+	</html>
+	`, tokenString)
+
+	plainTextContent := fmt.Sprintf("You're invited to join OrgaJobSearch! Please use the following link to sign up: http://localhost:3000/sign-up?token=%s. The link will expire in 48 hours.", tokenString)
+
+	err := s.SendEmail(toEmail, subject, plainTextContent, htmlContent)
+	if err != nil {
+		return errors.New("failed to send sign-up invitation email")
+	}
+
+	return nil
+}

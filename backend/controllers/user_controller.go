@@ -1,22 +1,25 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	otpServices "github.com/R-Thibault/OrgaJobSearch/backend/services/otp_services"
+	tokenService "github.com/R-Thibault/OrgaJobSearch/backend/services/token_services"
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	UserService *userServices.UserService
-	OTPService  *otpServices.OTPService
+	UserService  userServices.UserServiceInterface
+	OTPService   otpServices.OTPServiceInterface
+	tokenService tokenService.TokenServiceInterface
 }
 
-func NewUserController(UserService *userServices.UserService, OTPService *otpServices.OTPService) *UserController {
-	return &UserController{UserService: UserService, OTPService: OTPService}
+func NewUserController(UserService userServices.UserServiceInterface, OTPService otpServices.OTPServiceInterface, tokenService tokenService.TokenServiceInterface) *UserController {
+	return &UserController{UserService: UserService, OTPService: OTPService, tokenService: tokenService}
 }
 
 func (u *UserController) SignUp(c *gin.Context) {
@@ -27,14 +30,30 @@ func (u *UserController) SignUp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-
-	// Call the service to register the user
-	err := u.UserService.RegisterUser(creds)
+	token, err := u.tokenService.VerifyToken(creds.TokenString)
 	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
+		return
+	}
+	log.Printf("token : %v", token.Body)
+	switch *token.TokenType {
+	case "PersonalInvitation":
+		err := u.UserService.JobSeekerRegistration(*token.Body, creds)
+		if err != nil {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"success": "User registration successful !"})
+	case "GlobalInvitation":
+		err := u.UserService.RegisterUser(creds)
+		if err != nil {
+			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"tokenType": *token.TokenType})
+	default:
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return
 	}
 
-	// Respond with succes if no errors
-	c.JSON(http.StatusOK, gin.H{"message": creds.Email})
 }

@@ -21,14 +21,14 @@ func NewOTPService(userRepo userRepository.UserRepositoryInterface, OTPRepo otpR
 
 var _ OTPServiceInterface = &OTPService{}
 
-func (s *OTPService) GenerateOTP(email string) (otpCode string, err error) {
+func (s *OTPService) GenerateOTP(userID uint, otpType string) (otpCode string, err error) {
 
-	user, err := s.userRepo.GetUserByEmail(email)
+	user, err := s.userRepo.GetUserByID(userID)
 	if err != nil || user == nil {
 		return "", errors.New("user not found")
 	}
 
-	otp := s.OTPUtil.GenerateOTP(user)
+	otp := s.OTPUtil.GenerateOTP(user, otpType)
 
 	otpCodeGenerated, err := s.OTPRepo.SaveOTP(otp)
 	if err != nil {
@@ -62,4 +62,15 @@ func (s *OTPService) VerifyOTP(email string, otpCode string) error {
 		return errors.New("OTP codes do not match")
 	}
 
+}
+
+func (s *OTPService) VerifyOTPForGlobalInvitation(otpCode string, otpType string) error {
+	if otpCode == "" {
+		return errors.New("Otp code can't be emtpy")
+	}
+	otpSaved, err := s.OTPRepo.GetOTPByCode(otpCode, otpType)
+	if err != nil || otpSaved == nil {
+		return errors.New("OTP not found")
+	}
+	return nil
 }

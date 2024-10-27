@@ -33,8 +33,8 @@ project-root/
     │   │   │   ├── page.tsx            # Main entry point for the application.
     │   │   │   ├── layout.tsx          # Shared layout for the app, managing consistent structure across pages.
     │   │   │   ├── global.css          # Global styles for the application, imported in the root layout.
-    │   │   │   └── sign-in/            # Folder for sign-in specific pages.
-    │   │   │       └── page.tsx        # Page for the sign-in route, allowing routing to the /sign-in page.
+    │   │   │   └── login/            # Folder for login specific pages.
+    │   │   │       └── page.tsx        # Page for the login route, allowing routing to the /login page.
     │   │   ├── components/             # Reusable React components.
     │   │   ├── styles/                 # CSS or SCSS files for styling the frontend.
     │   │   │   └── fonts/              # Fonts used in the application.

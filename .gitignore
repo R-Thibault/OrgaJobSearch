@@ -24,3 +24,6 @@
 # env file
 /backend/.env
 /backend/tmp
+
+# In Case air is launch in root and not in /backend
+/tmp

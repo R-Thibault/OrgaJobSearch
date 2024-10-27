@@ -42,6 +42,96 @@ func (_m *UserRepositoryInterface) GetUserByEmail(email string) (*models.User, e
 	return r0, r1
 }
 
+// GetUserByID provides a mock function with given fields: ID
+func (_m *UserRepositoryInterface) GetUserByID(ID uint) (*models.User, error) {
+	ret := _m.Called(ID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserByID")
+	}
+
+	var r0 *models.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uint) (*models.User, error)); ok {
+		return rf(ID)
+	}
+	if rf, ok := ret.Get(0).(func(uint) *models.User); ok {
+		r0 = rf(ID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(ID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetUserByUUID provides a mock function with given fields: uuid
+func (_m *UserRepositoryInterface) GetUserByUUID(uuid string) (*models.User, error) {
+	ret := _m.Called(uuid)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserByUUID")
+	}
+
+	var r0 *models.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(string) (*models.User, error)); ok {
+		return rf(uuid)
+	}
+	if rf, ok := ret.Get(0).(func(string) *models.User); ok {
+		r0 = rf(uuid)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(uuid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// PreRegisterUser provides a mock function with given fields: user
+func (_m *UserRepositoryInterface) PreRegisterJobSeeker(user models.User) (*models.User, error) {
+	ret := _m.Called(user)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PreRegisterUser")
+	}
+
+	var r0 *models.User
+	var r1 error
+	if rf, ok := ret.Get(0).(func(models.User) (*models.User, error)); ok {
+		return rf(user)
+	}
+	if rf, ok := ret.Get(0).(func(models.User) *models.User); ok {
+		r0 = rf(user)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.User)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(models.User) error); ok {
+		r1 = rf(user)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // SaveUser provides a mock function with given fields: user
 func (_m *UserRepositoryInterface) SaveUser(user models.User) error {
 	ret := _m.Called(user)
@@ -53,6 +143,24 @@ func (_m *UserRepositoryInterface) SaveUser(user models.User) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(models.User) error); ok {
 		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateJobSeeker provides a mock function with given fields: savedUser
+func (_m *UserRepositoryInterface) UpdateJobSeeker(savedUser models.User) error {
+	ret := _m.Called(savedUser)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateJobSeeker")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(models.User) error); ok {
+		r0 = rf(savedUser)
 	} else {
 		r0 = ret.Error(0)
 	}

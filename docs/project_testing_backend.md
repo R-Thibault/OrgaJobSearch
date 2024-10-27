@@ -50,10 +50,10 @@ We use `testify` for both assertions and mocking.
 To generate mocks for your interfaces, you use the `mockery` tool. Here is how to generate mocks for a specific interface:
 
 ```bash
-mockery --name UserRepositoryInterface --dir ./repository --output ./repository/mocks
+mockery --name UserRepositoryInterface --dir ./repository/user_repository --output ./repository/mocks
 ```
 
-This command generates a mock for the `UserRepositoryInterface` located in the `./repository` directory and stores it in `./repository/mocks`.
+This command generates a mock for the `UserRepositoryInterface` located in the `./repository/user_repository` directory and stores it in `./repository/mocks`.
 
 ### Step 5: Writing a Test Case Example
 

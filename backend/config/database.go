@@ -33,6 +33,11 @@ func InitDB() {
 	log.Println("Database schema migrated successfully!")
 }
 
+// GetDB returns the database connection instance
+func GetDB() *gorm.DB {
+	return DB
+}
+
 func CloseDB() {
 	if sqlDB, err := DB.DB(); err == nil {
 		if err := sqlDB.Close(); err != nil {

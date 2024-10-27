@@ -6,4 +6,5 @@ import "github.com/R-Thibault/OrgaJobSearch/backend/models"
 type OTPRepositoryInterface interface {
 	SaveOTP(otp models.OTP) (otpCode string, err error)
 	GetOTPCodeByUserID(userID uint) (*models.OTP, error)
+	GetOTPByCode(otpCode string, otpType string) (*models.OTP, error)
 }

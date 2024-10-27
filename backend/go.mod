@@ -5,6 +5,7 @@ go 1.23.2
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.10.0
+	github.com/google/uuid v1.6.0
 	github.com/sendgrid/sendgrid-go v3.16.0+incompatible
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0

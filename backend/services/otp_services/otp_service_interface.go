@@ -1,6 +1,7 @@
 package services
 
 type OTPServiceInterface interface {
-	GenerateOTP(email string) (otpCode string, err error)
+	GenerateOTP(userID uint, otpType string) (otpCode string, err error)
 	VerifyOTP(email string, otpCode string) error
+	VerifyOTPForGlobalInvitation(otpCode string, otpType string) error
 }

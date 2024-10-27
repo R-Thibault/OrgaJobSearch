@@ -15,24 +15,29 @@ import (
 )
 
 type OTPController struct {
-	OTPService    *otpServices.OTPService
+	OTPService    otpServices.OTPServiceInterface
 	UserService   userServices.UserServiceInterface
 	MailerService *services.MailerService
 }
 
-func NewOTPController(OTPService *otpServices.OTPService, MailerService *services.MailerService, UserService userServices.UserServiceInterface) *OTPController {
+func NewOTPController(OTPService otpServices.OTPServiceInterface, MailerService *services.MailerService, UserService userServices.UserServiceInterface) *OTPController {
 
 	return &OTPController{OTPService: OTPService, MailerService: MailerService, UserService: UserService}
 }
 
-func (u *OTPController) GenerateOTP(c *gin.Context) {
+func (u *OTPController) GenerateOTPForSignUp(c *gin.Context) {
 	var creds models.Credentials
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		// If the input is invalid, respond with an error
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	Otp, err := u.OTPService.GenerateOTP(creds.Email)
+	user, err := u.UserService.GetUserByEmail(creds.Email)
+	if err != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+		return
+	}
+	Otp, err := u.OTPService.GenerateOTP(user.ID, "emailValidation")
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return

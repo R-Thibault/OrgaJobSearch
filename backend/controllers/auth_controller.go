@@ -107,7 +107,7 @@ func (a *AuthController) SignIn(c *gin.Context) {
 	}
 }
 
-func (a *AuthController) VerifyToken(c *gin.Context) {
+func (a *AuthController) VerifyInvitationToken(c *gin.Context) {
 	var tokenString models.TokenRequest
 	if err := c.ShouldBindJSON(&tokenString); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})

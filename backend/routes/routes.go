@@ -53,7 +53,7 @@ func SetupRoutes(router *gin.Engine) {
 	router.POST("/login", authController.SignIn)
 
 	// Public route to check token from url invitation
-	router.POST("/verify-token", authController.VerifyToken)
+	router.POST("/verify-token", authController.VerifyInvitationToken)
 
 	// Public route for signing up
 	router.POST("/sign-up", userController.SignUp)

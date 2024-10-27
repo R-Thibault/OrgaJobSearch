@@ -54,7 +54,7 @@ func (u *UserInvitationController) SendJobSeekerInvitation(c *gin.Context) {
 
 func (u *UserInvitationController) GenerateGlobalURLInvitation(c *gin.Context) {
 	var invitation models.GlobalInvitation
-	if err := c.ShouldBindJSON(&invitation); err != nil {
+	if err := c.ShouldBindJSON(&invitation); err != nil || invitation.UserID == 0 {
 		// If the input is invalid, respond with an error
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -46,7 +47,7 @@ func NewAuthController(service userServices.UserServiceInterface, hashingUtils h
 }
 
 // SignIn handles the login process
-func (a *AuthController) SignIn(c *gin.Context) {
+func (a *AuthController) Login(c *gin.Context) {
 	var creds models.Credentials
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request"})
@@ -70,41 +71,27 @@ func (a *AuthController) SignIn(c *gin.Context) {
 	}
 	// Verify the password
 	isMatch, err := a.hashingUtils.CompareHashPassword(creds.Password, existingUser.HashedPassword)
+	if err != nil || !isMatch {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	fmt.Println("Password matches!")
+	// Create JWT Token
+	expirationTime := time.Now().Add(24 * time.Hour)
+	tokenType := "Cookie"
+	userUUID := string(existingUser.UserUUID)
+	tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(&tokenType, &userUUID, expirationTime)
 	if err != nil {
-
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		fmt.Printf("Failed to sign the token: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
 		return
 	}
 
-	if isMatch {
-		fmt.Println("Password matches!")
-		// Create JWT Token
-		expirationTime := time.Now().Add(24 * time.Hour)
-		tokenType := "Cookie"
-		tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(&tokenType, nil, expirationTime)
-		if err != nil {
-			fmt.Printf("Failed to sign the token: %v\n", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			return
-		}
+	c.SetCookie("token", tokenString, 3600, "/", "localhost", true, false)
 
-		// Set the token in a cookie
-		cookie := &http.Cookie{
-			Name:     "token",
-			Value:    tokenString,
-			Path:     "/",
-			Expires:  time.Now().Add(15 * time.Minute),
-			HttpOnly: true,
-			Secure:   false,                 // Set to true in production (HTTPS required if SameSite=None)
-			SameSite: http.SameSiteNoneMode, // Required for cross-origin cookies
-		}
-		http.SetCookie(c.Writer, cookie)
+	c.JSON(http.StatusOK, gin.H{"message": "Sign in successful"})
 
-		c.JSON(http.StatusOK, gin.H{"message": "Sign in successful"})
-	} else {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
-		return
-	}
 }
 
 func (a *AuthController) VerifyInvitationToken(c *gin.Context) {
@@ -140,4 +127,27 @@ func (a *AuthController) VerifyInvitationToken(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return
 	}
+}
+
+func (a *AuthController) Logout(c *gin.Context) {
+	// Log all cookies present in the request for debugging
+	cookies := c.Request.Cookies()
+	if len(cookies) == 0 {
+		log.Println("No cookies received in the request.")
+	} else {
+		for _, cookie := range cookies {
+			log.Printf("Cookie Name: %s, Cookie Value: %s\n", cookie.Name, cookie.Value)
+		}
+	}
+	cookie, err := c.Cookie("token")
+	if err != nil {
+		log.Printf("err: %v", err)
+		log.Printf("Cookie: %v", cookie)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "No token found"})
+		return
+	}
+	log.Printf("Cookie: %v", cookie)
+	// Clear the cookie by setting its expiration date to the past
+	c.SetCookie("token", "", -1, "/", "localhost", true, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})
 }

@@ -50,8 +50,8 @@ func SetupRoutes(router *gin.Engine) {
 	userInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService, OTPService)
 
 	// Public route for signing in
-	router.POST("/login", authController.SignIn)
-
+	router.POST("/login", authController.Login)
+	router.POST("/logout", authController.Logout)
 	// Public route to check token from url invitation
 	router.POST("/verify-token", authController.VerifyInvitationToken)
 

@@ -88,6 +88,7 @@ The JWT token contains the following fields:
 ### 2. **Authentication and Token Management**
 
 - **`/login`**: Authenticates users and generates a JWT token upon successful login.
+- **`/logout`**: Deconnection of users and delete the JWT token upon successful logout.
 - **`/verify-token`**: Verifies the validity of tokens received from invitation links.
 
 ### 3. **Sign-Up and Invitation Management**

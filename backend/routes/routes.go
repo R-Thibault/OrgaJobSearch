@@ -67,4 +67,5 @@ func SetupRoutes(router *gin.Engine) {
 
 	protected.POST("/send-user-invitation", userInvitationController.SendJobSeekerInvitation)
 	protected.POST("/generate-url", userInvitationController.GenerateGlobalURLInvitation)
+	protected.GET("/me", userController.MyProfile)
 }

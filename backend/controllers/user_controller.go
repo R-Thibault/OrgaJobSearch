@@ -66,3 +66,22 @@ func (u *UserController) SignUp(c *gin.Context) {
 	}
 
 }
+
+func (u *UserController) MyProfile(c *gin.Context) {
+	userUUID, exists := c.Get("userUUID")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID not Found in context"})
+		return
+	}
+	userUUIDStr, ok := userUUID.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID in context is not a a valid string"})
+		return
+	}
+	existingUser, err := u.UserService.GetUserByUUID(userUUIDStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID do not match a user"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"userEmail": existingUser.Email, "userName": existingUser.Name})
+}

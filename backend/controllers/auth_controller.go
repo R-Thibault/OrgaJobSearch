@@ -76,7 +76,6 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("Password matches!")
 	// Create JWT Token
 	expirationTime := time.Now().Add(24 * time.Hour)
 	tokenType := "Cookie"
@@ -88,7 +87,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("token", tokenString, 3600, "/", "localhost", true, false)
+	c.SetCookie("token", tokenString, 36000, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Sign in successful"})
 

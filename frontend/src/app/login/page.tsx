@@ -12,6 +12,7 @@ export default function SignIn() {
   const router = useRouter();
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("LOGIN");
     try {
       const response = await axios.post(
         "http://localhost:8080/login",
@@ -21,8 +22,13 @@ export default function SignIn() {
         },
         { withCredentials: true }
       );
-      console.log(response);
-      router.push("/dashboard");
+      // Check if the response was successful (status 200)
+      if (response.status === 200) {
+        router.push("/dashboard");
+        router.refresh();
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
     } catch (error) {
       console.error("Error during sign in:", error);
       setErrorMessage("Email ou mot de passe incorrecte.");

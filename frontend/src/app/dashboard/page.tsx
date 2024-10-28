@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function Dashboard() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const router = useRouter();
+  console.log("/dashboard");
   const handleLogout = async () => {
     try {
       const response = await axios.post(
@@ -13,7 +14,7 @@ export default function Dashboard() {
         {},
         { withCredentials: true }
       );
-      console.log(response);
+
       if (response.data && response.data.message === "Logout successful") {
         router.push("/login");
       }

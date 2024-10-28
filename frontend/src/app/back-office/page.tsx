@@ -27,7 +27,7 @@ export default function BackOffice() {
       const response = await axios.post("http://localhost:8080/generate-url", {
         invitationType: "GlobalInvitation",
       });
-      console.log(response);
+
       setGeneratedUrl(response.data.url);
       setShowUrlModal(true);
     } catch (error) {

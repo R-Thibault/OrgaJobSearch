@@ -32,11 +32,11 @@ type AuthController struct {
 	tokenService      tokenService.TokenServiceInterface
 	invitationService invitationServices.InvitationServiceInterface
 	hashingUtils      hashingUtils.HashingServiceInterface
-	JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorServiceInterface
+	JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorUtilInterface
 }
 
 // NewAuthController creates a new instance of AuthController
-func NewAuthController(service userServices.UserServiceInterface, hashingUtils hashingUtils.HashingServiceInterface, tokenService tokenService.TokenServiceInterface, invitationService invitationServices.InvitationServiceInterface, JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorServiceInterface) *AuthController {
+func NewAuthController(service userServices.UserServiceInterface, hashingUtils hashingUtils.HashingServiceInterface, tokenService tokenService.TokenServiceInterface, invitationService invitationServices.InvitationServiceInterface, JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorUtilInterface) *AuthController {
 	return &AuthController{
 		service:           service,
 		hashingUtils:      hashingUtils,
@@ -92,41 +92,6 @@ func (a *AuthController) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Sign in successful"})
 
-}
-
-func (a *AuthController) VerifyInvitationToken(c *gin.Context) {
-	var tokenString models.TokenRequest
-	if err := c.ShouldBindJSON(&tokenString); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
-		return
-	}
-	token, err := a.tokenService.VerifyToken(tokenString.Token)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
-		return
-	}
-	switch *token.TokenType {
-	case "PersonalInvitation":
-		email, err := a.invitationService.VerifyPersonnalInvitationTokenData(*token)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"email":     email,
-			"tokenType": *token.TokenType})
-	case "GlobalInvitation":
-		err := a.invitationService.VerifyGlobalInvitationTokenData(*token)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"tokenType": *token.TokenType})
-	default:
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-		return
-	}
 }
 
 func (a *AuthController) Logout(c *gin.Context) {

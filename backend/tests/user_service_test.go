@@ -6,7 +6,7 @@ import (
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	"github.com/R-Thibault/OrgaJobSearch/backend/repository/mocks"
 	mockRepo "github.com/R-Thibault/OrgaJobSearch/backend/repository/mocks"
-	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
+	registrationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/registration_services"
 	mockUtil "github.com/R-Thibault/OrgaJobSearch/backend/utils/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -15,7 +15,7 @@ import (
 func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 	mockRepo := new(mockRepo.UserRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	userService := userServices.NewUserService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockRepo, mockHashingService)
 
 	creds := models.Credentials{
 		Email:    "existing@example.com",
@@ -26,7 +26,7 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 	mockRepo.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email}, nil)
 
 	// Execute the function
-	err := userService.RegisterUser(creds)
+	err := registrationService.RegisterUser(creds)
 
 	//Assertions
 	assert.Error(t, err)
@@ -37,7 +37,7 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 func TestRegisterUser_PasswordRegexCheckFail(t *testing.T) {
 	mockRepo := new(mockRepo.UserRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	UserService := userServices.NewUserService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockRepo, mockHashingService)
 
 	creds := models.Credentials{
 		Email:    "test@example.com",
@@ -45,7 +45,7 @@ func TestRegisterUser_PasswordRegexCheckFail(t *testing.T) {
 	}
 	mockRepo.On("GetUserByEmail", creds.Email).Return(nil, nil)
 	//Execute function
-	err := UserService.RegisterUser(creds)
+	err := registrationService.RegisterUser(creds)
 
 	//Assertions
 	assert.Error(t, err)
@@ -57,7 +57,7 @@ func TestRegisterUser_PasswordRegexCheckPass(t *testing.T) {
 	//Setup the mock repository
 	mockRepo := new(mocks.UserRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	userService := userServices.NewUserService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockRepo, mockHashingService)
 
 	// Define credentials
 	creds := models.Credentials{
@@ -71,7 +71,7 @@ func TestRegisterUser_PasswordRegexCheckPass(t *testing.T) {
 	mockRepo.On("SaveUser", mock.AnythingOfType("models.User")).Return(nil)
 
 	// Execute the function
-	err := userService.RegisterUser(creds)
+	err := registrationService.RegisterUser(creds)
 
 	//Assertions
 	assert.NoError(t, err)

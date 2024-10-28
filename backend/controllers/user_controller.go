@@ -6,20 +6,29 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	otpServices "github.com/R-Thibault/OrgaJobSearch/backend/services/otp_services"
+	registrationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/registration_services"
 	tokenService "github.com/R-Thibault/OrgaJobSearch/backend/services/token_services"
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
-
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	UserService  userServices.UserServiceInterface
-	OTPService   otpServices.OTPServiceInterface
-	tokenService tokenService.TokenServiceInterface
+	UserService         userServices.UserServiceInterface
+	OTPService          otpServices.OTPServiceInterface
+	tokenService        tokenService.TokenServiceInterface
+	Registrationservice registrationservices.RegistrationServiceInterface
 }
 
-func NewUserController(UserService userServices.UserServiceInterface, OTPService otpServices.OTPServiceInterface, tokenService tokenService.TokenServiceInterface) *UserController {
-	return &UserController{UserService: UserService, OTPService: OTPService, tokenService: tokenService}
+func NewUserController(
+	UserService userServices.UserServiceInterface,
+	OTPService otpServices.OTPServiceInterface,
+	tokenService tokenService.TokenServiceInterface,
+	Registrationservice registrationservices.RegistrationServiceInterface) *UserController {
+	return &UserController{
+		UserService:         UserService,
+		OTPService:          OTPService,
+		tokenService:        tokenService,
+		Registrationservice: Registrationservice}
 }
 
 func (u *UserController) SignUp(c *gin.Context) {
@@ -38,14 +47,14 @@ func (u *UserController) SignUp(c *gin.Context) {
 	log.Printf("token : %v", token.Body)
 	switch *token.TokenType {
 	case "PersonalInvitation":
-		err := u.UserService.JobSeekerRegistration(*token.Body, creds)
+		err := u.Registrationservice.JobSeekerRegistration(*token.Body, creds)
 		if err != nil {
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"success": "User registration successful !"})
 	case "GlobalInvitation":
-		err := u.UserService.RegisterUser(creds)
+		err := u.Registrationservice.RegisterUser(creds)
 		if err != nil {
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 			return

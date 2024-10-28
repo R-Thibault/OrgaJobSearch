@@ -8,20 +8,32 @@ import (
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	mailerService "github.com/R-Thibault/OrgaJobSearch/backend/services"
 	otpServices "github.com/R-Thibault/OrgaJobSearch/backend/services/otp_services"
+	registrationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/registration_services"
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 	tokenUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/tokenGenerator_util"
 	"github.com/gin-gonic/gin"
 )
 
 type UserInvitationController struct {
-	UserService        userServices.UserServiceInterface
-	TokenGeneratorUtil tokenUtils.JWTTokenGeneratorServiceInterface
-	MailerService      mailerService.MailerService
-	otpServices        otpServices.OTPServiceInterface
+	UserService         userServices.UserServiceInterface
+	TokenGeneratorUtil  tokenUtils.JWTTokenGeneratorUtilInterface
+	MailerService       mailerService.MailerService
+	otpServices         otpServices.OTPServiceInterface
+	Registrationservice registrationservices.RegistrationServiceInterface
 }
 
-func NewUserInvitationController(UserService userServices.UserServiceInterface, TokenGeneratorUtil tokenUtils.JWTTokenGeneratorServiceInterface, MailerService mailerService.MailerService, otpServices otpServices.OTPServiceInterface) *UserInvitationController {
-	return &UserInvitationController{UserService: UserService, TokenGeneratorUtil: TokenGeneratorUtil, MailerService: MailerService, otpServices: otpServices}
+func NewUserInvitationController(
+	UserService userServices.UserServiceInterface,
+	TokenGeneratorUtil tokenUtils.JWTTokenGeneratorUtilInterface,
+	MailerService mailerService.MailerService,
+	otpServices otpServices.OTPServiceInterface,
+	Registrationservice registrationservices.RegistrationServiceInterface) *UserInvitationController {
+	return &UserInvitationController{
+		UserService:         UserService,
+		TokenGeneratorUtil:  TokenGeneratorUtil,
+		MailerService:       MailerService,
+		otpServices:         otpServices,
+		Registrationservice: Registrationservice}
 }
 
 func (u *UserInvitationController) SendJobSeekerInvitation(c *gin.Context) {
@@ -31,7 +43,7 @@ func (u *UserInvitationController) SendJobSeekerInvitation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	savedUser, err := u.UserService.PreRegisterJobSeeker(userInvitation.Email, &userInvitation.UserID)
+	savedUser, err := u.Registrationservice.PreRegisterJobSeeker(userInvitation.Email, &userInvitation.UserID)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return

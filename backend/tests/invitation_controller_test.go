@@ -24,10 +24,10 @@ func TestGenerateGlobalURLInvitation_Success(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	mockUserService := new(serviceMocks.UserServiceInterface)
 	mockOTPService := new(serviceMocks.OTPServiceInterface)
-	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorServiceInterface)
-
+	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorUtilInterface)
+	mockRegistrationService := new(serviceMocks.RegistrationServiceInterface)
 	mailerService := mailerService.NewMailerService()
-	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService)
+	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService, mockRegistrationService)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -61,10 +61,10 @@ func TestGenerateGlobalURLInvitation_InvalidRequest(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	mockUserService := new(serviceMocks.UserServiceInterface)
 	mockOTPService := new(serviceMocks.OTPServiceInterface)
-	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorServiceInterface)
-
+	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorUtilInterface)
+	mockRegistrationService := new(serviceMocks.RegistrationServiceInterface)
 	mailerService := mailerService.NewMailerService()
-	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService)
+	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService, mockRegistrationService)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -85,10 +85,10 @@ func TestGenerateGlobalURLInvitation_UserNotFound(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	mockUserService := new(serviceMocks.UserServiceInterface)
 	mockOTPService := new(serviceMocks.OTPServiceInterface)
-	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorServiceInterface)
-
+	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorUtilInterface)
+	mockRegistrationService := new(serviceMocks.RegistrationServiceInterface)
 	mailerService := mailerService.NewMailerService()
-	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService)
+	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService, mockRegistrationService)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -116,10 +116,10 @@ func TestGenerateGlobalURLInvitation_OTPGenerationError(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	mockUserService := new(serviceMocks.UserServiceInterface)
 	mockOTPService := new(serviceMocks.OTPServiceInterface)
-	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorServiceInterface)
-
+	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorUtilInterface)
+	mockRegistrationService := new(serviceMocks.RegistrationServiceInterface)
 	mailerService := mailerService.NewMailerService()
-	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService)
+	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService, mockRegistrationService)
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
@@ -151,10 +151,10 @@ func TestGenerateGlobalURLInvitation_TokenGenerationError(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	mockUserService := new(serviceMocks.UserServiceInterface)
 	mockOTPService := new(serviceMocks.OTPServiceInterface)
-	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorServiceInterface)
-
+	mockTokenGenerator := new(JWTMock.JWTTokenGeneratorUtilInterface)
+	mockRegistrationService := new(serviceMocks.RegistrationServiceInterface)
 	mailerService := mailerService.NewMailerService()
-	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService)
+	invitationController := controllers.NewUserInvitationController(mockUserService, mockTokenGenerator, *mailerService, mockOTPService, mockRegistrationService)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 

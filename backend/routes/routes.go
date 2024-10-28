@@ -8,6 +8,7 @@ import (
 	"github.com/R-Thibault/OrgaJobSearch/backend/services"
 	invitationServices "github.com/R-Thibault/OrgaJobSearch/backend/services/invitation_services"
 	otpServices "github.com/R-Thibault/OrgaJobSearch/backend/services/otp_services"
+	registrationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/registration_services"
 	tokenService "github.com/R-Thibault/OrgaJobSearch/backend/services/token_services"
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
@@ -33,7 +34,7 @@ func SetupRoutes(router *gin.Engine) {
 
 	// Initialize Utilities
 	hashingService := hashingUtils.NewHashingService()
-	GenerateTokenService := tokenUtils.NewJWTTokenGeneratorService()
+	GenerateTokenService := tokenUtils.NewJWTTokenGeneratorUtil()
 	OTPGeneratorService := otpGeneratorUtils.NewOtpGeneratorService()
 
 	// Initialize Serivces
@@ -42,12 +43,13 @@ func SetupRoutes(router *gin.Engine) {
 	TokenService := tokenService.NewTokenService()
 	MailerService := services.NewMailerService()
 	invitationService := invitationServices.NewInvitationService(userRepository, OTPService)
+	RegistrationService := registrationservices.NewRegistrationService(userRepository, hashingService)
 
 	// Initialize Controllers
 	authController := controllers.NewAuthController(UserService, hashingService, TokenService, invitationService, GenerateTokenService)
-	userController := controllers.NewUserController(UserService, OTPService, TokenService)
+	userController := controllers.NewUserController(UserService, OTPService, TokenService, RegistrationService)
 	OTPcontroller := controllers.NewOTPController(OTPService, MailerService, UserService)
-	userInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService, OTPService)
+	userInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService, OTPService, RegistrationService)
 
 	// Public route for signing in
 	router.POST("/login", authController.Login)

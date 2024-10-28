@@ -10,14 +10,14 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-type JWTTokenGeneratorService struct {
+type JWTTokenGeneratorUtil struct {
 }
 
-func NewJWTTokenGeneratorService() *JWTTokenGeneratorService {
-	return &JWTTokenGeneratorService{}
+func NewJWTTokenGeneratorUtil() *JWTTokenGeneratorUtil {
+	return &JWTTokenGeneratorUtil{}
 }
 
-func (u *JWTTokenGeneratorService) GenerateJWTToken(tokenType *string, body *string, expirationTime time.Time) (JWTToken string, err error) {
+func (u *JWTTokenGeneratorUtil) GenerateJWTToken(tokenType *string, body *string, expirationTime time.Time) (JWTToken string, err error) {
 
 	var jwtKey = []byte(config.GetConfig("JWT_KEY"))
 	// Set expiration

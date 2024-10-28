@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/R-Thibault/OrgaJobSearch/backend/config"
 	"github.com/R-Thibault/OrgaJobSearch/backend/controllers"
+	"github.com/R-Thibault/OrgaJobSearch/backend/middleware"
 	otpRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/otp_repository"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
 	"github.com/R-Thibault/OrgaJobSearch/backend/services"
@@ -51,27 +52,19 @@ func SetupRoutes(router *gin.Engine) {
 	OTPcontroller := controllers.NewOTPController(OTPService, MailerService, UserService)
 	userInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService, OTPService, RegistrationService)
 
-	// Public route for signing in
+	// Public routes
 	router.POST("/login", authController.Login)
 	router.POST("/logout", authController.Logout)
-	// Public route to check token from url invitation
 	router.POST("/verify-token", authController.VerifyInvitationToken)
-
-	// Public route for signing up
 	router.POST("/sign-up", userController.SignUp)
-
-	// Public route to generate OTP
 	router.POST("/generate-otp", OTPcontroller.GenerateOTPForSignUp)
-
-	// Public ( will be protected) route for send User invitation
-	router.POST("/send-user-invitation", userInvitationController.SendJobSeekerInvitation)
-
-	// Public ( will be protected) route for send Global invitation
-	router.POST("/generate-url", userInvitationController.GenerateGlobalURLInvitation)
-
-	//Public route for sending OTP
 	router.POST("/send-otp", OTPcontroller.SendOTP)
-
 	router.POST("/verify-otp", OTPcontroller.ValidateOTP)
 
+	// Protected route
+	protected := router.Group("/")
+	protected.Use(middleware.AuthMiddleware())
+
+	protected.POST("/send-user-invitation", userInvitationController.SendJobSeekerInvitation)
+	protected.POST("/generate-url", userInvitationController.GenerateGlobalURLInvitation)
 }

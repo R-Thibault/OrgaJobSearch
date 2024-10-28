@@ -28,3 +28,7 @@ func (s *UserService) EmailValidation(email string) error {
 func (s *UserService) GetUserByID(userID uint) (*models.User, error) {
 	return s.UserRepo.GetUserByID(userID)
 }
+
+func (s *UserService) GetUserByUUID(userUUID string) (*models.User, error) {
+	return s.UserRepo.GetUserByUUID(userUUID)
+}

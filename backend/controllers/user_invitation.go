@@ -43,7 +43,24 @@ func (u *UserInvitationController) SendJobSeekerInvitation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	savedUser, err := u.Registrationservice.PreRegisterJobSeeker(userInvitation.Email, &userInvitation.UserID)
+	userUUID, exists := c.Get("userUUID")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID not Found in context"})
+		return
+	}
+
+	userUUIDStr, ok := userUUID.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID in context is not a a valid string"})
+		return
+	}
+	existingUser, err := u.UserService.GetUserByUUID(userUUIDStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID do not match a user"})
+		return
+	}
+
+	savedUser, err := u.Registrationservice.PreRegisterJobSeeker(userInvitation.Email, &existingUser.ID)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
@@ -71,14 +88,25 @@ func (u *UserInvitationController) GenerateGlobalURLInvitation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	user, err := u.UserService.GetUserByID(invitation.UserID)
+	userUUID, exists := c.Get("userUUID")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID not Found in context"})
+		return
+	}
+
+	userUUIDStr, ok := userUUID.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID in context is not a a valid string"})
+		return
+	}
+	existingUser, err := u.UserService.GetUserByUUID(userUUIDStr)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID do not match a user"})
 		return
 	}
 	//Generate the OTP with a type "GlobalInvitation"
 	otpType := "GlobalInvitation"
-	otpGenerated, err := u.otpServices.GenerateOTP(user.ID, otpType)
+	otpGenerated, err := u.otpServices.GenerateOTP(existingUser.ID, otpType)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return

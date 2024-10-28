@@ -95,15 +95,7 @@ func (a *AuthController) Login(c *gin.Context) {
 }
 
 func (a *AuthController) Logout(c *gin.Context) {
-	// Log all cookies present in the request for debugging
-	cookies := c.Request.Cookies()
-	if len(cookies) == 0 {
-		log.Println("No cookies received in the request.")
-	} else {
-		for _, cookie := range cookies {
-			log.Printf("Cookie Name: %s, Cookie Value: %s\n", cookie.Name, cookie.Value)
-		}
-	}
+
 	cookie, err := c.Cookie("token")
 	if err != nil {
 		log.Printf("err: %v", err)

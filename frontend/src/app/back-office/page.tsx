@@ -10,10 +10,8 @@ export default function BackOffice() {
 
   const handleSendInvitation = async () => {
     try {
-      const userID = 40;
       await axios.post("http://localhost:8080/send-user-invitation", {
         email,
-        userID,
       });
       alert("Invitation sent successfully!");
       setShowModal(false);
@@ -25,10 +23,8 @@ export default function BackOffice() {
   };
 
   const handleGenerateUrl = async () => {
-    const userGlobalID = 40;
     try {
       const response = await axios.post("http://localhost:8080/generate-url", {
-        userID: userGlobalID,
         invitationType: "GlobalInvitation",
       });
       console.log(response);

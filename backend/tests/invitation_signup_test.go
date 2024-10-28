@@ -39,8 +39,7 @@ func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
 	registrationService := registrationservices.NewRegistrationService(mockRepo, mockHashingService)
 
 	userInvitation := models.UserInvitation{
-		UserID: uint(10),
-		Email:  "existing@example.com",
+		Email: "existing@example.com",
 	}
 	user := &models.User{
 		Model: gorm.Model{
@@ -52,9 +51,9 @@ func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
 
 	mockRepo.On("GetUserByEmail", userInvitation.Email).Return(nil, nil)
 	mockRepo.On("PreRegisterJobSeeker", mock.AnythingOfType("models.User")).Return(user, nil)
-	mockRepo.On("GetUserByID", userInvitation.UserID).Return(user, nil)
+	mockRepo.On("GetUserByID", user.ID).Return(user, nil)
 
-	savedUser, err := registrationService.PreRegisterJobSeeker(userInvitation.Email, &userInvitation.UserID)
+	savedUser, err := registrationService.PreRegisterJobSeeker(userInvitation.Email, &user.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, user, savedUser)
 	mockRepo.AssertCalled(t, "GetUserByEmail", userInvitation.Email)

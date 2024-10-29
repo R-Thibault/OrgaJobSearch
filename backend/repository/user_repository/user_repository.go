@@ -34,7 +34,10 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 
 	var user models.User
 	email = strings.TrimSpace(email)
-	result := r.db.Unscoped().Where("email = ?", email).First(&user)
+	result := r.db.
+		Preload("Otps").
+		Preload("Roles").
+		Where("email = ?", email).First(&user)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -102,7 +105,10 @@ func (r *UserRepository) GetUserByUUID(uuid string) (*models.User, error) {
 		return nil, errors.New("uudi cannot be empty")
 	}
 	var user models.User
-	result := r.db.Unscoped().Where("user_uuid = ?", uuid).First(&user)
+	result := r.db.
+		Preload("Otps").
+		Preload("Roles").
+		Where("user_uuid = ?", uuid).First(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, gorm.ErrRecordNotFound

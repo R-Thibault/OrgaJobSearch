@@ -6,6 +6,5 @@ type UserInvitation struct {
 }
 
 type GlobalInvitation struct {
-	UserID         uint   `json:"userID"`
 	InvitationType string `json:"invitationType"`
 }

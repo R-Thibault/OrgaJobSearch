@@ -42,29 +42,29 @@ func (_m *OTPRepositoryInterface) GetOTPByCode(otpCode string, otpType string) (
 	return r0, r1
 }
 
-// GetOTPCodeByUserID provides a mock function with given fields: userID
-func (_m *OTPRepositoryInterface) GetOTPCodeByUserID(userID uint) (*models.OTP, error) {
-	ret := _m.Called(userID)
+// GetOTPCodeByUserIDandType provides a mock function with given fields: userID, otpType
+func (_m *OTPRepositoryInterface) GetOTPCodeByUserIDandType(userID uint, otpType string) (*models.OTP, error) {
+	ret := _m.Called(userID, otpType)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetOTPCodeByUserID")
+		panic("no return value specified for GetOTPCodeByUserIDandType")
 	}
 
 	var r0 *models.OTP
 	var r1 error
-	if rf, ok := ret.Get(0).(func(uint) (*models.OTP, error)); ok {
-		return rf(userID)
+	if rf, ok := ret.Get(0).(func(uint, string) (*models.OTP, error)); ok {
+		return rf(userID, otpType)
 	}
-	if rf, ok := ret.Get(0).(func(uint) *models.OTP); ok {
-		r0 = rf(userID)
+	if rf, ok := ret.Get(0).(func(uint, string) *models.OTP); ok {
+		r0 = rf(userID, otpType)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*models.OTP)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(uint) error); ok {
-		r1 = rf(userID)
+	if rf, ok := ret.Get(1).(func(uint, string) error); ok {
+		r1 = rf(userID, otpType)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -93,6 +93,36 @@ func (_m *OTPRepositoryInterface) SaveOTP(otp models.OTP) (string, error) {
 
 	if rf, ok := ret.Get(1).(func(models.OTP) error); ok {
 		r1 = rf(otp)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateOTPCode provides a mock function with given fields: otpID, otpCode, otpType
+func (_m *OTPRepositoryInterface) UpdateOTPCode(otpID uint, otpCode string, otpType string) (*models.OTP, error) {
+	ret := _m.Called(otpID, otpCode, otpType)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateOTPCode")
+	}
+
+	var r0 *models.OTP
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uint, string, string) (*models.OTP, error)); ok {
+		return rf(otpID, otpCode, otpType)
+	}
+	if rf, ok := ret.Get(0).(func(uint, string, string) *models.OTP); ok {
+		r0 = rf(otpID, otpCode, otpType)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.OTP)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uint, string, string) error); ok {
+		r1 = rf(otpID, otpCode, otpType)
 	} else {
 		r1 = ret.Error(1)
 	}

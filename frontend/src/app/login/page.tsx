@@ -24,8 +24,24 @@ export default function SignIn() {
       );
       // Check if the response was successful (status 200)
       if (response.status === 200) {
-        router.push("/dashboard");
-        router.refresh();
+        const responseMe = await axios.get("http://localhost:8080/me", {
+          withCredentials: true,
+        });
+        if (responseMe.status === 200) {
+          const { userRole } = responseMe.data;
+          if (
+            userRole.includes("CareerSupportManager") ||
+            userRole.includes("CareerCoach")
+          ) {
+            router.push("/back-office");
+          } else {
+            // Default or catch-all route
+            router.push("/dashboard");
+          }
+          router.refresh();
+        }
+        // router.push("/dashboard");
+        // router.refresh();
       } else {
         setErrorMessage("An unexpected error occurred. Please try again.");
       }

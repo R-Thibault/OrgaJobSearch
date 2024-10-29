@@ -5,6 +5,7 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type OTPRepository struct {
@@ -25,7 +26,7 @@ func (r *OTPRepository) SaveOTP(otp models.OTP) (otpCode string, err error) {
 	return otp.OtpCode, nil
 }
 
-func (r *OTPRepository) GetOTPCodeByUserID(userID uint) (*models.OTP, error) {
+func (r *OTPRepository) GetOTPCodeByUserIDandType(userID uint, otpType string) (*models.OTP, error) {
 	if r.db == nil {
 		return &models.OTP{}, errors.New("database connection is nil")
 	}
@@ -35,7 +36,7 @@ func (r *OTPRepository) GetOTPCodeByUserID(userID uint) (*models.OTP, error) {
 	}
 
 	var otp models.OTP
-	result := r.db.Where("user_id = ? AND otp_type = ?", userID, "emailValidation").First(&otp)
+	result := r.db.Where("user_id = ? AND otp_type = ?", userID, otpType).First(&otp)
 	if result.Error != nil {
 		if result.Error != nil {
 			if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -67,4 +68,33 @@ func (r *OTPRepository) GetOTPByCode(otpCode string, otpType string) (*models.OT
 	}
 
 	return &otp, nil
+}
+
+func (r *OTPRepository) UpdateOTPCode(otpID uint, otpCode string, otpType string) (*models.OTP, error) {
+	if r.db == nil {
+		return &models.OTP{}, errors.New("database connection is nil")
+	}
+	if otpID == 0 {
+		return &models.OTP{}, errors.New("otpID is empty")
+	}
+	if otpCode == "0" {
+		return &models.OTP{}, errors.New("OtpCode is empty")
+	}
+	if otpType == "" {
+		return &models.OTP{}, errors.New("otpType is empty")
+	}
+	updatedOTP := &models.OTP{
+		Model: gorm.Model{
+			ID: otpID,
+		},
+		OtpCode: otpCode,
+	}
+	result := r.db.Clauses(clause.Returning{}).Save(updatedOTP)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return &models.OTP{}, gorm.ErrRecordNotFound
+		}
+		return &models.OTP{}, result.Error
+	}
+	return updatedOTP, nil
 }

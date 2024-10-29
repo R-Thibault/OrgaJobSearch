@@ -21,7 +21,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// The same key used for signing
+		// JWT key for validation
 		var jwtKey = []byte(config.GetConfig("JWT_KEY"))
 
 		// Parse the token
@@ -34,48 +34,38 @@ func AuthMiddleware() gin.HandlerFunc {
 		})
 
 		if err != nil {
-			if ve, ok := err.(*jwt.ValidationError); ok {
-				if ve.Errors&jwt.ValidationErrorExpired != 0 {
-					c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
-					c.Abort()
-					return
-				} else {
-					c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-					c.Abort()
-					return
-				}
+			if ve, ok := err.(*jwt.ValidationError); ok && ve.Errors&jwt.ValidationErrorExpired != 0 {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Token expired"})
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			}
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
 			return
 		}
 
+		// Access claims if the token is valid
 		if claims, ok := token.Claims.(*models.JWTToken); ok && token.Valid {
-			// Access the userUUID from the Body field
-			if claims.Body == nil || *claims.Body == "" {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token: userUUID missing"})
-				c.Abort()
-				return
-			}
-			// Decode the JSON string in Body
-			var bodyContent map[string]string
+			var bodyContent map[string]interface{}
 			if err := json.Unmarshal([]byte(*claims.Body), &bodyContent); err != nil {
+
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to parse token body"})
 				c.Abort()
 				return
 			}
 
-			userUUID, uuidExists := bodyContent["userUUID"]
-			userRole, roleExists := bodyContent["userRole"]
-			if !uuidExists || !roleExists {
+			// Extract userUUID and userRole from the token body content
+			userUUID, uuidExists := bodyContent["userUUID"].(string)
+			userRoles, rolesExist := bodyContent["userRole"].([]interface{})
+
+			if !uuidExists || !rolesExist {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token: required user data missing"})
 				c.Abort()
 				return
 			}
 
-			// Store `userUUID` and `userRole` in context
+			// Store userUUID and userRole in context for further use
 			c.Set("userUUID", userUUID)
-			c.Set("userRole", userRole)
+			c.Set("userRoles", userRoles)
 
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
@@ -83,30 +73,34 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Proceed to the next middleware/handler
+		// Continue to the next handler
 		c.Next()
 	}
 }
 
 func RoleMiddleware(allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userRole, exists := c.Get("userRole")
+		userRoles, exists := c.Get("userRoles")
 		if !exists {
 			c.JSON(http.StatusForbidden, gin.H{"error": "User role not found in context"})
 			c.Abort()
 			return
 		}
-		userRolestr, ok := userRole.(string)
+
+		// Check if any role in userRoles matches allowedRoles
+		rolesSlice, ok := userRoles.([]interface{})
+
 		if !ok {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Invalid user role format"})
 			c.Abort()
 			return
 		}
-
-		for _, role := range allowedRoles {
-			if userRolestr == role {
-				c.Next()
-				return
+		for _, role := range rolesSlice {
+			for _, allowedRole := range allowedRoles {
+				if role == allowedRole {
+					c.Next()
+					return
+				}
 			}
 		}
 		c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permission"})

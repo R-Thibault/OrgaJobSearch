@@ -24,14 +24,18 @@ export default function BackOffice() {
 
   const handleGenerateUrl = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/generate-url", {
-        invitationType: "GlobalInvitation",
-      });
+      const response = await axios.post(
+        "http://localhost:8080/generate-url",
+        {
+          invitationType: "GlobalInvitation",
+        },
+        { withCredentials: true }
+      );
 
       setGeneratedUrl(response.data.url);
       setShowUrlModal(true);
     } catch (error) {
-      console.error("Error generating URL:", error);
+      console.log("Error generating URL:", error);
       alert("Failed to generate the URL");
     }
   };

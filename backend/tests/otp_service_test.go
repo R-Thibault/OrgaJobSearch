@@ -81,19 +81,20 @@ func TestVerifyOTP_Sucess(t *testing.T) {
 
 	validOTP := &models.OTP{
 		OtpCode:       otp,
+		OtpType:       "emailValidation",
 		OtpExpiration: time.Now().Add(10 * time.Minute),
 	}
 
 	// Setup mock expectation
 	mockRepoUser.On("GetUserByEmail", email).Return(user, nil)
-	mockRepoOTP.On("GetOTPCodeByUserID", user.ID).Return(validOTP, nil)
+	mockRepoOTP.On("GetOTPCodeByUserIDandType", user.ID, validOTP.OtpType).Return(validOTP, nil)
 
 	// Execute function
 	err := otpService.VerifyOTP(email, otp)
 
 	// Assertions
 	assert.NoError(t, err)
-	mockRepoOTP.AssertCalled(t, "GetOTPCodeByUserID", user.ID)
+	mockRepoOTP.AssertCalled(t, "GetOTPCodeByUserIDandType", user.ID, validOTP.OtpType)
 }
 
 func TestVerifyOTP_Fail_IncorrectOTP(t *testing.T) {
@@ -111,12 +112,13 @@ func TestVerifyOTP_Fail_IncorrectOTP(t *testing.T) {
 	incorrectOTP := "incorrectOTP"
 	validOTP := &models.OTP{
 		UserID:        user.ID,
-		OtpCode:       "123456",                         // The correct OTP for this user
+		OtpCode:       "123456",
+		OtpType:       "emailValidation",                // The correct OTP for this user
 		OtpExpiration: time.Now().Add(10 * time.Minute), // OTP is valid
 	}
 	// Setup mock expectation
 	mockRepoUser.On("GetUserByEmail", email).Return(user, nil)
-	mockRepoOTP.On("GetOTPCodeByUserID", user.ID).Return(validOTP, nil)
+	mockRepoOTP.On("GetOTPCodeByUserIDandType", user.ID, validOTP.OtpType).Return(validOTP, nil)
 
 	// Execute function
 	err := otpService.VerifyOTP(email, incorrectOTP)
@@ -144,11 +146,12 @@ func TestVerifyOTP_Fail_ExpiredOTP(t *testing.T) {
 	invalidOTP := &models.OTP{
 		UserID:        user.ID,
 		OtpCode:       "123456",
+		OtpType:       "emailValidation",
 		OtpExpiration: time.Now().Add(-10 * time.Minute),
 	}
 	// Setup mock expectation
 	mockRepoUser.On("GetUserByEmail", email).Return(user, nil)
-	mockRepoOTP.On("GetOTPCodeByUserID", user.ID).Return(invalidOTP, nil)
+	mockRepoOTP.On("GetOTPCodeByUserIDandType", user.ID, invalidOTP.OtpType).Return(invalidOTP, nil)
 
 	// Execute function
 	err := otpService.VerifyOTP(email, invalidOTP.OtpCode)

@@ -3,7 +3,6 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -81,19 +80,26 @@ func (a *AuthController) Login(c *gin.Context) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	tokenType := "Cookie"
 	userUUID := string(existingUser.UserUUID)
-	userRole := existingUser.Roles
-	bodyContent := map[string]string{
+
+	// Extract role names for the token body
+	roleNames := make([]string, len(existingUser.Roles))
+	for i, role := range existingUser.Roles {
+		roleNames[i] = role.RoleName
+	}
+
+	bodyContent := map[string]interface{}{
 		"userUUID": userUUID,
-		"userRole": fmt.Sprintf("%v", userRole),
+		"userRole": roleNames,
 	}
 
 	// Encode `bodyContent` to JSON
-	bodyBytes, err := json.Marshal(bodyContent)
+	bodyContentJSON, err := json.Marshal(bodyContent)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encode body content"})
 		return
 	}
-	bodyString := string(bodyBytes)
+	bodyString := string(bodyContentJSON)
+
 	tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(&tokenType, &bodyString, expirationTime)
 	if err != nil {
 		fmt.Printf("Failed to sign the token: %v\n", err)
@@ -109,14 +115,12 @@ func (a *AuthController) Login(c *gin.Context) {
 
 func (a *AuthController) Logout(c *gin.Context) {
 
-	cookie, err := c.Cookie("token")
+	_, err := c.Cookie("token")
 	if err != nil {
-		log.Printf("err: %v", err)
-		log.Printf("Cookie: %v", cookie)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "No token found"})
 		return
 	}
-	log.Printf("Cookie: %v", cookie)
+
 	// Clear the cookie by setting its expiration date to the past
 	c.SetCookie("token", "", -1, "/", "localhost", true, true)
 	c.JSON(http.StatusOK, gin.H{"message": "Logout successful"})

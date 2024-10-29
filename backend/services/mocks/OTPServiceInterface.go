@@ -9,6 +9,34 @@ type OTPServiceInterface struct {
 	mock.Mock
 }
 
+// CheckOTPCodeForGlobalInvitation provides a mock function with given fields: userID, otpType
+func (_m *OTPServiceInterface) CheckOTPCodeForGlobalInvitation(userID uint, otpType string) (string, error) {
+	ret := _m.Called(userID, otpType)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CheckOTPCodeForGlobalInvitation")
+	}
+
+	var r0 string
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uint, string) (string, error)); ok {
+		return rf(userID, otpType)
+	}
+	if rf, ok := ret.Get(0).(func(uint, string) string); ok {
+		r0 = rf(userID, otpType)
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	if rf, ok := ret.Get(1).(func(uint, string) error); ok {
+		r1 = rf(userID, otpType)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GenerateOTP provides a mock function with given fields: userID, otpType
 func (_m *OTPServiceInterface) GenerateOTP(userID uint, otpType string) (string, error) {
 	ret := _m.Called(userID, otpType)

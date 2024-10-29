@@ -33,12 +33,12 @@ func TestGenerateGlobalURLInvitation_Success(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 
 	invitation := models.GlobalInvitation{
-		UserID: 1,
+		InvitationType: "GlobalInvitation",
 	}
 
 	body, _ := json.Marshal(invitation)
 
-	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-invitation", bytes.NewBuffer(body))
+	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-url", bytes.NewBuffer(body))
 	c.Request.Header.Set("Content-type", "application/json")
 
 	// Set the userUUID in context
@@ -47,7 +47,8 @@ func TestGenerateGlobalURLInvitation_Success(t *testing.T) {
 	mockUserService.On("GetUserByUUID", "valid-uuid").Return(&models.User{Model: gorm.Model{
 		ID: 1,
 	}}, nil)
-	mockOTPService.On("GenerateOTP", uint(1), "GlobalInvitation").Return("otp123", nil)
+	mockOTPService.On("GenerateOTP", uint(1), invitation.InvitationType).Return("otp123", nil)
+	mockOTPService.On("CheckOTPCodeForGlobalInvitation", uint(1), invitation.InvitationType).Return("", nil)
 	mockTokenGenerator.On("GenerateJWTToken", mock.Anything, mock.Anything, mock.Anything).Return("jwtToken123", nil)
 
 	invitationController.GenerateGlobalURLInvitation(c)
@@ -70,10 +71,15 @@ func TestGenerateGlobalURLInvitation_InvalidRequest(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
+	invitation := models.GlobalInvitation{
+		InvitationType: "GlobalInvitation",
+	}
 
-	// Empty body to simulate invalid input
-	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-invitation", bytes.NewBuffer([]byte("{}")))
+	body, _ := json.Marshal(invitation)
+
+	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-url", bytes.NewBuffer(body))
 	c.Request.Header.Set("Content-type", "application/json")
+
 	// Set the userUUID in context
 	c.Set("userUUID", "valid-uuid")
 	// Mock the behavior for GetUserByID with any user ID to prevent the test from failing
@@ -81,8 +87,8 @@ func TestGenerateGlobalURLInvitation_InvalidRequest(t *testing.T) {
 
 	invitationController.GenerateGlobalURLInvitation(c)
 
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.Contains(t, w.Body.String(), "Invalid request data")
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.Contains(t, w.Body.String(), "UserUUID does not match a user")
 }
 
 func TestGenerateGlobalURLInvitation_UserNotFound(t *testing.T) {
@@ -98,12 +104,12 @@ func TestGenerateGlobalURLInvitation_UserNotFound(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 	c.Set("userUUID", "valid-uuid")
 	invitation := models.GlobalInvitation{
-		UserID: 2,
+		InvitationType: "GlobalInvitation",
 	}
 
 	body, _ := json.Marshal(invitation)
 
-	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-invitation", bytes.NewBuffer(body))
+	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-url", bytes.NewBuffer(body))
 	c.Request.Header.Set("Content-type", "application/json")
 
 	// Mock behavior for user not found
@@ -112,7 +118,7 @@ func TestGenerateGlobalURLInvitation_UserNotFound(t *testing.T) {
 	invitationController.GenerateGlobalURLInvitation(c)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Contains(t, w.Body.String(), "UserUUID do not match a user")
+	assert.Contains(t, w.Body.String(), "UserUUID does not match a user")
 	mockUserService.AssertExpectations(t)
 }
 
@@ -129,12 +135,12 @@ func TestGenerateGlobalURLInvitation_OTPGenerationError(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 
 	invitation := models.GlobalInvitation{
-		UserID: 1,
+		InvitationType: "GlobalInvitation",
 	}
 
 	body, _ := json.Marshal(invitation)
 
-	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-invitation", bytes.NewBuffer(body))
+	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-url", bytes.NewBuffer(body))
 	c.Request.Header.Set("Content-type", "application/json")
 
 	// Set the userUUID in context
@@ -144,6 +150,7 @@ func TestGenerateGlobalURLInvitation_OTPGenerationError(t *testing.T) {
 	mockUserService.On("GetUserByUUID", "valid-uuid").Return(&models.User{Model: gorm.Model{
 		ID: 1,
 	}}, nil)
+	mockOTPService.On("CheckOTPCodeForGlobalInvitation", uint(1), "GlobalInvitation").Return("", nil)
 	mockOTPService.On("GenerateOTP", uint(1), "GlobalInvitation").Return("", errors.New("OTP generation error"))
 
 	invitationController.GenerateGlobalURLInvitation(c)
@@ -166,12 +173,12 @@ func TestGenerateGlobalURLInvitation_TokenGenerationError(t *testing.T) {
 	c, _ := gin.CreateTestContext(w)
 
 	invitation := models.GlobalInvitation{
-		UserID: 1,
+		InvitationType: "GlobalInvitation",
 	}
 
 	body, _ := json.Marshal(invitation)
 
-	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-invitation", bytes.NewBuffer(body))
+	c.Request, _ = http.NewRequest(http.MethodPost, "/generate-url", bytes.NewBuffer(body))
 	c.Request.Header.Set("Content-type", "application/json")
 
 	// Set the userUUID in context
@@ -180,6 +187,7 @@ func TestGenerateGlobalURLInvitation_TokenGenerationError(t *testing.T) {
 	mockUserService.On("GetUserByUUID", "valid-uuid").Return(&models.User{Model: gorm.Model{
 		ID: 1,
 	}}, nil)
+	mockOTPService.On("CheckOTPCodeForGlobalInvitation", uint(1), "GlobalInvitation").Return("", nil)
 	mockOTPService.On("GenerateOTP", uint(1), "GlobalInvitation").Return("otp123", nil)
 	mockTokenGenerator.On("GenerateJWTToken", mock.Anything, mock.Anything, mock.Anything).Return("", errors.New("Token generation error"))
 

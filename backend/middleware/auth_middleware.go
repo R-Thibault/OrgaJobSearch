@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -56,10 +57,25 @@ func AuthMiddleware() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
+			// Decode the JSON string in Body
+			var bodyContent map[string]string
+			if err := json.Unmarshal([]byte(*claims.Body), &bodyContent); err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to parse token body"})
+				c.Abort()
+				return
+			}
 
-			// Set the userUUID (stored in Body) in context for further use
-			userUUID := *claims.Body
+			userUUID, uuidExists := bodyContent["userUUID"]
+			userRole, roleExists := bodyContent["userRole"]
+			if !uuidExists || !roleExists {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token: required user data missing"})
+				c.Abort()
+				return
+			}
+
+			// Store `userUUID` and `userRole` in context
 			c.Set("userUUID", userUUID)
+			c.Set("userRole", userRole)
 
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
@@ -69,5 +85,31 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// Proceed to the next middleware/handler
 		c.Next()
+	}
+}
+
+func RoleMiddleware(allowedRoles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userRole, exists := c.Get("userRole")
+		if !exists {
+			c.JSON(http.StatusForbidden, gin.H{"error": "User role not found in context"})
+			c.Abort()
+			return
+		}
+		userRolestr, ok := userRole.(string)
+		if !ok {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Invalid user role format"})
+			c.Abort()
+			return
+		}
+
+		for _, role := range allowedRoles {
+			if userRolestr == role {
+				c.Next()
+				return
+			}
+		}
+		c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permission"})
+		c.Abort()
 	}
 }

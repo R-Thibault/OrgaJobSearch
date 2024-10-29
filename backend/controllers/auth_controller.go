@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -80,7 +81,20 @@ func (a *AuthController) Login(c *gin.Context) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	tokenType := "Cookie"
 	userUUID := string(existingUser.UserUUID)
-	tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(&tokenType, &userUUID, expirationTime)
+	userRole := existingUser.Roles
+	bodyContent := map[string]string{
+		"userUUID": userUUID,
+		"userRole": fmt.Sprintf("%v", userRole),
+	}
+
+	// Encode `bodyContent` to JSON
+	bodyBytes, err := json.Marshal(bodyContent)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encode body content"})
+		return
+	}
+	bodyString := string(bodyBytes)
+	tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(&tokenType, &bodyString, expirationTime)
 	if err != nil {
 		fmt.Printf("Failed to sign the token: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})

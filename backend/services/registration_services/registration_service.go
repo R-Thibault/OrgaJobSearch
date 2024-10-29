@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
+	roleRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/role_repository"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
 	"github.com/R-Thibault/OrgaJobSearch/backend/utils"
 	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
@@ -13,15 +14,22 @@ import (
 )
 
 type RegistrationService struct {
-	UserRepo     userRepository.UserRepositoryInterface
-	hashingUtils hashingUtils.HashingServiceInterface
+	UserRepo       userRepository.UserRepositoryInterface
+	HashingUtils   hashingUtils.HashingServiceInterface
+	RoleRepository roleRepository.RoleRepositoryInterface
 }
 
-func NewRegistrationService(UserRepo userRepository.UserRepositoryInterface, hashingUtils hashingUtils.HashingServiceInterface) *RegistrationService {
-	return &RegistrationService{UserRepo: UserRepo, hashingUtils: hashingUtils}
+func NewRegistrationService(
+	UserRepo userRepository.UserRepositoryInterface,
+	HashingUtils hashingUtils.HashingServiceInterface,
+	RoleRepository roleRepository.RoleRepositoryInterface) *RegistrationService {
+	return &RegistrationService{
+		UserRepo:       UserRepo,
+		HashingUtils:   HashingUtils,
+		RoleRepository: RoleRepository}
 }
 
-func (s *RegistrationService) RegisterUser(creds models.Credentials) error {
+func (s *RegistrationService) RegisterCareerCoach(creds models.Credentials) error {
 	//Check if a user with same email exists
 	existingUser, _ := s.UserRepo.GetUserByEmail(creds.Email)
 	if existingUser != nil {
@@ -34,17 +42,21 @@ func (s *RegistrationService) RegisterUser(creds models.Credentials) error {
 	}
 
 	//Hash user's password
-	hashedPassword, err := s.hashingUtils.HashPassword(creds.Password)
+	hashedPassword, err := s.HashingUtils.HashPassword(creds.Password)
 	if err != nil {
 		return err
 	}
-
+	role, roleErr := s.RoleRepository.GetRoleByName("CareerCoach")
+	if roleErr != nil {
+		return fmt.Errorf("failed to get role: %w", roleErr)
+	}
 	// Prepare user object
 	user := models.User{
 		Email:          creds.Email,
 		HashedPassword: string(hashedPassword),
 		UserUUID:       uuid.New().String(),
 		UserStatus:     "pending",
+		Roles:          []models.Role{*role},
 	}
 	// Save the user
 	return s.UserRepo.SaveUser(user)
@@ -60,7 +72,7 @@ func (s *RegistrationService) JobSeekerRegistration(tokenBody string, creds mode
 	if !isMatch {
 		return errors.New("Password doesn't match requirement")
 	}
-	hashedPassword, hashErr := s.hashingUtils.HashPassword(creds.Password)
+	hashedPassword, hashErr := s.HashingUtils.HashPassword(creds.Password)
 	if hashErr != nil {
 		return errors.New("Error during password hash")
 	}
@@ -91,11 +103,16 @@ func (s *RegistrationService) PreRegisterJobSeeker(email string, careerSuportID 
 			return nil, errors.New("career support user does not exist")
 		}
 	}
-
+	role, err := s.RoleRepository.GetRoleByName("JobSeeker")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get role: %w", err)
+	}
 	user := models.User{
 		Email:           email,
+		UserStatus:      "pre-register",
 		UserUUID:        uuid.New().String(),
 		CareerSupportID: careerSuportID,
+		Roles:           []models.Role{*role},
 	}
 	savedUser, err := s.UserRepo.PreRegisterJobSeeker(user)
 	if err != nil {

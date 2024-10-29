@@ -17,26 +17,28 @@ import (
 )
 
 func TestInvitationSignup_EmailExist(t *testing.T) {
-	mockRepo := new(mockRepo.UserRepositoryInterface)
+	mockUserRepo := new(mockRepo.UserRepositoryInterface)
+	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	registrationService := registrationservices.NewRegistrationService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
 
 	userInvitation := models.UserInvitation{
 		Email: "existing@example.com",
 	}
 
-	mockRepo.On("GetUserByEmail", userInvitation.Email).Return(&models.User{Email: userInvitation.Email}, nil)
+	mockUserRepo.On("GetUserByEmail", userInvitation.Email).Return(&models.User{Email: userInvitation.Email}, nil)
 
 	_, err := registrationService.PreRegisterJobSeeker(userInvitation.Email, nil)
 	assert.Error(t, err)
 	assert.Equal(t, "user already exists", err.Error())
-	mockRepo.AssertExpectations(t)
+	mockUserRepo.AssertExpectations(t)
 }
 
 func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
-	mockRepo := new(mockRepo.UserRepositoryInterface)
+	mockUserRepo := new(mockRepo.UserRepositoryInterface)
+	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	registrationService := registrationservices.NewRegistrationService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
 
 	userInvitation := models.UserInvitation{
 		Email: "existing@example.com",
@@ -48,16 +50,20 @@ func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
 		UserUUID: uuid.New().String(),
 		Email:    userInvitation.Email,
 	}
-
-	mockRepo.On("GetUserByEmail", userInvitation.Email).Return(nil, nil)
-	mockRepo.On("PreRegisterJobSeeker", mock.AnythingOfType("models.User")).Return(user, nil)
-	mockRepo.On("GetUserByID", user.ID).Return(user, nil)
+	jobSeekerRole := &models.Role{
+		RoleName: "JobSeeker",
+	}
+	mockRoleRepo.On("GetRoleByName", "JobSeeker").Return(jobSeekerRole, nil)
+	mockUserRepo.On("GetUserByEmail", userInvitation.Email).Return(nil, nil)
+	mockUserRepo.On("PreRegisterJobSeeker", mock.AnythingOfType("models.User")).Return(user, nil)
+	mockUserRepo.On("GetUserByID", user.ID).Return(user, nil)
 
 	savedUser, err := registrationService.PreRegisterJobSeeker(userInvitation.Email, &user.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, user, savedUser)
-	mockRepo.AssertCalled(t, "GetUserByEmail", userInvitation.Email)
-	mockRepo.AssertExpectations(t)
+	mockUserRepo.AssertCalled(t, "GetUserByEmail", userInvitation.Email)
+	mockUserRepo.AssertExpectations(t)
+	mockRoleRepo.AssertExpectations(t)
 }
 
 func TestInvitationSignup_VerifyTokenFail(t *testing.T) {

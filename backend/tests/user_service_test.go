@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
-	"github.com/R-Thibault/OrgaJobSearch/backend/repository/mocks"
 	mockRepo "github.com/R-Thibault/OrgaJobSearch/backend/repository/mocks"
 	registrationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/registration_services"
 	mockUtil "github.com/R-Thibault/OrgaJobSearch/backend/utils/mocks"
@@ -13,9 +12,10 @@ import (
 )
 
 func TestRegisterUser_UserAlreadyExists(t *testing.T) {
-	mockRepo := new(mockRepo.UserRepositoryInterface)
+	mockUserRepo := new(mockRepo.UserRepositoryInterface)
+	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	registrationService := registrationservices.NewRegistrationService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
 
 	creds := models.Credentials{
 		Email:    "existing@example.com",
@@ -23,41 +23,42 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 	}
 
 	// Setup mock expectations to simulate an existing user
-	mockRepo.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email}, nil)
+	mockUserRepo.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email}, nil)
 
 	// Execute the function
-	err := registrationService.RegisterUser(creds)
+	err := registrationService.RegisterCareerCoach(creds)
 
 	//Assertions
 	assert.Error(t, err)
 	assert.Equal(t, "user already exists", err.Error())
-	mockRepo.AssertExpectations(t)
+	mockUserRepo.AssertExpectations(t)
 }
 
 func TestRegisterUser_PasswordRegexCheckFail(t *testing.T) {
-	mockRepo := new(mockRepo.UserRepositoryInterface)
+	mockUserRepo := new(mockRepo.UserRepositoryInterface)
+	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	registrationService := registrationservices.NewRegistrationService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
 
 	creds := models.Credentials{
 		Email:    "test@example.com",
 		Password: "superPassword1",
 	}
-	mockRepo.On("GetUserByEmail", creds.Email).Return(nil, nil)
+	mockUserRepo.On("GetUserByEmail", creds.Email).Return(nil, nil)
 	//Execute function
-	err := registrationService.RegisterUser(creds)
+	err := registrationService.RegisterCareerCoach(creds)
 
 	//Assertions
 	assert.Error(t, err)
 	assert.Equal(t, "Password doesn't match requirement", err.Error())
-	mockRepo.AssertExpectations(t)
+	mockUserRepo.AssertExpectations(t)
 }
 
 func TestRegisterUser_PasswordRegexCheckPass(t *testing.T) {
-	//Setup the mock repository
-	mockRepo := new(mocks.UserRepositoryInterface)
+	mockUserRepo := new(mockRepo.UserRepositoryInterface)
+	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	registrationService := registrationservices.NewRegistrationService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
 
 	// Define credentials
 	creds := models.Credentials{
@@ -65,16 +66,19 @@ func TestRegisterUser_PasswordRegexCheckPass(t *testing.T) {
 		Password: "Password1!",
 	}
 	hashedPassword := "encodedSalt:encodedHash"
-	// Mock the repository behavior
-	mockRepo.On("GetUserByEmail", creds.Email).Return(nil, nil)
+	jobSeekerRole := &models.Role{
+		RoleName: "CareerCoach",
+	}
+	mockRoleRepo.On("GetRoleByName", "CareerCoach").Return(jobSeekerRole, nil)
+	mockUserRepo.On("GetUserByEmail", creds.Email).Return(nil, nil)
 	mockHashingService.On("HashPassword", creds.Password).Return(hashedPassword, nil)
-	mockRepo.On("SaveUser", mock.AnythingOfType("models.User")).Return(nil)
+	mockUserRepo.On("SaveUser", mock.AnythingOfType("models.User")).Return(nil)
 
 	// Execute the function
-	err := registrationService.RegisterUser(creds)
+	err := registrationService.RegisterCareerCoach(creds)
 
 	//Assertions
 	assert.NoError(t, err)
-	mockRepo.AssertCalled(t, "GetUserByEmail", creds.Email)
-	mockRepo.AssertCalled(t, "SaveUser", mock.AnythingOfType("models.User"))
+	mockUserRepo.AssertCalled(t, "GetUserByEmail", creds.Email)
+	mockUserRepo.AssertCalled(t, "SaveUser", mock.AnythingOfType("models.User"))
 }

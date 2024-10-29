@@ -60,12 +60,12 @@ func (_m *RegistrationServiceInterface) PreRegisterJobSeeker(email string, caree
 	return r0, r1
 }
 
-// RegisterUser provides a mock function with given fields: creds
-func (_m *RegistrationServiceInterface) RegisterUser(creds models.Credentials) error {
+// RegisterCareerCoach provides a mock function with given fields: creds
+func (_m *RegistrationServiceInterface) RegisterCareerCoach(creds models.Credentials) error {
 	ret := _m.Called(creds)
 
 	if len(ret) == 0 {
-		panic("no return value specified for RegisterUser")
+		panic("no return value specified for RegisterCareerCoach")
 	}
 
 	var r0 error

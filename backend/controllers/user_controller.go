@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
@@ -44,7 +43,6 @@ func (u *UserController) SignUp(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
 		return
 	}
-	log.Printf("token : %v", token.Body)
 	switch *token.TokenType {
 	case "PersonalInvitation":
 		err := u.Registrationservice.JobSeekerRegistration(*token.Body, creds)
@@ -54,7 +52,7 @@ func (u *UserController) SignUp(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, gin.H{"success": "User registration successful !"})
 	case "GlobalInvitation":
-		err := u.Registrationservice.RegisterUser(creds)
+		err := u.Registrationservice.RegisterCareerCoach(creds)
 		if err != nil {
 			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 			return
@@ -78,6 +76,7 @@ func (u *UserController) MyProfile(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID in context is not a a valid string"})
 		return
 	}
+
 	existingUser, err := u.UserService.GetUserByUUID(userUUIDStr)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID do not match a user"})

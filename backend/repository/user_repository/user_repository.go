@@ -118,9 +118,7 @@ func (r *UserRepository) UpdateJobSeeker(savedUser models.User) error {
 		Model: gorm.Model{
 			ID: savedUser.ID,
 		},
-		Email:          savedUser.Email,
 		HashedPassword: savedUser.HashedPassword,
-		UserUUID:       savedUser.UserUUID,
 		UserStatus:     "registred",
 		EmailIsValide:  true})
 	if result.Error != nil {

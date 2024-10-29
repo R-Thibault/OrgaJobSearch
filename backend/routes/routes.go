@@ -5,6 +5,7 @@ import (
 	"github.com/R-Thibault/OrgaJobSearch/backend/controllers"
 	"github.com/R-Thibault/OrgaJobSearch/backend/middleware"
 	otpRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/otp_repository"
+	rolerepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/role_repository"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
 	"github.com/R-Thibault/OrgaJobSearch/backend/services"
 	invitationServices "github.com/R-Thibault/OrgaJobSearch/backend/services/invitation_services"
@@ -32,6 +33,7 @@ func SetupRoutes(router *gin.Engine) {
 	// Initialize repositories
 	userRepository := userRepository.NewUserRepository(config.DB)
 	OTPRepository := otpRepository.NewOTPRepository(config.DB)
+	RoleRepository := rolerepository.NewRoleRepository(config.DB)
 
 	// Initialize Utilities
 	hashingService := hashingUtils.NewHashingService()
@@ -44,7 +46,7 @@ func SetupRoutes(router *gin.Engine) {
 	TokenService := tokenService.NewTokenService()
 	MailerService := services.NewMailerService()
 	invitationService := invitationServices.NewInvitationService(userRepository, OTPService)
-	RegistrationService := registrationservices.NewRegistrationService(userRepository, hashingService)
+	RegistrationService := registrationservices.NewRegistrationService(userRepository, hashingService, RoleRepository)
 
 	// Initialize Controllers
 	authController := controllers.NewAuthController(UserService, hashingService, TokenService, invitationService, GenerateTokenService)
@@ -65,7 +67,7 @@ func SetupRoutes(router *gin.Engine) {
 	protected := router.Group("/")
 	protected.Use(middleware.AuthMiddleware())
 
-	protected.POST("/send-user-invitation", userInvitationController.SendJobSeekerInvitation)
-	protected.POST("/generate-url", userInvitationController.GenerateGlobalURLInvitation)
-	protected.GET("/me", userController.MyProfile)
+	protected.POST("/send-user-invitation", middleware.RoleMiddleware("CareerCoach", "CareerSupportManager"), userInvitationController.SendJobSeekerInvitation)
+	protected.POST("/generate-url", middleware.RoleMiddleware("CareerSupportManager"), userInvitationController.GenerateGlobalURLInvitation)
+	protected.GET("/me", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), userController.MyProfile)
 }

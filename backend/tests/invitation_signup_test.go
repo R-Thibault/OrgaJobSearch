@@ -6,8 +6,8 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	mockRepo "github.com/R-Thibault/OrgaJobSearch/backend/repository/mocks"
+	registrationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/registration_services"
 	tokenServices "github.com/R-Thibault/OrgaJobSearch/backend/services/token_services"
-	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 	mockUtil "github.com/R-Thibault/OrgaJobSearch/backend/utils/mocks"
 	tokenGeneratorUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/tokenGenerator_util"
 	"github.com/google/uuid"
@@ -17,30 +17,31 @@ import (
 )
 
 func TestInvitationSignup_EmailExist(t *testing.T) {
-	mockRepo := new(mockRepo.UserRepositoryInterface)
+	mockUserRepo := new(mockRepo.UserRepositoryInterface)
+	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	userService := userServices.NewUserService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
 
 	userInvitation := models.UserInvitation{
 		Email: "existing@example.com",
 	}
 
-	mockRepo.On("GetUserByEmail", userInvitation.Email).Return(&models.User{Email: userInvitation.Email}, nil)
+	mockUserRepo.On("GetUserByEmail", userInvitation.Email).Return(&models.User{Email: userInvitation.Email}, nil)
 
-	_, err := userService.PreRegisterJobSeeker(userInvitation.Email, nil)
+	_, err := registrationService.PreRegisterJobSeeker(userInvitation.Email, nil)
 	assert.Error(t, err)
 	assert.Equal(t, "user already exists", err.Error())
-	mockRepo.AssertExpectations(t)
+	mockUserRepo.AssertExpectations(t)
 }
 
 func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
-	mockRepo := new(mockRepo.UserRepositoryInterface)
+	mockUserRepo := new(mockRepo.UserRepositoryInterface)
+	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	userService := userServices.NewUserService(mockRepo, mockHashingService)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
 
 	userInvitation := models.UserInvitation{
-		UserID: uint(10),
-		Email:  "existing@example.com",
+		Email: "existing@example.com",
 	}
 	user := &models.User{
 		Model: gorm.Model{
@@ -49,20 +50,24 @@ func TestInvitationSignup_UserPreRegisteredCorrectly(t *testing.T) {
 		UserUUID: uuid.New().String(),
 		Email:    userInvitation.Email,
 	}
+	jobSeekerRole := &models.Role{
+		RoleName: "JobSeeker",
+	}
+	mockRoleRepo.On("GetRoleByName", "JobSeeker").Return(jobSeekerRole, nil)
+	mockUserRepo.On("GetUserByEmail", userInvitation.Email).Return(nil, nil)
+	mockUserRepo.On("PreRegisterJobSeeker", mock.AnythingOfType("models.User")).Return(user, nil)
+	mockUserRepo.On("GetUserByID", user.ID).Return(user, nil)
 
-	mockRepo.On("GetUserByEmail", userInvitation.Email).Return(nil, nil)
-	mockRepo.On("PreRegisterJobSeeker", mock.AnythingOfType("models.User")).Return(user, nil)
-	mockRepo.On("GetUserByID", userInvitation.UserID).Return(user, nil)
-
-	savedUser, err := userService.PreRegisterJobSeeker(userInvitation.Email, &userInvitation.UserID)
+	savedUser, err := registrationService.PreRegisterJobSeeker(userInvitation.Email, &user.ID)
 	assert.NoError(t, err)
 	assert.Equal(t, user, savedUser)
-	mockRepo.AssertCalled(t, "GetUserByEmail", userInvitation.Email)
-	mockRepo.AssertExpectations(t)
+	mockUserRepo.AssertCalled(t, "GetUserByEmail", userInvitation.Email)
+	mockUserRepo.AssertExpectations(t)
+	mockRoleRepo.AssertExpectations(t)
 }
 
 func TestInvitationSignup_VerifyTokenFail(t *testing.T) {
-	var tokenGenerator tokenGeneratorUtils.JWTTokenGeneratorServiceInterface = tokenGeneratorUtils.NewJWTTokenGeneratorService()
+	var tokenGenerator tokenGeneratorUtils.JWTTokenGeneratorUtilInterface = tokenGeneratorUtils.NewJWTTokenGeneratorUtil()
 	tokenService := tokenServices.NewTokenService()
 	expirationTime := time.Now().Add(-1 * time.Hour)
 	tokenType := "personnalInvitation"
@@ -81,7 +86,7 @@ func TestInvitationSignup_VerifyTokenFail(t *testing.T) {
 }
 
 func TestInvitationSignup_VerifyTokenPass(t *testing.T) {
-	var tokenGenerator tokenGeneratorUtils.JWTTokenGeneratorServiceInterface = tokenGeneratorUtils.NewJWTTokenGeneratorService()
+	var tokenGenerator tokenGeneratorUtils.JWTTokenGeneratorUtilInterface = tokenGeneratorUtils.NewJWTTokenGeneratorUtil()
 	tokenService := tokenServices.NewTokenService()
 	expirationTime := time.Now().Add(1 * time.Hour)
 	invitationType := "personnalInvitation"

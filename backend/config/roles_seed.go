@@ -5,6 +5,7 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	utils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -51,11 +52,20 @@ func LoadData(db *gorm.DB) error {
 		return err
 	}
 
+	// retreived CareerCoach role
+	var careerCoachRole models.Role
+	if err := db.Where("role_name = ?", "CareerCoach").First(&careerCoachRole).Error; err != nil {
+		log.Fatalf("Error retrieving CareerCoach role: %v\n", err)
+		return err
+	}
+
 	supAdmin := models.User{
 		Name:           "SupAdmin",
 		Email:          "supadmin@admin.com",
+		UserUUID:       uuid.New().String(),
 		HashedPassword: hashedPassword,
 		EmailIsValide:  true,
+		Roles:          []models.Role{careerSupportManagerRole, careerCoachRole},
 	}
 	var existingSupAdmin models.User
 	// Create a Admin user

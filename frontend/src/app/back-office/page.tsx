@@ -10,10 +10,8 @@ export default function BackOffice() {
 
   const handleSendInvitation = async () => {
     try {
-      const userID = 40;
       await axios.post("http://localhost:8080/send-user-invitation", {
         email,
-        userID,
       });
       alert("Invitation sent successfully!");
       setShowModal(false);
@@ -25,17 +23,19 @@ export default function BackOffice() {
   };
 
   const handleGenerateUrl = async () => {
-    const userGlobalID = 40;
     try {
-      const response = await axios.post("http://localhost:8080/generate-url", {
-        userID: userGlobalID,
-        invitationType: "GlobalInvitation",
-      });
-      console.log(response);
+      const response = await axios.post(
+        "http://localhost:8080/generate-url",
+        {
+          invitationType: "GlobalInvitation",
+        },
+        { withCredentials: true }
+      );
+
       setGeneratedUrl(response.data.url);
       setShowUrlModal(true);
     } catch (error) {
-      console.error("Error generating URL:", error);
+      console.log("Error generating URL:", error);
       alert("Failed to generate the URL");
     }
   };

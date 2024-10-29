@@ -12,8 +12,9 @@ export default function SignIn() {
   const router = useRouter();
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("LOGIN");
     try {
-      await axios.post(
+      const response = await axios.post(
         "http://localhost:8080/login",
         {
           email: email,
@@ -21,7 +22,29 @@ export default function SignIn() {
         },
         { withCredentials: true }
       );
-      router.push("/success");
+      // Check if the response was successful (status 200)
+      if (response.status === 200) {
+        const responseMe = await axios.get("http://localhost:8080/me", {
+          withCredentials: true,
+        });
+        if (responseMe.status === 200) {
+          const { userRole } = responseMe.data;
+          if (
+            userRole.includes("CareerSupportManager") ||
+            userRole.includes("CareerCoach")
+          ) {
+            router.push("/back-office");
+          } else {
+            // Default or catch-all route
+            router.push("/dashboard");
+          }
+          router.refresh();
+        }
+        // router.push("/dashboard");
+        // router.refresh();
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
     } catch (error) {
       console.error("Error during sign in:", error);
       setErrorMessage("Email ou mot de passe incorrecte.");

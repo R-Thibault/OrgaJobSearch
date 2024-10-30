@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 
 interface SignUpWithOTPProps {
   initialEmail: string; // Changed to initialEmail since we'll be able to modify it in the form
+  firstName: string;
+  setFirstName: (firstname: string) => void;
+  lastName: string;
+  setLastName: (lastName: string) => void;
   password: string;
   setPassword: (password: string) => void;
   confirmPassword: string;
@@ -14,6 +18,10 @@ interface SignUpWithOTPProps {
 
 function SignUpWithOTP({
   initialEmail,
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
   password,
   setPassword,
   confirmPassword,
@@ -49,6 +57,12 @@ function SignUpWithOTP({
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
+  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFirstName(e.target.value);
+  };
+  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLastName(e.target.value);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -61,6 +75,8 @@ function SignUpWithOTP({
       if (password === confirmPassword) {
         const response = await axios.post("http://localhost:8080/sign-up", {
           email: email,
+          firstName: firstName,
+          lastName: lastName,
           password: password,
           tokenString: token,
         });
@@ -133,6 +149,38 @@ function SignUpWithOTP({
             value={email}
             onChange={handleEmailChange}
             required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="firstName"
+            className="block text-sm font-medium text-gray-700"
+          >
+            First Name
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            value={firstName}
+            required
+            onChange={handleFirstNameChange}
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="lastName"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Last Name
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            value={lastName}
+            required
+            onChange={handleLastNameChange}
           />
         </div>
         <div>

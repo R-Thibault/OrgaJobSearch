@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 
 interface SignUpWithoutOTPProps {
   email: string;
+  firstName: string;
+  setFirstName: (firstname: string) => void;
+  lastName: string;
+  setLastName: (lastName: string) => void;
   password: string;
   setPassword: (password: string) => void;
   confirmPassword: string;
@@ -14,6 +18,8 @@ interface SignUpWithoutOTPProps {
 
 function SignUpWithoutOTP({
   email,
+  firstName,
+  lastName,
   password,
   setPassword,
   confirmPassword,
@@ -45,6 +51,8 @@ function SignUpWithoutOTP({
       if (password === confirmPassword) {
         const response = await axios.post("http://localhost:8080/sign-up", {
           email: email,
+          firstName: firstName,
+          lastName: lastName,
           password: password,
           tokenString: token,
         });
@@ -85,6 +93,36 @@ function SignUpWithoutOTP({
             className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             value={email}
             readOnly
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="firstName"
+            className="block text-sm font-medium text-gray-700"
+          >
+            First Name
+          </label>
+          <input
+            type="text"
+            id="firstName"
+            className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            value={firstName}
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="lastName"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Last Name
+          </label>
+          <input
+            type="text"
+            id="lastName"
+            className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            value={lastName}
             required
           />
         </div>

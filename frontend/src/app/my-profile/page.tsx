@@ -5,7 +5,8 @@ import React, { useEffect, useState } from "react";
 
 export default function MyProfilePage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>();
+  const [userFirstName, setUserFirstName] = useState<string>();
+  const [userLastName, setUserLastName] = useState<string>();
   const [userEmail, setUserEmail] = useState<string>();
   const [successMessage, setSuccessMessage] = useState<string>();
   useEffect(() => {
@@ -16,10 +17,12 @@ export default function MyProfilePage() {
         });
         if (response.status === 200) {
           console.log(response.data);
-          setUserName(response.data.userName);
+          setUserLastName(response.data.userLastName);
+          setUserFirstName(response.data.userFirstName);
           setUserEmail(response.data.userEmail);
         } else {
-          setUserName("");
+          setUserLastName("");
+          setUserFirstName("");
           setUserEmail("");
           setErrorMessage(
             "Une érreur est survenue, veuillez contactez un administrateur"
@@ -39,7 +42,8 @@ export default function MyProfilePage() {
     const response = await axios.post(
       "http://localhost:8080/update-user",
       {
-        UserName: userName,
+        UserLastName: userLastName,
+        userFirstName: userFirstName,
         Email: userEmail,
       },
       { withCredentials: true }
@@ -61,13 +65,23 @@ export default function MyProfilePage() {
             </span>
           )}
           <div className="mb-4">
-            <label className="block text-gray-700">Name</label>
+            <label className="block text-gray-700">Last Name</label>
             <input
               type="text"
               className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Your Name"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
+              value={userLastName}
+              onChange={(e) => setUserLastName(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">First Name</label>
+            <input
+              type="text"
+              className="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Your Name"
+              value={userFirstName}
+              onChange={(e) => setUserFirstName(e.target.value)}
             />
           </div>
           <div className="mb-4">

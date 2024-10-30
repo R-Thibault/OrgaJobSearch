@@ -36,7 +36,7 @@ func (s *UserService) GetUserByUUID(userUUID string) (*models.User, error) {
 }
 
 func (s *UserService) UpdateUser(existingUser models.User, updatedUserDatas models.UserProfileUpdate) error {
-	if updatedUserDatas.UserName == "" {
+	if updatedUserDatas.UserLastName == "" || updatedUserDatas.UserFirstName == "" {
 		return errors.New("UserName can't be empty")
 	}
 	if updatedUserDatas.Email == "" {

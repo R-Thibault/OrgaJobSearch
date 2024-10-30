@@ -21,7 +21,7 @@ func LoadData(db *gorm.DB) error {
 
 		if err := db.Where("role_name = ?", role.RoleName).First(&existingRole).Error; err != nil {
 			if err == gorm.ErrRecordNotFound {
-				if createErr := db.Create(&role).Error; err != nil {
+				if createErr := db.Create(&role).Error; createErr != nil {
 					log.Fatalf("Cannot seed role table: %v\n", err)
 					return createErr
 				}
@@ -60,7 +60,8 @@ func LoadData(db *gorm.DB) error {
 	}
 
 	supAdmin := models.User{
-		Name:           "SupAdmin",
+		FirstName:      "Maxi",
+		LastName:       "SupAdmin",
 		Email:          "supadmin@admin.com",
 		UserUUID:       uuid.New().String(),
 		HashedPassword: hashedPassword,
@@ -70,13 +71,13 @@ func LoadData(db *gorm.DB) error {
 	}
 	var existingSupAdmin models.User
 	// Create a Admin user
-	if userErr := db.Where("name = ?", supAdmin.Name).First(&existingSupAdmin).Error; userErr != nil {
+	if userErr := db.Where("Last_name = ?", supAdmin.LastName).First(&existingSupAdmin).Error; userErr != nil {
 		if userErr == gorm.ErrRecordNotFound {
 			if createUserErr := db.Create(&supAdmin).Error; createUserErr != nil {
 				log.Fatalf("Cannot seed user table: %v\n", createUserErr)
 				return createUserErr
 			}
-			log.Printf("User %s seeded successfully.", supAdmin.Name)
+			log.Printf("User %s seeded successfully.", supAdmin.LastName)
 
 			if roleAssignErr := db.Model(&supAdmin).Association("Roles").Append(&careerSupportManagerRole); roleAssignErr != nil {
 				log.Fatalf("Error assigning role to SupAdmin: %v\n", roleAssignErr)
@@ -86,7 +87,7 @@ func LoadData(db *gorm.DB) error {
 			log.Fatalf("Error checking if admin user exists: %v\n", userErr)
 		}
 	} else {
-		log.Printf("User %s already exists, skipping seeding.", supAdmin.Name)
+		log.Printf("User %s already exists, skipping seeding.", supAdmin.LastName)
 	}
 	return nil
 }

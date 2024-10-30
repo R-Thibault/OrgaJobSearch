@@ -63,7 +63,7 @@ func (r *UserRepository) GetUserByID(ID uint) (*models.User, error) {
 	}
 
 	var user models.User
-	result := r.db.Unscoped().Where("id = ?", ID).First(&user)
+	result := r.db.Where("id = ?", ID).First(&user)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -162,7 +162,8 @@ func (r *UserRepository) UpdateUser(existingUserID uint, updatedUserData models.
 	}
 
 	result := r.db.Model(&models.User{}).Where("id = ?", existingUserID).Updates(models.User{
-		Name: updatedUserData.UserName,
+		LastName:  updatedUserData.UserLastName,
+		FirstName: updatedUserData.UserFirstName,
 	})
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {

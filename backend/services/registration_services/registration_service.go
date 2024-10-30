@@ -53,6 +53,8 @@ func (s *RegistrationService) RegisterCareerCoach(creds models.Credentials) erro
 	// Prepare user object
 	user := models.User{
 		Email:          creds.Email,
+		LastName:       creds.LastName,
+		FirstName:      creds.FirstName,
 		HashedPassword: string(hashedPassword),
 		UserUUID:       uuid.New().String(),
 		UserStatus:     "pending",
@@ -78,6 +80,8 @@ func (s *RegistrationService) JobSeekerRegistration(tokenBody string, creds mode
 	}
 	savedUser.HashedPassword = hashedPassword
 	savedUser.Email = creds.Email
+	savedUser.LastName = creds.LastName
+	savedUser.FirstName = creds.FirstName
 	savedUser.UserUUID = tokenBody
 	updateErr := s.UserRepo.UpdateJobSeeker(*savedUser)
 	if updateErr != nil {

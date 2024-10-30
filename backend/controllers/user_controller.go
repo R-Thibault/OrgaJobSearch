@@ -87,7 +87,7 @@ func (u *UserController) MyProfile(c *gin.Context) {
 		roleNames[i] = role.RoleName
 	}
 	// Check if any role in userRoles matches allowedRoles
-	c.JSON(http.StatusOK, gin.H{"userEmail": existingUser.Email, "userName": existingUser.Name, "userRole": roleNames})
+	c.JSON(http.StatusOK, gin.H{"userEmail": existingUser.Email, "userFirstName": existingUser.FirstName, "userLastName": existingUser.LastName, "userRole": roleNames})
 }
 
 func (u *UserController) UpdateUser(c *gin.Context) {

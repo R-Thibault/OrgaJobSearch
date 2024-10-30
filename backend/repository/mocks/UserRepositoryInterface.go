@@ -102,12 +102,12 @@ func (_m *UserRepositoryInterface) GetUserByUUID(uuid string) (*models.User, err
 	return r0, r1
 }
 
-// PreRegisterUser provides a mock function with given fields: user
+// PreRegisterJobSeeker provides a mock function with given fields: user
 func (_m *UserRepositoryInterface) PreRegisterJobSeeker(user models.User) (*models.User, error) {
 	ret := _m.Called(user)
 
 	if len(ret) == 0 {
-		panic("no return value specified for PreRegisterUser")
+		panic("no return value specified for PreRegisterJobSeeker")
 	}
 
 	var r0 *models.User
@@ -161,6 +161,24 @@ func (_m *UserRepositoryInterface) UpdateJobSeeker(savedUser models.User) error 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(models.User) error); ok {
 		r0 = rf(savedUser)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateUser provides a mock function with given fields: existingUserID, updatedUserData
+func (_m *UserRepositoryInterface) UpdateUser(existingUserID uint, updatedUserData models.UserProfileUpdate) error {
+	ret := _m.Called(existingUserID, updatedUserData)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateUser")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uint, models.UserProfileUpdate) error); ok {
+		r0 = rf(existingUserID, updatedUserData)
 	} else {
 		r0 = ret.Error(0)
 	}

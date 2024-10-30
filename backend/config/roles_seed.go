@@ -65,6 +65,7 @@ func LoadData(db *gorm.DB) error {
 		UserUUID:       uuid.New().String(),
 		HashedPassword: hashedPassword,
 		EmailIsValide:  true,
+		UserStatus:     "registred",
 		Roles:          []models.Role{careerSupportManagerRole, careerCoachRole},
 	}
 	var existingSupAdmin models.User

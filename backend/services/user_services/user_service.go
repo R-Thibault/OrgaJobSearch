@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
 	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
@@ -31,4 +33,17 @@ func (s *UserService) GetUserByID(userID uint) (*models.User, error) {
 
 func (s *UserService) GetUserByUUID(userUUID string) (*models.User, error) {
 	return s.UserRepo.GetUserByUUID(userUUID)
+}
+
+func (s *UserService) UpdateUser(existingUser models.User, updatedUserDatas models.UserProfileUpdate) error {
+	if updatedUserDatas.UserName == "" {
+		return errors.New("UserName can't be empty")
+	}
+	if updatedUserDatas.Email == "" {
+		return errors.New("Email can't be empty")
+	}
+	if existingUser.Email != updatedUserDatas.Email {
+		return errors.New("Emails do not match")
+	}
+	return s.UserRepo.UpdateUser(existingUser.ID, updatedUserDatas)
 }

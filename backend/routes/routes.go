@@ -70,4 +70,5 @@ func SetupRoutes(router *gin.Engine) {
 	protected.POST("/send-user-invitation", middleware.RoleMiddleware("CareerCoach", "CareerSupportManager"), userInvitationController.SendJobSeekerInvitation)
 	protected.POST("/generate-url", middleware.RoleMiddleware("CareerSupportManager"), userInvitationController.GenerateGlobalURLInvitation)
 	protected.GET("/me", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), userController.MyProfile)
+	protected.POST("/update-user", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), userController.UpdateUser)
 }

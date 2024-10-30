@@ -120,6 +120,24 @@ func (_m *UserServiceInterface) GetUserByUUID(userUUID string) (*models.User, er
 	return r0, r1
 }
 
+// UpdateUser provides a mock function with given fields: existingUser, updatedUserDatas
+func (_m *UserServiceInterface) UpdateUser(existingUser models.User, updatedUserDatas models.UserProfileUpdate) error {
+	ret := _m.Called(existingUser, updatedUserDatas)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateUser")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(models.User, models.UserProfileUpdate) error); ok {
+		r0 = rf(existingUser, updatedUserDatas)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // NewUserServiceInterface creates a new instance of UserServiceInterface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewUserServiceInterface(t interface {

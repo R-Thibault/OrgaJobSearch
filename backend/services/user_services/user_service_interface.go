@@ -7,4 +7,5 @@ type UserServiceInterface interface {
 	GetUserByID(userID uint) (*models.User, error)
 	EmailValidation(email string) error
 	GetUserByUUID(userUUID string) (*models.User, error)
+	UpdateUser(existingUser models.User, updatedUserDatas models.UserProfileUpdate) error
 }

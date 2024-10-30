@@ -19,6 +19,10 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 var _ UserRepositoryInterface = &UserRepository{}
 
 func (r *UserRepository) SaveUser(user models.User) error {
+	if r.db == nil {
+		return errors.New("database connection is nil")
+	}
+
 	//Save user in DB
 	return r.db.Create(&user).Error
 }
@@ -59,7 +63,7 @@ func (r *UserRepository) GetUserByID(ID uint) (*models.User, error) {
 	}
 
 	var user models.User
-	result := r.db.Unscoped().Where("id = ?", ID).First(&user)
+	result := r.db.Where("id = ?", ID).First(&user)
 
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -72,6 +76,10 @@ func (r *UserRepository) GetUserByID(ID uint) (*models.User, error) {
 }
 
 func (r *UserRepository) ValidateEmail(email string) error {
+	if r.db == nil {
+		return errors.New("database connection is nil")
+	}
+
 	if email == "" {
 		return errors.New("email cannot be empty")
 	}
@@ -85,6 +93,10 @@ func (r *UserRepository) ValidateEmail(email string) error {
 }
 
 func (r *UserRepository) PreRegisterJobSeeker(user models.User) (*models.User, error) {
+	if r.db == nil {
+		return nil, errors.New("database connection is nil")
+	}
+
 	if user.Email == "" {
 		return nil, errors.New("email cannot be empty")
 	}
@@ -101,6 +113,10 @@ func (r *UserRepository) PreRegisterJobSeeker(user models.User) (*models.User, e
 }
 
 func (r *UserRepository) GetUserByUUID(uuid string) (*models.User, error) {
+	if r.db == nil {
+		return nil, errors.New("database connection is nil")
+	}
+
 	if uuid == "" {
 		return nil, errors.New("uudi cannot be empty")
 	}
@@ -120,6 +136,10 @@ func (r *UserRepository) GetUserByUUID(uuid string) (*models.User, error) {
 }
 
 func (r *UserRepository) UpdateJobSeeker(savedUser models.User) error {
+	if r.db == nil {
+		return errors.New("database connection is nil")
+	}
+
 	result := r.db.Save(&models.User{
 		Model: gorm.Model{
 			ID: savedUser.ID,
@@ -127,6 +147,24 @@ func (r *UserRepository) UpdateJobSeeker(savedUser models.User) error {
 		HashedPassword: savedUser.HashedPassword,
 		UserStatus:     "registred",
 		EmailIsValide:  true})
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return gorm.ErrRecordNotFound
+		}
+		return result.Error
+	}
+	return nil
+}
+
+func (r *UserRepository) UpdateUser(existingUserID uint, updatedUserData models.UserProfileUpdate) error {
+	if r.db == nil {
+		return errors.New("database connection is nil")
+	}
+
+	result := r.db.Model(&models.User{}).Where("id = ?", existingUserID).Updates(models.User{
+		LastName:  updatedUserData.UserLastName,
+		FirstName: updatedUserData.UserFirstName,
+	})
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return gorm.ErrRecordNotFound

@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
+import Link from "next/link";
 
 export default function BackOffice() {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -61,6 +62,11 @@ export default function BackOffice() {
           <li className="mb-4">Dashboard Home</li>
           <li className="mb-4">User Management</li>
           <li className="mb-4">Settings</li>
+          <li className="mb-4">
+            <Link href="/my-profile" passHref>
+              My Profile
+            </Link>
+          </li>
         </ul>
       </nav>
 

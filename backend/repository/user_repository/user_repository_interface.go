@@ -11,4 +11,5 @@ type UserRepositoryInterface interface {
 	PreRegisterJobSeeker(user models.User) (*models.User, error)
 	GetUserByUUID(uuid string) (*models.User, error)
 	UpdateJobSeeker(savedUser models.User) error
+	UpdateUser(existingUserID uint, updatedUserData models.UserProfileUpdate) error
 }

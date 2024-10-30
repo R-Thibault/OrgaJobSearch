@@ -8,6 +8,8 @@ import SignUpWithoutOTP from "../../components/organisms/signUpWithoutOTP";
 
 export default function SignUpPage() {
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -72,6 +74,10 @@ export default function SignUpPage() {
           ? token && (
               <SignUpWithOTP
                 initialEmail={email}
+                firstName={firstName}
+                setFirstName={setFirstName}
+                lastName={lastName}
+                setLastName={setLastName}
                 password={password}
                 setPassword={setPassword}
                 confirmPassword={confirmPassword}
@@ -82,6 +88,10 @@ export default function SignUpPage() {
           : token && (
               <SignUpWithoutOTP
                 email={email}
+                firstName={firstName}
+                setFirstName={setFirstName}
+                lastName={lastName}
+                setLastName={setLastName}
                 password={password}
                 setPassword={setPassword}
                 confirmPassword={confirmPassword}

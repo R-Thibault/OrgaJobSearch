@@ -87,5 +87,37 @@ func (u *UserController) MyProfile(c *gin.Context) {
 		roleNames[i] = role.RoleName
 	}
 	// Check if any role in userRoles matches allowedRoles
-	c.JSON(http.StatusOK, gin.H{"userEmail": existingUser.Email, "userName": existingUser.Name, "userRole": roleNames})
+	c.JSON(http.StatusOK, gin.H{"userEmail": existingUser.Email, "userFirstName": existingUser.FirstName, "userLastName": existingUser.LastName, "userRole": roleNames})
+}
+
+func (u *UserController) UpdateUser(c *gin.Context) {
+	var datas models.UserProfileUpdate
+	if err := c.ShouldBindJSON(&datas); err != nil {
+		// If the input is invalid, respond with an error
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		return
+	}
+	userUUID, exists := c.Get("userUUID")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID not Found in context"})
+		return
+	}
+	userUUIDStr, ok := userUUID.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID in context is not a a valid string"})
+		return
+	}
+
+	existingUser, err := u.UserService.GetUserByUUID(userUUIDStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID do not match a user"})
+		return
+	}
+
+	updateErr := u.UserService.UpdateUser(*existingUser, datas)
+	if updateErr != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": updateErr.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "User update successful"})
 }

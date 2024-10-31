@@ -13,10 +13,11 @@ type User struct {
 	UserUUID        string `gorm:"size:36;index;unique;not null"`
 	EmailIsValide   bool   `gorm:"default:false"`
 	Otps            []OTP
-	Roles           []Role `gorm:"many2many:user_role;"`
-	CareerSupportID *uint  // Foreign key for self-referencing the Career Support
-	CareerSupport   *User  `gorm:"foreignkey:CareerSupportID"` // Reference to the Career Support (optional)
-	Jobseekers      []User `gorm:"foreignkey:CareerSupportID"` // List of Jobseekers being followed
+	Roles           []Role        `gorm:"many2many:user_role;"`
+	CareerSupportID *uint         // Foreign key for self-referencing the Career Support
+	CareerSupport   *User         `gorm:"foreignkey:CareerSupportID"` // Reference to the Career Support (optional)
+	Jobseekers      []User        `gorm:"foreignkey:CareerSupportID"` // List of Jobseekers being followed
+	Applications    []Application `gorm:"foreignkey:UserID"`
 }
 
 type UserProfileUpdate struct {

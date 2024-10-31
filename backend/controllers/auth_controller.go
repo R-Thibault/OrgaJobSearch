@@ -14,17 +14,11 @@ import (
 	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
 	JWTTokenGenerator "github.com/R-Thibault/OrgaJobSearch/backend/utils/tokenGenerator_util"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 var jwtKey = []byte(config.GetConfig("JWT_KEY"))
-
-type Claims struct {
-	Email string `json:"email"`
-	jwt.StandardClaims
-}
 
 // AuthController handles authentication-related requests
 type AuthController struct {

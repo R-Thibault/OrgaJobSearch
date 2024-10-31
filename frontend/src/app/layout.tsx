@@ -1,7 +1,11 @@
+// © Rossa Thibault 2024. Tous droits réservés.
+// Ce code est la propriété de Rossa Thibault et ne peut être utilisé,
+// distribué ou modifié sans autorisation explicite.
+
 import type { Metadata } from "next";
-import Head from "next/head";
 import localFont from "next/font/local";
 import "./globals.css";
+import Footer from "@/components/organisms/footer";
 
 const geistSans = localFont({
   src: "../styles/fonts/GeistVF.woff",
@@ -25,15 +29,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full overflow-hidden">
       {/* <Head>
         <title>{String(metadata.title) ?? "Default Title"}</title>
         <meta name="description" content={String(metadata.description)} />
       </Head> */}
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        {children}
+        <main className="flex-grow">{children}</main>
+        <Footer />
       </body>
     </html>
   );

@@ -1,3 +1,7 @@
+// © Rossa Thibault 2024. Tous droits réservés.
+// Ce code est la propriété de Rossa Thibault et ne peut être utilisé,
+// distribué ou modifié sans autorisation explicite.
+
 import Navbar from "../components/organisms/navbar";
 export default function Home() {
   return (

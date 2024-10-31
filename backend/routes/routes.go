@@ -1,13 +1,18 @@
 package routes
 
+// © Rossa Thibault 2024. Tous droits réservés.
+// Ce code est la propriété de Rossa Thibault et ne peut être utilisé,
+// distribué ou modifié sans autorisation explicite.
 import (
 	"github.com/R-Thibault/OrgaJobSearch/backend/config"
 	"github.com/R-Thibault/OrgaJobSearch/backend/controllers"
 	"github.com/R-Thibault/OrgaJobSearch/backend/middleware"
+	applicationrepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/application_repository"
 	otpRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/otp_repository"
 	rolerepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/role_repository"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
 	"github.com/R-Thibault/OrgaJobSearch/backend/services"
+	applicationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/application_services"
 	invitationServices "github.com/R-Thibault/OrgaJobSearch/backend/services/invitation_services"
 	otpServices "github.com/R-Thibault/OrgaJobSearch/backend/services/otp_services"
 	registrationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/registration_services"
@@ -31,34 +36,37 @@ func SetupRoutes(router *gin.Engine) {
 	})
 
 	// Initialize repositories
-	userRepository := userRepository.NewUserRepository(config.DB)
+	UserRepository := userRepository.NewUserRepository(config.DB)
 	OTPRepository := otpRepository.NewOTPRepository(config.DB)
 	RoleRepository := rolerepository.NewRoleRepository(config.DB)
+	ApplicationRepository := applicationrepository.NewApplicationRepository(config.DB)
 
 	// Initialize Utilities
-	hashingService := hashingUtils.NewHashingService()
+	HashingService := hashingUtils.NewHashingService()
 	GenerateTokenService := tokenUtils.NewJWTTokenGeneratorUtil()
 	OTPGeneratorService := otpGeneratorUtils.NewOtpGeneratorService()
 
 	// Initialize Serivces
-	UserService := userServices.NewUserService(userRepository, hashingService)
-	OTPService := otpServices.NewOTPService(userRepository, OTPRepository, OTPGeneratorService)
+	UserService := userServices.NewUserService(UserRepository, HashingService)
+	OTPService := otpServices.NewOTPService(UserRepository, OTPRepository, OTPGeneratorService)
 	TokenService := tokenService.NewTokenService()
 	MailerService := services.NewMailerService()
-	invitationService := invitationServices.NewInvitationService(userRepository, OTPService)
-	RegistrationService := registrationservices.NewRegistrationService(userRepository, hashingService, RoleRepository)
+	InvitationService := invitationServices.NewInvitationService(UserRepository, OTPService)
+	RegistrationService := registrationservices.NewRegistrationService(UserRepository, HashingService, RoleRepository)
+	ApplicationService := applicationservices.NewApplicationService(ApplicationRepository)
 
 	// Initialize Controllers
-	authController := controllers.NewAuthController(UserService, hashingService, TokenService, invitationService, GenerateTokenService)
-	userController := controllers.NewUserController(UserService, OTPService, TokenService, RegistrationService)
+	AuthController := controllers.NewAuthController(UserService, HashingService, TokenService, InvitationService, GenerateTokenService)
+	UserController := controllers.NewUserController(UserService, OTPService, TokenService, RegistrationService)
 	OTPcontroller := controllers.NewOTPController(OTPService, MailerService, UserService)
-	userInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService, OTPService, RegistrationService)
+	UserInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService, OTPService, RegistrationService)
+	ApplicationController := controllers.NewApplicationController(UserService, ApplicationService)
 
 	// Public routes
-	router.POST("/login", authController.Login)
-	router.POST("/logout", authController.Logout)
-	router.POST("/verify-token", authController.VerifyInvitationToken)
-	router.POST("/sign-up", userController.SignUp)
+	router.POST("/login", AuthController.Login)
+	router.POST("/logout", AuthController.Logout)
+	router.POST("/verify-token", AuthController.VerifyInvitationToken)
+	router.POST("/sign-up", UserController.SignUp)
 	router.POST("/generate-otp", OTPcontroller.GenerateOTPForSignUp)
 	router.POST("/send-otp", OTPcontroller.SendOTP)
 	router.POST("/verify-otp", OTPcontroller.ValidateOTP)
@@ -67,8 +75,9 @@ func SetupRoutes(router *gin.Engine) {
 	protected := router.Group("/")
 	protected.Use(middleware.AuthMiddleware())
 
-	protected.POST("/send-user-invitation", middleware.RoleMiddleware("CareerCoach", "CareerSupportManager"), userInvitationController.SendJobSeekerInvitation)
-	protected.POST("/generate-url", middleware.RoleMiddleware("CareerSupportManager"), userInvitationController.GenerateGlobalURLInvitation)
-	protected.GET("/me", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), userController.MyProfile)
-	protected.POST("/update-user", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), userController.UpdateUser)
+	protected.POST("/send-user-invitation", middleware.RoleMiddleware("CareerCoach", "CareerSupportManager"), UserInvitationController.SendJobSeekerInvitation)
+	protected.POST("/generate-url", middleware.RoleMiddleware("CareerSupportManager"), UserInvitationController.GenerateGlobalURLInvitation)
+	protected.GET("/me", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), UserController.MyProfile)
+	protected.POST("/update-user", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), UserController.UpdateUser)
+	protected.POST("/application", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), ApplicationController.SaveApplication)
 }

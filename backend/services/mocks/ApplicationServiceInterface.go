@@ -12,6 +12,84 @@ type ApplicationServiceInterface struct {
 	mock.Mock
 }
 
+// DeleteApplication provides a mock function with given fields: userID, applicationID
+func (_m *ApplicationServiceInterface) DeleteApplication(userID uint, applicationID uint) error {
+	ret := _m.Called(userID, applicationID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteApplication")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uint, uint) error); ok {
+		r0 = rf(userID, applicationID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GetApplicationByID provides a mock function with given fields: userID, applicationID
+func (_m *ApplicationServiceInterface) GetApplicationByID(userID uint, applicationID uint) (*models.Application, error) {
+	ret := _m.Called(userID, applicationID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetApplicationByID")
+	}
+
+	var r0 *models.Application
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uint, uint) (*models.Application, error)); ok {
+		return rf(userID, applicationID)
+	}
+	if rf, ok := ret.Get(0).(func(uint, uint) *models.Application); ok {
+		r0 = rf(userID, applicationID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Application)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uint, uint) error); ok {
+		r1 = rf(userID, applicationID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetApplicationsByUserID provides a mock function with given fields: userID
+func (_m *ApplicationServiceInterface) GetApplicationsByUserID(userID uint) ([]*models.Application, error) {
+	ret := _m.Called(userID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetApplicationsByUserID")
+	}
+
+	var r0 []*models.Application
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uint) ([]*models.Application, error)); ok {
+		return rf(userID)
+	}
+	if rf, ok := ret.Get(0).(func(uint) []*models.Application); ok {
+		r0 = rf(userID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*models.Application)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(userID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // SaveApplication provides a mock function with given fields: userID, appData
 func (_m *ApplicationServiceInterface) SaveApplication(userID uint, appData models.Application) error {
 	ret := _m.Called(userID, appData)
@@ -28,6 +106,36 @@ func (_m *ApplicationServiceInterface) SaveApplication(userID uint, appData mode
 	}
 
 	return r0
+}
+
+// UpdateApplication provides a mock function with given fields: userID, appData
+func (_m *ApplicationServiceInterface) UpdateApplication(userID uint, appData models.Application) (*models.Application, error) {
+	ret := _m.Called(userID, appData)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateApplication")
+	}
+
+	var r0 *models.Application
+	var r1 error
+	if rf, ok := ret.Get(0).(func(uint, models.Application) (*models.Application, error)); ok {
+		return rf(userID, appData)
+	}
+	if rf, ok := ret.Get(0).(func(uint, models.Application) *models.Application); ok {
+		r0 = rf(userID, appData)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.Application)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(uint, models.Application) error); ok {
+		r1 = rf(userID, appData)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // NewApplicationServiceInterface creates a new instance of ApplicationServiceInterface. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

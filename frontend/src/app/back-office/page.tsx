@@ -11,9 +11,13 @@ export default function BackOffice() {
 
   const handleSendInvitation = async () => {
     try {
-      await axios.post("http://localhost:8080/send-user-invitation", {
-        email,
-      });
+      await axios.post(
+        "http://localhost:8080/send-user-invitation",
+        {
+          email,
+        },
+        { withCredentials: true }
+      );
       alert("Invitation sent successfully!");
       setShowModal(false);
       setEmail("");

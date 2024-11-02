@@ -5,6 +5,15 @@ import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showAppModal, setShowAppModal] = useState<boolean>(false);
+  const [appData, setAppData] = useState({
+    url: "",
+    title: "",
+    description: "",
+    location: "",
+    company: "",
+    applied: "yes",
+  });
   const router = useRouter();
   console.log("/dashboard");
   const handleLogout = async () => {
@@ -22,6 +31,20 @@ export default function Dashboard() {
       console.error("Error during Logout:", error);
       alert("Failed to Logout");
     }
+  };
+
+  const handleAppChange = (e) => {
+    const { name, value } = e.target;
+    setAppData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleAppSubmit = () => {
+    // Here you can handle submitting the form data
+    console.log("Application Data: ", appData);
+    setShowAppModal(false);
   };
 
   return (
@@ -45,6 +68,14 @@ export default function Dashboard() {
             onClick={() => setShowModal(true)}
           >
             Invite User
+          </button>
+
+          {/* Button to trigger application modal */}
+          <button
+            className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 ml-4"
+            onClick={() => setShowAppModal(true)}
+          >
+            Create Application
           </button>
 
           {/* Button to trigger URL modal */}
@@ -75,6 +106,113 @@ export default function Dashboard() {
               </button>
               <button className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                 Send Invitation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for creating an application */}
+      {showAppModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-md shadow-md w-96">
+            <h2 className="text-xl font-semibold mb-4">Create Application</h2>
+            <form>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">URL</label>
+                <input
+                  type="text"
+                  name="url"
+                  value={appData.url}
+                  onChange={handleAppChange}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={appData.title}
+                  onChange={handleAppChange}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={appData.description}
+                  onChange={handleAppChange}
+                  className="w-full px-3 py-2 border rounded-md"
+                ></textarea>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  name="location"
+                  value={appData.location}
+                  onChange={handleAppChange}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">
+                  Company
+                </label>
+                <input
+                  type="text"
+                  name="company"
+                  value={appData.company}
+                  onChange={handleAppChange}
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">
+                  Applied
+                </label>
+                <div className="flex items-center">
+                  <label className="mr-4">
+                    <input
+                      type="radio"
+                      name="applied"
+                      value="yes"
+                      checked={appData.applied === "yes"}
+                      onChange={handleAppChange}
+                    />
+                    Yes
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="applied"
+                      value="no"
+                      checked={appData.applied === "no"}
+                      onChange={handleAppChange}
+                    />
+                    No
+                  </label>
+                </div>
+              </div>
+            </form>
+            <div className="flex justify-end mt-4">
+              <button
+                className="bg-gray-300 text-black px-4 py-2 rounded-md mr-2 hover:bg-gray-400"
+                onClick={() => setShowAppModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                onClick={handleAppSubmit}
+              >
+                Create Application
               </button>
             </div>
           </div>

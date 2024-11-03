@@ -80,4 +80,5 @@ func SetupRoutes(router *gin.Engine) {
 	protected.GET("/me", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), UserController.MyProfile)
 	protected.POST("/update-user", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), UserController.UpdateUser)
 	protected.POST("/application", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), ApplicationController.SaveApplication)
+	protected.GET("/get-applications-by-user", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), ApplicationController.GetApplicationsByUserID)
 }

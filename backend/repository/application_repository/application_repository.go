@@ -42,7 +42,7 @@ func (r *ApplicationRepository) GetApplicationByID(applicationID uint) (*models.
 		return nil, errors.New("database connection is nil")
 	}
 	var application models.Application
-	result := r.db.Preload("user").Where("id = ?", applicationID).First(&application)
+	result := r.db.Where("id = ?", applicationID).First(&application)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, gorm.ErrRecordNotFound
@@ -57,7 +57,7 @@ func (r *ApplicationRepository) GetApplicationsByUserID(userID uint) ([]*models.
 		return nil, errors.New("database connection is nil")
 	}
 	var applications []*models.Application
-	result := r.db.Preload("user").Where("user_id = ?", userID).Order("created_at desc").Find(&applications)
+	result := r.db.Where("user_id = ?", userID).Find(&applications)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, gorm.ErrRecordNotFound

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
@@ -21,6 +22,8 @@ func NewApplicationController(UserService userServices.UserServiceInterface, App
 func (app *ApplicationController) SaveApplication(c *gin.Context) {
 	var appData models.Application
 	if err := c.ShouldBindJSON(&appData); err != nil {
+		log.Printf("APPDATA: %v", appData)
+		log.Printf("ERROR: %v", err)
 		// If the input is invalid, respond with an error
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return

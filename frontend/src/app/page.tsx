@@ -11,11 +11,6 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
           Welcome to MyApp
         </h1>
-        <p className="text-gray-700 mb-4">
-          This is a simple example of a Next.js page with a Tailwind CSS navbar.
-          The page is styled using Tailwind CSS utility classes, providing a
-          modern, responsive layout with minimal effort.
-        </p>
         <p className="text-gray-700">
           Explore the navigation links above to learn more about what this site
           has to offer.

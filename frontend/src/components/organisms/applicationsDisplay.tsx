@@ -11,9 +11,13 @@ export default function ApplicationDisplay({
   applications,
 }: ApplicationDisplayProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="flex flex-col items-center justify-center gap-4">
       {applications.length > 0 ? (
-        applications.map((app) => <ApplicationCard key={app.ID} {...app} />)
+        applications.map((app) => (
+          <div key={app.ID} className="w-full max-w-2xl">
+            <ApplicationCard {...app} />
+          </div>
+        ))
       ) : (
         <p>No applications found.</p>
       )}

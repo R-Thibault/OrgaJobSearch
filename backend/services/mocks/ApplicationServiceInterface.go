@@ -60,9 +60,9 @@ func (_m *ApplicationServiceInterface) GetApplicationByID(userID uint, applicati
 	return r0, r1
 }
 
-// GetApplicationsByUserID provides a mock function with given fields: userID
-func (_m *ApplicationServiceInterface) GetApplicationsByUserID(userID uint) ([]*models.Application, error) {
-	ret := _m.Called(userID)
+// GetApplicationsByUserID provides a mock function with given fields: userID, requestSettings
+func (_m *ApplicationServiceInterface) GetApplicationsByUserID(userID uint, requestSettings models.RequestSettings) ([]*models.Application, error) {
+	ret := _m.Called(userID, requestSettings)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetApplicationsByUserID")
@@ -70,19 +70,19 @@ func (_m *ApplicationServiceInterface) GetApplicationsByUserID(userID uint) ([]*
 
 	var r0 []*models.Application
 	var r1 error
-	if rf, ok := ret.Get(0).(func(uint) ([]*models.Application, error)); ok {
-		return rf(userID)
+	if rf, ok := ret.Get(0).(func(uint, models.RequestSettings) ([]*models.Application, error)); ok {
+		return rf(userID, requestSettings)
 	}
-	if rf, ok := ret.Get(0).(func(uint) []*models.Application); ok {
-		r0 = rf(userID)
+	if rf, ok := ret.Get(0).(func(uint, models.RequestSettings) []*models.Application); ok {
+		r0 = rf(userID, requestSettings)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*models.Application)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(uint) error); ok {
-		r1 = rf(userID)
+	if rf, ok := ret.Get(1).(func(uint, models.RequestSettings) error); ok {
+		r1 = rf(userID, requestSettings)
 	} else {
 		r1 = ret.Error(1)
 	}

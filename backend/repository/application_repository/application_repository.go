@@ -52,12 +52,12 @@ func (r *ApplicationRepository) GetApplicationByID(applicationID uint) (*models.
 	return &application, nil
 }
 
-func (r *ApplicationRepository) GetApplicationsByUserID(userID uint) ([]*models.Application, error) {
+func (r *ApplicationRepository) GetApplicationsByUserID(userID uint, requestSettings models.RequestSettings) ([]*models.Application, error) {
 	if r.db == nil {
 		return nil, errors.New("database connection is nil")
 	}
 	var applications []*models.Application
-	result := r.db.Where("user_id = ?", userID).Find(&applications)
+	result := r.db.Where("user_id = ?", userID).Limit(requestSettings.Limit).Offset(requestSettings.Offset).Find(&applications)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, gorm.ErrRecordNotFound

@@ -68,8 +68,14 @@ export default function Dashboard() {
   };
   const fetchApplications = async () => {
     try {
-      const response = await axios.get(
+      const response = await axios.post(
         "http://localhost:8080/get-applications-by-user",
+        {
+          limit: 10,
+          offset: 0,
+          order: "asc",
+          where: "",
+        },
         { withCredentials: true }
       );
       if (response.status === 200) {
@@ -83,7 +89,7 @@ export default function Dashboard() {
     fetchApplications();
   }, []);
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       {/* Main Content Area */}
       <div className="flex-1 p-6">
         <header className="flex items-center justify-between mb-8">

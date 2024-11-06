@@ -118,6 +118,13 @@ func (app *ApplicationController) GetApplicationByID(c *gin.Context) {
 }
 
 func (app *ApplicationController) GetApplicationsByUserID(c *gin.Context) {
+	//Get additionnal setting for query
+	var requestSettings models.RequestSettings
+	if err := c.ShouldBindJSON(&requestSettings); err != nil {
+		// If the input is invalid, respond with an error
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
 	userUUID, exists := c.Get("userUUID")
 	if !exists {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID not Found in context"})
@@ -133,7 +140,7 @@ func (app *ApplicationController) GetApplicationsByUserID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID do not match a user"})
 		return
 	}
-	applications, err := app.ApplicationService.GetApplicationsByUserID(existingUser.ID)
+	applications, err := app.ApplicationService.GetApplicationsByUserID(existingUser.ID, requestSettings)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Can't find applications for this user"})
 		return

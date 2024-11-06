@@ -45,11 +45,12 @@ func (s *ApplicationService) GetApplicationByID(userID uint, applicationID uint)
 	return application, nil
 }
 
-func (s *ApplicationService) GetApplicationsByUserID(userID uint) ([]*models.Application, error) {
+func (s *ApplicationService) GetApplicationsByUserID(userID uint, requestSettings models.RequestSettings) ([]*models.Application, error) {
 	if userID == 0 {
 		return nil, errors.New("userID or ApplicationID can't be null")
 	}
-	applications, err := s.ApplicationRepo.GetApplicationsByUserID(userID)
+
+	applications, err := s.ApplicationRepo.GetApplicationsByUserID(userID, requestSettings)
 	if err != nil {
 		return nil, errors.New("Can't find applications with this userID")
 	}

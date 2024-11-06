@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
-import Link from "next/link";
 
 export default function BackOffice() {
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -11,9 +10,13 @@ export default function BackOffice() {
 
   const handleSendInvitation = async () => {
     try {
-      await axios.post("http://localhost:8080/send-user-invitation", {
-        email,
-      });
+      await axios.post(
+        "http://localhost:8080/send-user-invitation",
+        {
+          email,
+        },
+        { withCredentials: true }
+      );
       alert("Invitation sent successfully!");
       setShowModal(false);
       setEmail("");
@@ -55,21 +58,6 @@ export default function BackOffice() {
 
   return (
     <div className="flex h-screen">
-      {/* Sidebar Navigation */}
-      <nav className="w-64 bg-gray-800 text-white p-4">
-        <h2 className="text-xl font-semibold mb-6">Dashboard Navigation</h2>
-        <ul>
-          <li className="mb-4">Dashboard Home</li>
-          <li className="mb-4">User Management</li>
-          <li className="mb-4">Settings</li>
-          <li className="mb-4">
-            <Link href="/my-profile" passHref>
-              My Profile
-            </Link>
-          </li>
-        </ul>
-      </nav>
-
       {/* Main Content Area */}
       <div className="flex-1 p-6">
         <header className="flex items-center justify-between mb-8">

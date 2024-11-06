@@ -1,5 +1,8 @@
 package main
 
+// © Rossa Thibault 2024. Tous droits réservés.
+// Ce code est la propriété de Rossa Thibault et ne peut être utilisé,
+// distribué ou modifié sans autorisation explicite.
 import (
 	"log"
 
@@ -19,6 +22,12 @@ func main() {
 		log.Fatalf("Error loading initial data: %v", err)
 	}
 
+	if err := config.SeedDatabaseWithUsers(config.GetDB()); err != nil {
+		log.Fatalf("Error loading initial data: %v", err)
+	}
+	if err := config.SeedDatabaseWithApplications(config.GetDB()); err != nil {
+		log.Fatalf("Error loading initial data: %v", err)
+	}
 	// Create a new Gin engine instance
 	r := gin.Default()
 	// Enable CORS

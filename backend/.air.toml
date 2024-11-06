@@ -26,3 +26,6 @@
 [hot]
   # Disable live reload on runtime error
   live_reload_on_error = false
+
+[env]
+ENV = "dev"

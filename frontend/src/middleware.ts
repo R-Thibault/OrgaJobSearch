@@ -1,5 +1,4 @@
 // frontend/middleware.ts
-import axios from "axios";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -21,19 +20,19 @@ export async function middleware(req: NextRequest) {
 
   // Make a request to the Go backend's /me endpoint to validate the session
   try {
-    const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/me`,
-      {
-        headers: {
-          Cookie: req.headers.get("cookie") || "", // Pass all cookies from the request
-        },
-        withCredentials: true, // Ensures cookies are sent with the request
-      }
-    );
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/me`, {
+      headers: {
+        Cookie: req.headers.get("cookie") || "", // Pass all cookies from the request
+      },
+      credentials: "include", // Ensures cookies are sent with the request
+    });
 
-    // If the response status is not 200, redirect to login
-    if (response.status !== 200) {
+    if (response.status === 401) {
+      // Redirect to login if unauthenticated
       return NextResponse.redirect(new URL("/login", req.url));
+    } else if (response.status === 403) {
+      // Redirect to an unauthorized page if user lacks permissions
+      return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
 
     // Allow the request to proceed if authenticated

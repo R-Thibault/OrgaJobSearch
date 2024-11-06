@@ -29,6 +29,7 @@ export default function SignIn() {
         });
         if (responseMe.status === 200) {
           const { userRole } = responseMe.data;
+          console.log(responseMe);
           if (
             userRole.includes("CareerSupportManager") ||
             userRole.includes("CareerCoach")

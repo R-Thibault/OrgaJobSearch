@@ -4,7 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 
 interface SignUpWithOTPProps {
-  initialEmail: string; // Changed to initialEmail since we'll be able to modify it in the form
+  initialEmail: string;
   firstName: string;
   setFirstName: (firstname: string) => void;
   lastName: string;
@@ -13,7 +13,6 @@ interface SignUpWithOTPProps {
   setPassword: (password: string) => void;
   confirmPassword: string;
   setConfirmPassword: (confirmPassword: string) => void;
-  token: string;
 }
 
 function SignUpWithOTP({
@@ -26,7 +25,6 @@ function SignUpWithOTP({
   setPassword,
   confirmPassword,
   setConfirmPassword,
-  token,
 }: SignUpWithOTPProps) {
   const [email, setEmail] = useState(initialEmail);
   const [otp, setOtp] = useState("");
@@ -70,17 +68,19 @@ function SignUpWithOTP({
       setErrorMessage("Veuillez entrer une adresse email valide.");
       return;
     }
-
+    console.log("test1");
     try {
       if (password === confirmPassword) {
+        console.log("test2");
         const response = await axios.post("http://localhost:8080/sign-up", {
           email: email,
           firstName: firstName,
           lastName: lastName,
           password: password,
-          tokenString: token,
+          confirmPassword: confirmPassword,
         });
         if (response.data) {
+          console.log("test3");
           setErrorMessage("");
           const responseOTP = await axios.post(
             "http://localhost:8080/generate-otp",

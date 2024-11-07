@@ -16,5 +16,5 @@ type Application struct {
 	JobType     string `gorm:"size:255"`
 	Applied     bool   `gorm:"default:true"`
 	Response    bool   `gorm:"default:false"`
-	FolloUp     bool   `gorm:"default:false"`
+	FollowUp    bool   `gorm:"default:false"`
 }

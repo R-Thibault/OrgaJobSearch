@@ -28,23 +28,11 @@ export default function SignIn() {
           withCredentials: true,
         });
         if (responseMe.status === 200) {
-          const { userRole } = responseMe.data;
-          console.log(responseMe);
-          if (
-            userRole.includes("CareerSupportManager") ||
-            userRole.includes("CareerCoach")
-          ) {
-            router.push("/back-office");
-          } else {
-            // Default or catch-all route
-            router.push("/dashboard");
-          }
+          router.push("/dashboard");
           router.refresh();
+        } else {
+          setErrorMessage("An unexpected error occurred. Please try again.");
         }
-        // router.push("/dashboard");
-        // router.refresh();
-      } else {
-        setErrorMessage("An unexpected error occurred. Please try again.");
       }
     } catch (error) {
       console.error("Error during sign in:", error);

@@ -40,7 +40,6 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	email = strings.TrimSpace(email)
 	result := r.db.
 		Preload("Otps").
-		Preload("Roles").
 		Where("email = ?", email).First(&user)
 
 	if result.Error != nil {
@@ -79,7 +78,6 @@ func (r *UserRepository) ValidateEmail(email string) error {
 	if r.db == nil {
 		return errors.New("database connection is nil")
 	}
-
 	if email == "" {
 		return errors.New("email cannot be empty")
 	}
@@ -90,26 +88,6 @@ func (r *UserRepository) ValidateEmail(email string) error {
 			"user_status":     "registered",
 		}).Error
 
-}
-
-func (r *UserRepository) PreRegisterJobSeeker(user models.User) (*models.User, error) {
-	if r.db == nil {
-		return nil, errors.New("database connection is nil")
-	}
-
-	if user.Email == "" {
-		return nil, errors.New("email cannot be empty")
-	}
-	user.UserStatus = "pre-registred"
-	// Save user in DB
-	result := r.db.Create(&user)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, gorm.ErrRecordNotFound
-		}
-		return nil, result.Error
-	}
-	return &user, nil
 }
 
 func (r *UserRepository) GetUserByUUID(uuid string) (*models.User, error) {
@@ -123,7 +101,6 @@ func (r *UserRepository) GetUserByUUID(uuid string) (*models.User, error) {
 	var user models.User
 	result := r.db.
 		Preload("Otps").
-		Preload("Roles").
 		Where("user_uuid = ?", uuid).First(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -133,27 +110,6 @@ func (r *UserRepository) GetUserByUUID(uuid string) (*models.User, error) {
 	}
 
 	return &user, nil
-}
-
-func (r *UserRepository) UpdateJobSeeker(savedUser models.User) error {
-	if r.db == nil {
-		return errors.New("database connection is nil")
-	}
-
-	result := r.db.Save(&models.User{
-		Model: gorm.Model{
-			ID: savedUser.ID,
-		},
-		HashedPassword: savedUser.HashedPassword,
-		UserStatus:     "registred",
-		EmailIsValide:  true})
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return gorm.ErrRecordNotFound
-		}
-		return result.Error
-	}
-	return nil
 }
 
 func (r *UserRepository) UpdateUser(existingUserID uint, updatedUserData models.UserProfileUpdate) error {

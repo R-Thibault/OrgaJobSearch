@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
+	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -20,8 +21,10 @@ func InitDB() {
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, password, dbName, port)
 	var err error
+
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
+
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
 

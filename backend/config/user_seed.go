@@ -36,13 +36,6 @@ func SeedDatabaseWithUsers(db *gorm.DB) error {
 		return errors.New("Error hashing password")
 	}
 
-	// Retrieve JobSeeker role
-	var JobSeeker models.Role
-	if err := db.Where("role_name = ?", "JobSeeker").First(&JobSeeker).Error; err != nil {
-		log.Fatalf("Error retrieving JobSeeker role: %v\n", err)
-		return err
-	}
-
 	// Sample users to insert
 	users := []models.User{
 		{
@@ -53,7 +46,6 @@ func SeedDatabaseWithUsers(db *gorm.DB) error {
 			UserStatus:     "active",
 			UserUUID:       uuid.New().String(),
 			EmailIsValide:  true,
-			Roles:          []models.Role{JobSeeker},
 		},
 		{
 			FirstName:      "Jane",
@@ -63,7 +55,6 @@ func SeedDatabaseWithUsers(db *gorm.DB) error {
 			UserStatus:     "active",
 			UserUUID:       uuid.New().String(),
 			EmailIsValide:  true,
-			Roles:          []models.Role{JobSeeker},
 		},
 	}
 

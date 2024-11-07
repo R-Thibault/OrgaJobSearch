@@ -13,7 +13,6 @@ interface SignUpWithoutOTPProps {
   setPassword: (password: string) => void;
   confirmPassword: string;
   setConfirmPassword: (confirmPassword: string) => void;
-  token: string;
 }
 
 function SignUpWithoutOTP({
@@ -24,7 +23,6 @@ function SignUpWithoutOTP({
   setPassword,
   confirmPassword,
   setConfirmPassword,
-  token,
 }: SignUpWithoutOTPProps) {
   const [errorMessage, setErrorMessage] = useState("");
   const [checkPswd, setCheckPswnd] = useState(
@@ -54,7 +52,6 @@ function SignUpWithoutOTP({
           firstName: firstName,
           lastName: lastName,
           password: password,
-          tokenString: token,
         });
         if (response.data) {
           console.log(response.data);
@@ -79,7 +76,6 @@ function SignUpWithoutOTP({
         <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
       )}
       <form className="space-y-4" onSubmit={handleSubmit}>
-        <input type="hidden" name="token" value={token || ""} />
         <div>
           <label
             htmlFor="email"

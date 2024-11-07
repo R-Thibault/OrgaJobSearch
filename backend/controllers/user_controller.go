@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
@@ -35,33 +36,17 @@ func (u *UserController) SignUp(c *gin.Context) {
 	var creds models.Credentials
 	if err := c.ShouldBindJSON(&creds); err != nil {
 		// If the input is invalid, respond with an error
+		log.Printf("ERROR : %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
 		return
 	}
-	token, err := u.tokenService.VerifyToken(creds.TokenString)
+
+	err := u.Registrationservice.UserRegistration(creds)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization"})
+		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
-	switch *token.TokenType {
-	case "PersonalInvitation":
-		err := u.Registrationservice.JobSeekerRegistration(*token.Body, creds)
-		if err != nil {
-			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"success": "User registration successful !"})
-	case "GlobalInvitation":
-		err := u.Registrationservice.RegisterCareerCoach(creds)
-		if err != nil {
-			c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"tokenType": *token.TokenType})
-	default:
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-		return
-	}
+	c.JSON(http.StatusOK, gin.H{"success": "User registration successful !"})
 
 }
 
@@ -82,12 +67,8 @@ func (u *UserController) MyProfile(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID do not match a user"})
 		return
 	}
-	roleNames := make([]string, len(existingUser.Roles))
-	for i, role := range existingUser.Roles {
-		roleNames[i] = role.RoleName
-	}
-	// Check if any role in userRoles matches allowedRoles
-	c.JSON(http.StatusOK, gin.H{"userEmail": existingUser.Email, "userFirstName": existingUser.FirstName, "userLastName": existingUser.LastName, "userRole": roleNames})
+
+	c.JSON(http.StatusOK, gin.H{"userEmail": existingUser.Email, "userFirstName": existingUser.FirstName, "userLastName": existingUser.LastName})
 }
 
 func (u *UserController) UpdateUser(c *gin.Context) {

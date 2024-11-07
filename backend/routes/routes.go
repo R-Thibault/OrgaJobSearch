@@ -9,11 +9,9 @@ import (
 	"github.com/R-Thibault/OrgaJobSearch/backend/middleware"
 	applicationrepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/application_repository"
 	otpRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/otp_repository"
-	rolerepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/role_repository"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
 	"github.com/R-Thibault/OrgaJobSearch/backend/services"
 	applicationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/application_services"
-	invitationServices "github.com/R-Thibault/OrgaJobSearch/backend/services/invitation_services"
 	otpServices "github.com/R-Thibault/OrgaJobSearch/backend/services/otp_services"
 	registrationservices "github.com/R-Thibault/OrgaJobSearch/backend/services/registration_services"
 	tokenService "github.com/R-Thibault/OrgaJobSearch/backend/services/token_services"
@@ -38,7 +36,6 @@ func SetupRoutes(router *gin.Engine) {
 	// Initialize repositories
 	UserRepository := userRepository.NewUserRepository(config.DB)
 	OTPRepository := otpRepository.NewOTPRepository(config.DB)
-	RoleRepository := rolerepository.NewRoleRepository(config.DB)
 	ApplicationRepository := applicationrepository.NewApplicationRepository(config.DB)
 
 	// Initialize Utilities
@@ -51,34 +48,34 @@ func SetupRoutes(router *gin.Engine) {
 	OTPService := otpServices.NewOTPService(UserRepository, OTPRepository, OTPGeneratorService)
 	TokenService := tokenService.NewTokenService()
 	MailerService := services.NewMailerService()
-	InvitationService := invitationServices.NewInvitationService(UserRepository, OTPService)
-	RegistrationService := registrationservices.NewRegistrationService(UserRepository, HashingService, RoleRepository)
+	RegistrationService := registrationservices.NewRegistrationService(UserRepository, HashingService)
 	ApplicationService := applicationservices.NewApplicationService(ApplicationRepository)
 
 	// Initialize Controllers
-	AuthController := controllers.NewAuthController(UserService, HashingService, TokenService, InvitationService, GenerateTokenService)
+	AuthController := controllers.NewAuthController(UserService, HashingService, TokenService, GenerateTokenService)
 	UserController := controllers.NewUserController(UserService, OTPService, TokenService, RegistrationService)
 	OTPcontroller := controllers.NewOTPController(OTPService, MailerService, UserService)
-	UserInvitationController := controllers.NewUserInvitationController(UserService, GenerateTokenService, *MailerService, OTPService, RegistrationService)
+
 	ApplicationController := controllers.NewApplicationController(UserService, ApplicationService)
 
 	// Public routes
 	router.POST("/login", AuthController.Login)
 	router.POST("/logout", AuthController.Logout)
-	router.POST("/verify-token", AuthController.VerifyInvitationToken)
 	router.POST("/sign-up", UserController.SignUp)
 	router.POST("/generate-otp", OTPcontroller.GenerateOTPForSignUp)
-	router.POST("/send-otp", OTPcontroller.SendOTP)
+	router.POST("/send-otp", OTPcontroller.SendOTP) // Not use on frontend only called on backend
 	router.POST("/verify-otp", OTPcontroller.ValidateOTP)
 
 	// Protected route
 	protected := router.Group("/")
 	protected.Use(middleware.AuthMiddleware())
 
-	protected.POST("/send-user-invitation", middleware.RoleMiddleware("CareerCoach", "CareerSupportManager"), UserInvitationController.SendJobSeekerInvitation)
-	protected.POST("/generate-url", middleware.RoleMiddleware("CareerSupportManager"), UserInvitationController.GenerateGlobalURLInvitation)
-	protected.GET("/me", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), UserController.MyProfile)
-	protected.POST("/update-user", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), UserController.UpdateUser)
-	protected.POST("/application", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), ApplicationController.SaveApplication)
-	protected.POST("/get-applications-by-user", middleware.RoleMiddleware("JobSeeker", "CareerCoach", "CareerSupportManager"), ApplicationController.GetApplicationsByUserID)
+	protected.GET("/me", UserController.MyProfile)
+	protected.POST("/update-user", UserController.UpdateUser)
+	protected.POST("/create-application", ApplicationController.SaveApplication)
+	protected.POST("/get-applications-by-user", ApplicationController.GetApplicationsByUserID)
+	protected.POST("/update-application")
+	protected.POST("/delete-application")        //Soft delete with Gorm
+	protected.POST("/update-application-status") //For updating only app status on dashboard
+
 }

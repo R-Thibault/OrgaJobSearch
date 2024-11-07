@@ -51,7 +51,7 @@ func SeedDatabaseWithApplications(db *gorm.DB) error {
 					JobType:     fake.Lorem().Word(),                          // Random word as job type
 					Applied:     true,                                         // Random boolean for applied
 					Response:    rand.Intn(2) == 1,                            // Random boolean for response
-					FolloUp:     rand.Intn(2) == 1,                            // Random boolean for follow-up
+					FollowUp:    rand.Intn(2) == 1,                            // Random boolean for follow-up
 				}
 
 				// Insert the application into the database

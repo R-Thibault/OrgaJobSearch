@@ -13,9 +13,8 @@ import (
 
 func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 	mockUserRepo := new(mockRepo.UserRepositoryInterface)
-	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService)
 
 	creds := models.Credentials{
 		Email:    "existing@example.com",
@@ -26,7 +25,7 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 	mockUserRepo.On("GetUserByEmail", creds.Email).Return(&models.User{Email: creds.Email}, nil)
 
 	// Execute the function
-	err := registrationService.RegisterCareerCoach(creds)
+	err := registrationService.UserRegistration(creds)
 
 	//Assertions
 	assert.Error(t, err)
@@ -36,9 +35,8 @@ func TestRegisterUser_UserAlreadyExists(t *testing.T) {
 
 func TestRegisterUser_PasswordRegexCheckFail(t *testing.T) {
 	mockUserRepo := new(mockRepo.UserRepositoryInterface)
-	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService)
 
 	creds := models.Credentials{
 		Email:    "test@example.com",
@@ -46,7 +44,7 @@ func TestRegisterUser_PasswordRegexCheckFail(t *testing.T) {
 	}
 	mockUserRepo.On("GetUserByEmail", creds.Email).Return(nil, nil)
 	//Execute function
-	err := registrationService.RegisterCareerCoach(creds)
+	err := registrationService.UserRegistration(creds)
 
 	//Assertions
 	assert.Error(t, err)
@@ -56,9 +54,8 @@ func TestRegisterUser_PasswordRegexCheckFail(t *testing.T) {
 
 func TestRegisterUser_PasswordRegexCheckPass(t *testing.T) {
 	mockUserRepo := new(mockRepo.UserRepositoryInterface)
-	mockRoleRepo := new(mockRepo.RoleRepositoryInterface)
 	mockHashingService := new(mockUtil.HashingServiceInterface)
-	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService, mockRoleRepo)
+	registrationService := registrationservices.NewRegistrationService(mockUserRepo, mockHashingService)
 
 	// Define credentials
 	creds := models.Credentials{
@@ -66,16 +63,13 @@ func TestRegisterUser_PasswordRegexCheckPass(t *testing.T) {
 		Password: "Password1!",
 	}
 	hashedPassword := "encodedSalt:encodedHash"
-	jobSeekerRole := &models.Role{
-		RoleName: "CareerCoach",
-	}
-	mockRoleRepo.On("GetRoleByName", "CareerCoach").Return(jobSeekerRole, nil)
+
 	mockUserRepo.On("GetUserByEmail", creds.Email).Return(nil, nil)
 	mockHashingService.On("HashPassword", creds.Password).Return(hashedPassword, nil)
 	mockUserRepo.On("SaveUser", mock.AnythingOfType("models.User")).Return(nil)
 
 	// Execute the function
-	err := registrationService.RegisterCareerCoach(creds)
+	err := registrationService.UserRegistration(creds)
 
 	//Assertions
 	assert.NoError(t, err)

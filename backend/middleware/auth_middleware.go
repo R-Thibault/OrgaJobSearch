@@ -67,18 +67,16 @@ func AuthMiddleware() gin.HandlerFunc {
 
 			// Extract userUUID and userRole from the token body content
 			userUUID, uuidExists := bodyContent["userUUID"].(string)
-			userRoles, rolesExist := bodyContent["userRole"].([]interface{})
-			if !uuidExists || !rolesExist {
+			if !uuidExists {
 				log.Println("Invalid token: required user data missing")
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token: required user data missing"})
 				c.Abort()
 				return
 			}
-			log.Printf("User UUID: %s, User Roles: %v", userUUID, userRoles)
+			log.Printf("User UUID: %s", userUUID)
 
 			// Store userUUID and userRole in context for further use
 			c.Set("userUUID", userUUID)
-			c.Set("userRoles", userRoles)
 		} else {
 			log.Println("Invalid token: token claims are not valid")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
@@ -88,41 +86,5 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// Continue to the next handler
 		c.Next()
-	}
-}
-
-func RoleMiddleware(allowedRoles ...string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		userRoles, exists := c.Get("userRoles")
-		if !exists {
-			log.Println("User role not found in context")
-			c.JSON(http.StatusForbidden, gin.H{"error": "User role not found in context"})
-			c.Abort()
-			return
-		}
-		log.Printf("User roles found in context: %v", userRoles)
-
-		// Check if any role in userRoles matches allowedRoles
-		rolesSlice, ok := userRoles.([]interface{})
-		if !ok {
-			log.Println("Invalid user role format")
-			c.JSON(http.StatusForbidden, gin.H{"error": "Invalid user role format"})
-			c.Abort()
-			return
-		}
-
-		// Check role permissions
-		for _, role := range rolesSlice {
-			for _, allowedRole := range allowedRoles {
-				if role == allowedRole {
-					log.Printf("User role %v is allowed", role)
-					c.Next()
-					return
-				}
-			}
-		}
-		log.Printf("User has insufficient permission. Allowed roles: %v, User roles: %v", allowedRoles, rolesSlice)
-		c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permission"})
-		c.Abort()
 	}
 }

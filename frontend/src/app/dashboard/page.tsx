@@ -51,7 +51,7 @@ export default function Dashboard() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:8080/application",
+        "http://localhost:8080/create-application",
         {
           ...appData,
         },

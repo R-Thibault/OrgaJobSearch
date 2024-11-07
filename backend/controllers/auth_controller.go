@@ -8,7 +8,6 @@ import (
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/config"
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
-	invitationServices "github.com/R-Thibault/OrgaJobSearch/backend/services/invitation_services"
 	tokenService "github.com/R-Thibault/OrgaJobSearch/backend/services/token_services"
 	userServices "github.com/R-Thibault/OrgaJobSearch/backend/services/user_services"
 	hashingUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/hash_util"
@@ -24,18 +23,20 @@ var jwtKey = []byte(config.GetConfig("JWT_KEY"))
 type AuthController struct {
 	service           userServices.UserServiceInterface
 	tokenService      tokenService.TokenServiceInterface
-	invitationService invitationServices.InvitationServiceInterface
 	hashingUtils      hashingUtils.HashingServiceInterface
 	JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorUtilInterface
 }
 
 // NewAuthController creates a new instance of AuthController
-func NewAuthController(service userServices.UserServiceInterface, hashingUtils hashingUtils.HashingServiceInterface, tokenService tokenService.TokenServiceInterface, invitationService invitationServices.InvitationServiceInterface, JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorUtilInterface) *AuthController {
+func NewAuthController(
+	service userServices.UserServiceInterface,
+	hashingUtils hashingUtils.HashingServiceInterface,
+	tokenService tokenService.TokenServiceInterface,
+	JWTTokenGenerator JWTTokenGenerator.JWTTokenGeneratorUtilInterface) *AuthController {
 	return &AuthController{
 		service:           service,
 		hashingUtils:      hashingUtils,
 		tokenService:      tokenService,
-		invitationService: invitationService,
 		JWTTokenGenerator: JWTTokenGenerator,
 	}
 }
@@ -75,15 +76,8 @@ func (a *AuthController) Login(c *gin.Context) {
 	tokenType := "Cookie"
 	userUUID := string(existingUser.UserUUID)
 
-	// Extract role names for the token body
-	roleNames := make([]string, len(existingUser.Roles))
-	for i, role := range existingUser.Roles {
-		roleNames[i] = role.RoleName
-	}
-
 	bodyContent := map[string]interface{}{
 		"userUUID": userUUID,
-		"userRole": roleNames,
 	}
 
 	// Encode `bodyContent` to JSON

@@ -17,7 +17,8 @@ type User struct {
 }
 
 type UserProfileUpdate struct {
-	UserFirstName string
-	UserLastName  string
-	Email         string
+	UserFirstName  string
+	UserLastName   string
+	Email          string
+	HashedPassword string
 }

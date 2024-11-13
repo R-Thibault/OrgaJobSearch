@@ -1,8 +1,14 @@
 package services
 
+import (
+	"time"
+
+	"github.com/R-Thibault/OrgaJobSearch/backend/models"
+)
+
 type OTPServiceInterface interface {
-	GenerateOTP(userID uint, otpType string) (otpCode string, err error)
-	VerifyOTP(email string, otpCode string) error
-	VerifyOTPForGlobalInvitation(otpCode string, otpType string) error
-	CheckOTPCodeForGlobalInvitation(userID uint, otpType string) (otpCode string, err error)
+	GenerateOTP(userID uint, otpType string, expirationTime time.Time) (otpCode string, err error)
+	VerifyOTPGiven(email string, otpType string, otpCode string) error
+	VerifyOTPCode(otpCode string, otpType string) (*models.OTP, error)
+	CheckAndRefreshOTPCode(userID uint, otpType string, expirationTime time.Time) (otpCode string, err error)
 }

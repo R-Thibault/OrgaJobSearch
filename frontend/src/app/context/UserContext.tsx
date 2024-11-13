@@ -6,7 +6,6 @@ import axios from "axios";
 import { UserType } from "@/types/userTypes";
 
 interface UserContextType {
-  roles: string[] | null;
   user: UserType | null;
   loading: boolean;
 }
@@ -14,7 +13,6 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [roles, setRoles] = useState<string[] | null>(null);
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,11 +24,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         });
         if (response.status === 200) {
           const userProfile = response.data;
-          setRoles(userProfile.userRole);
           setUser(userProfile);
         }
       } catch (error) {
-        console.error("Error fetching user role:", error);
+        console.error("Error:", error);
       } finally {
         setLoading(false);
       }
@@ -39,7 +36,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ roles, loading, user }}>
+    <UserContext.Provider value={{ loading, user }}>
       {children}
     </UserContext.Provider>
   );

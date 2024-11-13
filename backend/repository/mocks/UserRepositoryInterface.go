@@ -138,6 +138,24 @@ func (_m *UserRepositoryInterface) UpdateUser(existingUserID uint, updatedUserDa
 	return r0
 }
 
+// UpdateUserPassword provides a mock function with given fields: existingUserID, updatedHashpassword
+func (_m *UserRepositoryInterface) UpdateUserPassword(existingUserID uint, updatedHashpassword string) error {
+	ret := _m.Called(existingUserID, updatedHashpassword)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateUserPassword")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uint, string) error); ok {
+		r0 = rf(existingUserID, updatedHashpassword)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // ValidateEmail provides a mock function with given fields: email
 func (_m *UserRepositoryInterface) ValidateEmail(email string) error {
 	ret := _m.Called(email)

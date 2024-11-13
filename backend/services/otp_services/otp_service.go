@@ -2,9 +2,9 @@ package services
 
 import (
 	"errors"
-	"log"
 	"time"
 
+	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	otpRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/otp_repository"
 	userRepository "github.com/R-Thibault/OrgaJobSearch/backend/repository/user_repository"
 	otpGeneratorUtils "github.com/R-Thibault/OrgaJobSearch/backend/utils/otpGenerator_util"
@@ -22,14 +22,14 @@ func NewOTPService(userRepo userRepository.UserRepositoryInterface, OTPRepo otpR
 
 var _ OTPServiceInterface = &OTPService{}
 
-func (s *OTPService) GenerateOTP(userID uint, otpType string) (otpCode string, err error) {
+func (s *OTPService) GenerateOTP(userID uint, otpType string, expirationTime time.Time) (otpCode string, err error) {
 
 	user, err := s.userRepo.GetUserByID(userID)
 	if err != nil || user == nil {
 		return "", errors.New("user not found")
 	}
 
-	otp := s.OTPUtil.GenerateOTP(user, otpType)
+	otp := s.OTPUtil.GenerateOTP(user, otpType, expirationTime)
 
 	otpCodeGenerated, err := s.OTPRepo.SaveOTP(otp)
 	if err != nil {
@@ -39,13 +39,12 @@ func (s *OTPService) GenerateOTP(userID uint, otpType string) (otpCode string, e
 	return otpCodeGenerated, nil
 }
 
-func (s *OTPService) VerifyOTP(email string, otpCode string) error {
+func (s *OTPService) VerifyOTPGiven(email string, otpType string, otpCode string) error {
 	// fetch user by email
 	user, err := s.userRepo.GetUserByEmail(email)
 	if err != nil || user == nil {
 		return errors.New("user not found")
 	}
-	otpType := "emailValidation"
 	// Fetch OTP associated with the user
 	otpSaved, err := s.OTPRepo.GetOTPCodeByUserIDandType(user.ID, otpType)
 	if err != nil || otpSaved == nil {
@@ -65,20 +64,19 @@ func (s *OTPService) VerifyOTP(email string, otpCode string) error {
 
 }
 
-func (s *OTPService) CheckOTPCodeForGlobalInvitation(userID uint, otpType string) (otpCode string, err error) {
+func (s *OTPService) CheckAndRefreshOTPCode(userID uint, otpType string, expirationTime time.Time) (otpCode string, err error) {
 	user, err := s.userRepo.GetUserByID(userID)
 	if err != nil || user == nil {
 		return "", errors.New("user not found")
 	}
-	otpType = "GlobalInvitation"
 	otp, err := s.OTPRepo.GetOTPCodeByUserIDandType(user.ID, otpType)
 	if err != nil || otp == nil {
 		return "", errors.New("OTP doesn't exists")
 	}
-	hours48 := 48 * time.Hour
-	if time.Since(otp.UpdatedAt) >= hours48 {
-		newOTPCode := s.OTPUtil.GenerateOTP(user, otpType)
-		newOtp, err := s.OTPRepo.UpdateOTPCode(otp.ID, newOTPCode.OtpCode, otpType)
+
+	if time.Now().After(otp.OtpExpiration) {
+		newOTPCode := s.OTPUtil.GenerateOTP(user, otpType, expirationTime)
+		newOtp, err := s.OTPRepo.UpdateOTP(&newOTPCode)
 		if err != nil {
 			return "", errors.New("Error during OTP update")
 		}
@@ -87,14 +85,16 @@ func (s *OTPService) CheckOTPCodeForGlobalInvitation(userID uint, otpType string
 	return otp.OtpCode, nil
 }
 
-func (s *OTPService) VerifyOTPForGlobalInvitation(otpCode string, otpType string) error {
+func (s *OTPService) VerifyOTPCode(otpCode string, otpType string) (*models.OTP, error) {
 	if otpCode == "" {
-		return errors.New("Otp code can't be emtpy")
+		return &models.OTP{}, errors.New("Otp code can't be emtpy")
 	}
-	log.Printf("OTP Code : %v", otpCode)
+	hours2 := 2 * time.Hour
 	otpSaved, err := s.OTPRepo.GetOTPByCode(otpCode, otpType)
 	if err != nil || otpSaved == nil {
-		return errors.New("OTP not found")
+		return &models.OTP{}, errors.New("OTP not found")
+	} else if time.Since(otpSaved.UpdatedAt) >= hours2 {
+		return &models.OTP{}, errors.New("OTP not valid")
 	}
-	return nil
+	return otpSaved, nil
 }

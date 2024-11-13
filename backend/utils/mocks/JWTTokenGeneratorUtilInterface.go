@@ -14,7 +14,7 @@ type JWTTokenGeneratorUtilInterface struct {
 }
 
 // GenerateJWTToken provides a mock function with given fields: tokenType, body, expirationTime
-func (_m *JWTTokenGeneratorUtilInterface) GenerateJWTToken(tokenType *string, body *string, expirationTime time.Time) (string, error) {
+func (_m *JWTTokenGeneratorUtilInterface) GenerateJWTToken(tokenType string, body string, expirationTime time.Time) (string, error) {
 	ret := _m.Called(tokenType, body, expirationTime)
 
 	if len(ret) == 0 {
@@ -23,16 +23,16 @@ func (_m *JWTTokenGeneratorUtilInterface) GenerateJWTToken(tokenType *string, bo
 
 	var r0 string
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*string, *string, time.Time) (string, error)); ok {
+	if rf, ok := ret.Get(0).(func(string, string, time.Time) (string, error)); ok {
 		return rf(tokenType, body, expirationTime)
 	}
-	if rf, ok := ret.Get(0).(func(*string, *string, time.Time) string); ok {
+	if rf, ok := ret.Get(0).(func(string, string, time.Time) string); ok {
 		r0 = rf(tokenType, body, expirationTime)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(*string, *string, time.Time) error); ok {
+	if rf, ok := ret.Get(1).(func(string, string, time.Time) error); ok {
 		r1 = rf(tokenType, body, expirationTime)
 	} else {
 		r1 = ret.Error(1)

@@ -44,7 +44,7 @@ func SetupRoutes(router *gin.Engine) {
 	OTPGeneratorService := otpGeneratorUtils.NewOtpGeneratorService()
 
 	// Initialize Serivces
-	UserService := userServices.NewUserService(UserRepository, HashingService)
+	UserService := userServices.NewUserService(UserRepository, OTPRepository, HashingService)
 	OTPService := otpServices.NewOTPService(UserRepository, OTPRepository, OTPGeneratorService)
 	TokenService := tokenService.NewTokenService()
 	MailerService := services.NewMailerService()
@@ -54,7 +54,8 @@ func SetupRoutes(router *gin.Engine) {
 	// Initialize Controllers
 	AuthController := controllers.NewAuthController(UserService, HashingService, TokenService, GenerateTokenService)
 	UserController := controllers.NewUserController(UserService, OTPService, TokenService, RegistrationService)
-	OTPcontroller := controllers.NewOTPController(OTPService, MailerService, UserService)
+	OTPController := controllers.NewOTPController(OTPService, MailerService, UserService)
+	TokenController := controllers.NewTokenController(TokenService, UserService, OTPService, GenerateTokenService, *MailerService)
 
 	ApplicationController := controllers.NewApplicationController(UserService, ApplicationService)
 
@@ -62,9 +63,12 @@ func SetupRoutes(router *gin.Engine) {
 	router.POST("/login", AuthController.Login)
 	router.POST("/logout", AuthController.Logout)
 	router.POST("/sign-up", UserController.SignUp)
-	router.POST("/generate-otp", OTPcontroller.GenerateOTPForSignUp)
-	router.POST("/send-otp", OTPcontroller.SendOTP) // Not use on frontend only called on backend
-	router.POST("/verify-otp", OTPcontroller.ValidateOTP)
+	router.POST("/generate-otp", OTPController.GenerateOTPForSignUp)
+	router.POST("/send-otp", OTPController.SendOTP) // Not use on frontend only called on backend
+	router.POST("/verify-otp", OTPController.ValidateOTPForSignUp)
+	router.POST("/reset-password", UserController.ResetPassword)
+	router.POST("/send-reset-password-link", TokenController.SendResetPasswordEmail)
+	router.POST("/verify-reset-password-link", TokenController.VerifyResetPasswordToken)
 
 	// Protected route
 	protected := router.Group("/")
@@ -77,5 +81,6 @@ func SetupRoutes(router *gin.Engine) {
 	protected.POST("/update-application")
 	protected.POST("/delete-application")        //Soft delete with Gorm
 	protected.POST("/update-application-status") //For updating only app status on dashboard
+	// protected.POST("/reset-password", UserController.ResetPassword)
 
 }

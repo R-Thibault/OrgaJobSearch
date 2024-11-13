@@ -70,31 +70,40 @@ func (r *OTPRepository) GetOTPByCode(otpCode string, otpType string) (*models.OT
 	return &otp, nil
 }
 
-func (r *OTPRepository) UpdateOTPCode(otpID uint, otpCode string, otpType string) (*models.OTP, error) {
+// UpdateOTP updates an existing OTP record in the database.
+// It takes a pointer to a models.OTP struct as input and returns the updated OTP record or an error.
+//
+// Parameters:
+//   - newOTP: A pointer to the models.OTP struct containing the OTP details to be updated.
+//
+// Returns:
+//   - *models.OTP: A pointer to the updated OTP record.
+//   - error: An error if the update operation fails.
+//
+// Errors:
+//   - Returns an error if the database connection is nil.
+//   - Returns an error if the OtpCode is "0".
+//   - Returns an error if the OtpType is empty.
+//   - Returns gorm.ErrRecordNotFound if the OTP record is not found in the database.
+//   - Returns any other error encountered during the update operation.
+func (r *OTPRepository) UpdateOTP(newOTP *models.OTP) (*models.OTP, error) {
 	if r.db == nil {
 		return &models.OTP{}, errors.New("database connection is nil")
 	}
-	if otpID == 0 {
-		return &models.OTP{}, errors.New("otpID is empty")
-	}
-	if otpCode == "0" {
+
+	if newOTP.OtpCode == "0" {
 		return &models.OTP{}, errors.New("OtpCode is empty")
 	}
-	if otpType == "" {
+	if newOTP.OtpType == "" {
 		return &models.OTP{}, errors.New("otpType is empty")
 	}
-	updatedOTP := &models.OTP{
-		Model: gorm.Model{
-			ID: otpID,
-		},
-		OtpCode: otpCode,
-	}
-	result := r.db.Clauses(clause.Returning{}).Save(updatedOTP)
+
+	result := r.db.Clauses(clause.Returning{}).Save(newOTP)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return &models.OTP{}, gorm.ErrRecordNotFound
 		}
 		return &models.OTP{}, result.Error
 	}
-	return updatedOTP, nil
+	return newOTP, nil
 }

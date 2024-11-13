@@ -6,13 +6,20 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // Define a list of public routes (add paths as needed)
-  const publicRoutes = ["/login", "/sign-up", "/about", "/contact"];
+  const publicRoutes = [
+    "/login",
+    "/sign-up",
+    "/about",
+    "/contact",
+    "/reset-password",
+  ];
 
   // Check if the current path matches any of the public routes
   const isPublicRoute = publicRoutes.some((route) =>
     pathname.startsWith(route)
   );
-
+  console.error("Current Pathname:", pathname);
+  console.error("Is Public Route:", isPublicRoute);
   // Allow access if the route is public
   if (isPublicRoute) {
     return NextResponse.next();

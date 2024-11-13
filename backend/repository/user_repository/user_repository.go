@@ -129,3 +129,20 @@ func (r *UserRepository) UpdateUser(existingUserID uint, updatedUserData models.
 	}
 	return nil
 }
+
+func (r *UserRepository) UpdateUserPassword(existingUserID uint, updatedHashpassword string) error {
+	if r.db == nil {
+		return errors.New("database connection is nil")
+	}
+
+	result := r.db.Model(&models.User{}).Where("id = ?", existingUserID).Updates(models.User{
+		HashedPassword: updatedHashpassword,
+	})
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return gorm.ErrRecordNotFound
+		}
+		return result.Error
+	}
+	return nil
+}

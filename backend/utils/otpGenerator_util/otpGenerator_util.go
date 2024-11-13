@@ -18,7 +18,19 @@ func NewOtpGeneratorService() *OtpGeneratorService {
 
 var _ OtpGeneratorServiceInterface = &OtpGeneratorService{}
 
-func (s *OtpGeneratorService) GenerateOTP(user *models.User, OtpType string) (otp models.OTP) {
+// GenerateOTP generates a one-time password (OTP) for a given user.
+// It sets the seed for the random number generator, generates a 6-digit OTP,
+// and returns an OTP model with the provided expiration time and OTP type.
+//
+// Parameters:
+//   - user: A pointer to the User model for whom the OTP is being generated.
+//   - OtpType: A string representing the type of OTP being generated.
+//   - expirationTime: A time.Time value representing the expiration time of the OTP.
+//
+// Returns:
+//   - otp: An OTP model containing the generated OTP code, user ID, expiration time, OTP type,
+//     number of attempts, and validity status.
+func (s *OtpGeneratorService) GenerateOTP(user *models.User, OtpType string, expirationTime time.Time) (otp models.OTP) {
 	// Set the seed for the random number generator
 	rand.Seed(uint64(time.Now().UnixNano()))
 	OtpRandCode := rand.Intn(900000) + 100000
@@ -26,7 +38,7 @@ func (s *OtpGeneratorService) GenerateOTP(user *models.User, OtpType string) (ot
 	otpGenerated := models.OTP{
 		UserID:        user.ID,
 		OtpCode:       OtpRandCodeToString,
-		OtpExpiration: time.Now().Add(60 * time.Minute), // 1heure
+		OtpExpiration: expirationTime, // 1heure
 		OtpType:       OtpType,
 		OtpAttempts:   0,
 		IsValid:       true,

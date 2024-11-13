@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/R-Thibault/OrgaJobSearch/backend/models"
 	"github.com/R-Thibault/OrgaJobSearch/backend/services"
@@ -37,7 +38,8 @@ func (u *OTPController) GenerateOTPForSignUp(c *gin.Context) {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
 	}
-	Otp, err := u.OTPService.GenerateOTP(user.ID, "emailValidation")
+	expirationTime := time.Now().Add(48 * time.Hour)
+	Otp, err := u.OTPService.GenerateOTP(user.ID, "emailValidation", expirationTime)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return
@@ -99,14 +101,15 @@ func (u *OTPController) SendOTP(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "OTP Successfully send"})
 }
 
-func (u *OTPController) ValidateOTP(c *gin.Context) {
+func (u *OTPController) ValidateOTPForSignUp(c *gin.Context) {
 	var request models.SendOTPRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		log.Printf("Error OTP : %v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
-	err := u.OTPService.VerifyOTP(request.Email, request.OtpCode)
+	otpType := "emailValidation"
+	err := u.OTPService.VerifyOTPGiven(request.Email, otpType, request.OtpCode)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": err.Error()})
 		return

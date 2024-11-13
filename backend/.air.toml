@@ -1,6 +1,9 @@
 # Config file for Air
 
 [build]
+  # Hook to run the mock generation script before each build
+  pre_cmd = ["./generate_mocks.sh"]
+  
   # This is the command that Air runs to build your application
   cmd = "go build -o ./tmp/main ./cmd/main.go"
 
@@ -18,6 +21,10 @@
 
   # The command to start the application
   full_bin = "./tmp/main"
+   # Hook to run the mock generation script before each build
+  [[build.before]]
+  # Pass the changed file path to the script
+  cmd = "./generate_mocks.sh {{ .FullPath }}"
 
 [log]
   # The color of log information (0 is off)

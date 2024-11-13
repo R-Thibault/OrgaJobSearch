@@ -8,4 +8,5 @@ type UserServiceInterface interface {
 	EmailValidation(email string) error
 	GetUserByUUID(userUUID string) (*models.User, error)
 	UpdateUser(existingUser models.User, updatedUserDatas models.UserProfileUpdate) error
+	ResetPassword(user models.User, claims models.JWTToken, newPassword string) error
 }

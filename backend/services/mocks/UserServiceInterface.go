@@ -120,6 +120,24 @@ func (_m *UserServiceInterface) GetUserByUUID(userUUID string) (*models.User, er
 	return r0, r1
 }
 
+// ResetPassword provides a mock function with given fields: user, claims, newPassword
+func (_m *UserServiceInterface) ResetPassword(user models.User, claims models.JWTToken, newPassword string) error {
+	ret := _m.Called(user, claims, newPassword)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ResetPassword")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(models.User, models.JWTToken, string) error); ok {
+		r0 = rf(user, claims, newPassword)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // UpdateUser provides a mock function with given fields: existingUser, updatedUserDatas
 func (_m *UserServiceInterface) UpdateUser(existingUser models.User, updatedUserDatas models.UserProfileUpdate) error {
 	ret := _m.Called(existingUser, updatedUserDatas)

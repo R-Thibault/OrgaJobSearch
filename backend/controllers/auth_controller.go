@@ -88,7 +88,7 @@ func (a *AuthController) Login(c *gin.Context) {
 	}
 	bodyString := string(bodyContentJSON)
 
-	tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(&tokenType, &bodyString, expirationTime)
+	tokenString, err := a.JWTTokenGenerator.GenerateJWTToken(tokenType, bodyString, expirationTime)
 	if err != nil {
 		fmt.Printf("Failed to sign the token: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})

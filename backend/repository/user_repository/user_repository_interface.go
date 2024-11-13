@@ -10,4 +10,5 @@ type UserRepositoryInterface interface {
 	ValidateEmail(email string) error
 	GetUserByUUID(uuid string) (*models.User, error)
 	UpdateUser(existingUserID uint, updatedUserData models.UserProfileUpdate) error
+	UpdateUserPassword(existingUserID uint, updatedHashpassword string) error
 }

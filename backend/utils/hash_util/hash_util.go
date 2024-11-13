@@ -14,14 +14,21 @@ import (
 type HashingService struct{}
 
 func NewHashingService() *HashingService {
-
 	return &HashingService{}
 
 }
 
 var _ HashingServiceInterface = &HashingService{}
 
-// HashPassword generates a hashed password using the Argon2id algorithm.
+// HashPassword generates a hashed password using Argon2id algorithm.
+// It returns the encoded salt and hash, separated by a colon.
+//
+// Parameters:
+//   - password: the plain text password to be hashed.
+//
+// Returns:
+//   - string: the encoded salt and hash, separated by a colon.
+//   - error: an error if any occurs during the hashing process.
 func (h *HashingService) HashPassword(password string) (string, error) {
 	// Generate a random salt of 16 bytes
 	salt := make([]byte, 16)
@@ -41,7 +48,19 @@ func (h *HashingService) HashPassword(password string) (string, error) {
 	return encodedSalt + ":" + encodedHash, nil
 }
 
-func (h *HashingService) CompareHashPassword(password, storedHash string) (bool, error) {
+// CompareHashPassword compares a given password with a stored hash to check if they match.
+// The stored hash is expected to be in the format "salt:hash", where both components are base64 encoded.
+// It returns true if the password matches the stored hash, otherwise false.
+// If there is an error during the process, it returns false and the error.
+//
+// Parameters:
+//   - password: The plaintext password to compare as a string.
+//   - storedHash: The stored hash in the format "salt:hash".
+//
+// Returns:
+//   - bool: True if the password matches the stored hash, otherwise false.
+//   - error: An error if the stored hash format is invalid or if decoding fails.
+func (h *HashingService) CompareHashPassword(password string, storedHash string) (bool, error) {
 	// Split the stored hash into salt and hash components
 	saltAndHash := strings.Split(storedHash, ":")
 	if len(saltAndHash) != 2 {

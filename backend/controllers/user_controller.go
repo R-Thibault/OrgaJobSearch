@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -101,4 +102,49 @@ func (u *UserController) UpdateUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "User update successful"})
+}
+
+func (u *UserController) ResetPassword(c *gin.Context) {
+	var requestDatas models.ResetPasswordCredentials
+	if err := c.ShouldBindJSON(&requestDatas); err != nil {
+		// If the input is invalid, respond with an error
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request data"})
+		return
+	}
+	log.Printf("ERROR : %v", requestDatas)
+	// userUUID, exists := c.Get("userUUID")
+	// if !exists {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID not Found in context"})
+	// 	return
+	// }
+	// userUUIDStr, ok := userUUID.(string)
+	// if !ok {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID in context is not a a valid string"})
+	// 	return
+	// }
+	if requestDatas.Password == requestDatas.ConfirmPassword {
+
+		existingUser, err := u.UserService.GetUserByEmail(requestDatas.Email)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "UserUUID do not match a user"})
+			return
+		}
+		fmt.Printf("existingUser: %v", existingUser)
+		claims, claimsErr := u.tokenService.VerifyToken(requestDatas.TokenString)
+		if claimsErr != nil {
+			log.Printf("ERROR claims: %v", claimsErr)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid token"})
+		}
+		fmt.Printf("claims: %v", claims)
+		pswdErr := u.UserService.ResetPassword(*existingUser, *claims, requestDatas.Password)
+		if pswdErr != nil {
+			log.Printf("ERROR pswd : %v", pswdErr)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Reset password fail"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Password and confirm do not match"})
+	}
 }

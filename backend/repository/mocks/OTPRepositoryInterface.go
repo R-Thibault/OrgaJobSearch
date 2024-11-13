@@ -100,29 +100,29 @@ func (_m *OTPRepositoryInterface) SaveOTP(otp models.OTP) (string, error) {
 	return r0, r1
 }
 
-// UpdateOTPCode provides a mock function with given fields: otpID, otpCode, otpType
-func (_m *OTPRepositoryInterface) UpdateOTPCode(otpID uint, otpCode string, otpType string) (*models.OTP, error) {
-	ret := _m.Called(otpID, otpCode, otpType)
+// UpdateOTP provides a mock function with given fields: newOTP
+func (_m *OTPRepositoryInterface) UpdateOTP(newOTP *models.OTP) (*models.OTP, error) {
+	ret := _m.Called(newOTP)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UpdateOTPCode")
+		panic("no return value specified for UpdateOTP")
 	}
 
 	var r0 *models.OTP
 	var r1 error
-	if rf, ok := ret.Get(0).(func(uint, string, string) (*models.OTP, error)); ok {
-		return rf(otpID, otpCode, otpType)
+	if rf, ok := ret.Get(0).(func(*models.OTP) (*models.OTP, error)); ok {
+		return rf(newOTP)
 	}
-	if rf, ok := ret.Get(0).(func(uint, string, string) *models.OTP); ok {
-		r0 = rf(otpID, otpCode, otpType)
+	if rf, ok := ret.Get(0).(func(*models.OTP) *models.OTP); ok {
+		r0 = rf(newOTP)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*models.OTP)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(uint, string, string) error); ok {
-		r1 = rf(otpID, otpCode, otpType)
+	if rf, ok := ret.Get(1).(func(*models.OTP) error); ok {
+		r1 = rf(newOTP)
 	} else {
 		r1 = ret.Error(1)
 	}

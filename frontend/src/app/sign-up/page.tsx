@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import SignUpWithOTP from "../../components/organisms/signUpWithOTP";
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState("");
+  const [email] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");

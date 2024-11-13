@@ -22,11 +22,12 @@ func TestGenerateOTP_UserNotFound(t *testing.T) {
 
 	userID := uint(1)
 	otpType := "emailValidation"
+	expirationTime := time.Now().Add(48 * time.Hour)
 	// Setup mock expectation
 	mockRepoUser.On("GetUserByID", userID).Return(nil, errors.New("user not found"))
 
 	// Execute function
-	_, err := otpService.GenerateOTP(userID, otpType)
+	_, err := otpService.GenerateOTP(userID, otpType, expirationTime)
 
 	//Assertions
 	assert.Error(t, err)
@@ -46,9 +47,10 @@ func TestGenerateOTP_Success(t *testing.T) {
 		ID: 1,
 	}, Email: email}
 	otpType := "emailValidation"
+	expirationTime := time.Now().Add(48 * time.Hour)
 	// Setup mock expectation
 	mockRepoUser.On("GetUserByID", user.ID).Return(user, nil)
-	mockUtilOTP.On("GenerateOTP", user, otpType).Return(models.OTP{
+	mockUtilOTP.On("GenerateOTP", user, otpType, expirationTime).Return(models.OTP{
 		UserID:        user.ID,
 		OtpCode:       otp,
 		OtpExpiration: time.Now().Add(60 * time.Minute),
@@ -59,7 +61,7 @@ func TestGenerateOTP_Success(t *testing.T) {
 	mockRepoOTP.On("SaveOTP", mock.AnythingOfType("models.OTP")).Return(otp, nil)
 
 	// Execute function
-	generatedOTP, err := otpService.GenerateOTP(user.ID, otpType)
+	generatedOTP, err := otpService.GenerateOTP(user.ID, otpType, expirationTime)
 
 	//Assertions
 	assert.NoError(t, err)
@@ -74,6 +76,7 @@ func TestVerifyOTP_Sucess(t *testing.T) {
 	otpService := otpServices.NewOTPService(mockRepoUser, mockRepoOTP, mockUtilOTP)
 
 	otp := "123456"
+	otpType := "emailValidation"
 	email := "existinguser@example.com"
 	user := &models.User{Model: gorm.Model{
 		ID: 1,
@@ -90,7 +93,7 @@ func TestVerifyOTP_Sucess(t *testing.T) {
 	mockRepoOTP.On("GetOTPCodeByUserIDandType", user.ID, validOTP.OtpType).Return(validOTP, nil)
 
 	// Execute function
-	err := otpService.VerifyOTP(email, otp)
+	err := otpService.VerifyOTPGiven(email, otpType, otp)
 
 	// Assertions
 	assert.NoError(t, err)
@@ -109,6 +112,7 @@ func TestVerifyOTP_Fail_IncorrectOTP(t *testing.T) {
 			ID: 1,
 		}, Email: email}
 
+	otpType := "emailValidation"
 	incorrectOTP := "incorrectOTP"
 	validOTP := &models.OTP{
 		UserID:        user.ID,
@@ -121,7 +125,7 @@ func TestVerifyOTP_Fail_IncorrectOTP(t *testing.T) {
 	mockRepoOTP.On("GetOTPCodeByUserIDandType", user.ID, validOTP.OtpType).Return(validOTP, nil)
 
 	// Execute function
-	err := otpService.VerifyOTP(email, incorrectOTP)
+	err := otpService.VerifyOTPGiven(email, otpType, incorrectOTP)
 
 	// Assertions
 	assert.Error(t, err)
@@ -154,7 +158,7 @@ func TestVerifyOTP_Fail_ExpiredOTP(t *testing.T) {
 	mockRepoOTP.On("GetOTPCodeByUserIDandType", user.ID, invalidOTP.OtpType).Return(invalidOTP, nil)
 
 	// Execute function
-	err := otpService.VerifyOTP(email, invalidOTP.OtpCode)
+	err := otpService.VerifyOTPGiven(email, invalidOTP.OtpType, invalidOTP.OtpCode)
 
 	// Assertions
 	assert.Error(t, err)

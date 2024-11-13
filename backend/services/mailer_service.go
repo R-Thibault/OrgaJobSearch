@@ -117,8 +117,8 @@ func (s *MailerService) SendOTPMail(toEmail string, otpCode string) error {
 	return nil
 }
 
-func (s *MailerService) SendJobSeekerSignUpInvitation(toEmail string, tokenString string) error {
-	subject := "You're Invited to Join OrgaJobSearch!"
+func (s *MailerService) SendResetPasswordEmail(toEmail string, tokenString string) error {
+	subject := "Reset Your Password for OrgaJobSearch"
 
 	htmlContent := fmt.Sprintf(`
 	<!DOCTYPE html>
@@ -156,7 +156,7 @@ func (s *MailerService) SendJobSeekerSignUpInvitation(toEmail string, tokenStrin
 				font-size: 16px;
 				font-weight: bold;
 				color: #ffffff;
-				background-color: #28a745;
+				background-color: #007bff;
 				text-decoration: none;
 				border-radius: 5px;
 				margin-top: 20px;
@@ -166,27 +166,27 @@ func (s *MailerService) SendJobSeekerSignUpInvitation(toEmail string, tokenStrin
 	<body>
 		<div class="container">
 			<div class="header">
-				<h2>You're Invited to Join OrgaJobSearch!</h2>
+				<h2>Password Reset Request</h2>
 			</div>
 			<div class="message">
 				<p>Hello,</p>
-				<p>We're excited to invite you to join OrgaJobSearch. Click the link below to sign up and get started!</p>
-				<a href="http://localhost:3000/sign-up?token=%s" class="button">Accept Invitation</a>
-				<p>The invitation link will expire in 48 hours, so be sure to sign up soon.</p>
+				<p>We received a request to reset your password for your OrgaJobSearch account. Click the link below to reset your password:</p>
+				<a href="http://localhost:3000/reset-password?token=%s" class="button">Reset Password</a>
+				<p>This link will expire in 60 minutes. If you did not request a password reset, please ignore this email.</p>
 			</div>
 			<div class="footer">
-				<p>If you did not request this invitation, please ignore this email.</p>
+				<p>If you have any issues, please contact our support team.</p>
 			</div>
 		</div>
 	</body>
 	</html>
 	`, tokenString)
 
-	plainTextContent := fmt.Sprintf("You're invited to join OrgaJobSearch! Please use the following link to sign up: http://localhost:3000/sign-up?token=%s. The link will expire in 48 hours.", tokenString)
+	plainTextContent := fmt.Sprintf("We received a request to reset your password for OrgaJobSearch. Use the following link to reset your password: http://localhost:3000/reset-password?token=%s. This link will expire in 60 minutes.", tokenString)
 
 	err := s.SendEmail(toEmail, subject, plainTextContent, htmlContent)
 	if err != nil {
-		return errors.New("failed to send sign-up invitation email")
+		return errors.New("failed to send reset password email")
 	}
 
 	return nil
